@@ -47,8 +47,8 @@ wire		[31:0] b = (unsignLow & b_in[31] ? (1 + ~b_in)
 assign		q_out = (unsignLow & (a_in[31] ^ b_in[31]) ? (1 + ~q)
 					  		   : q);
 		// The remainder is only negative if the input dividend is.
-assign		r_out = (unsignLow & a_in[31] ? (1 + ~r)
-					      : r);
+assign		r_out = (unsignLow & (a_in[31] ^ b_in[31]) ? (1 + ~r)
+							: r);
 
 
 // ****************************************

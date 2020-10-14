@@ -14,7 +14,7 @@ begin
 	if(unsignLow) q = ($signed(a)/$signed(b));
 	else q = (a/b);
 
-	if(unsignLow) r = ($signed(a) - $signed(q)*$signed(b));
+	if(unsignLow) signed r = ($signed(a) - ($signed(q)*$signed(b)));
 	else r = (a - (q*b));
 end
 endmodule
