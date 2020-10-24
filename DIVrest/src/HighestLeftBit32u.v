@@ -1,14 +1,11 @@
 // Telecommunications Master Dissertation - Francis Fuentes 12-10-2020
-// Normalize combinational circuit for 32-bit unsigned.
-// Finds the highest '1' bit and sends the required number of leftShifts to 
-// normalize its value. With an input a = 0, leftShift = h1F.
+// Outputs a unsigned number value equals to the first leftmost '1' position of the input value.
 
-module Normalize32u(a, b, leftSh);
 
-input	   [31:0] a;		// Unsigned value to normalize.
-output     [31:0] b;		// Unsigned value normalized.
-output 	    [4:0] leftSh;	// Number of leftShifts to perform for normulization.
-wire        [4:0] temp;         // Number of highest '1' bit position.
+module HighestLeftBit32u(a, leftSh);
+
+input	   [31:0] a;		// Input value.
+output 	    [4:0] leftSh;	// Bit position of the leftmost '1' in unsigned format. [31:0] format.
 
 // Wiring used to lower the resources required at the synthesization.
 wire a3130, a2726, a2322, a1918, a1514, a1110, a0706, a0302;
@@ -35,82 +32,79 @@ assign a3124 = a3128 | |a[27:24];
 assign a1508 = a1512 | |a[11:8];
 
 
-// If "a" 16MSB has a one, temp[4] <= 0;
-assign temp[4] = a3124 | a2320 | a1918 | |a[17:16];
+// If "a" 16MSB has a one, leftSh[4] <= 0;
+assign temp[4] = a3124 | a2320 | a1918 |a[17:16];
 
-// If temp[4] == 0, search in the 8MSB, if not, search 8MSB at a[15:0]
-assign temp[3] = (temp[4] ? a3124
+// If leftSh[4] == 0, search in the 8MSB, if not, search 8MSB at a[15:0]
+assign leftSh[3] = (leftSh[4] ? a3124
                           : a1508);
 
 // Following the same procedure, section the operand "a" to find the highest '1'
-assign temp[2] = (temp[4] 
-                     ? (temp[3] 
+assign leftSh[2] = (leftSh[4] 
+                     ? (leftSh[3] 
                            ? a3128
                            : a2320) 
-                     : (temp[3] 
+                     : (leftSh[3] 
                            ? a1512 
                            : a0704)
 		  );
 
-assign temp[1] = (temp[4] 
-                     ? (temp[3] 
-                           ? (temp[2] 
+assign leftSh[1] = (leftSh[4] 
+                     ? (leftSh[3] 
+                           ? (leftSh[2] 
                                  ? a3130
                                  : a2726) 
-                           : (temp[2] 
+                           : (leftSh[2] 
                                  ? a2322
                                  : a1918)
                        )
-                     : (temp[3] 
-                           ? (temp[2] 
+                     : (leftSh[3] 
+                           ? (leftSh[2] 
                                  ? a1514
                                  : a1110) 
-                           : (temp[2] 
+                           : (leftSh[2] 
                                  ? a0706
                                  : a0302)
                        )
 		  );
 
-assign temp[0] = (temp[4] 
-                     ? (temp[3] 
-                           ? (temp[2] 
-                                 ? (temp[1]
+assign leftSh[0] = (leftSh[4] 
+                     ? (leftSh[3] 
+                           ? (leftSh[2] 
+                                 ? (leftSh[1]
                                        ? a[31]
                                        : a[29])
-                                 : (temp[1]
+                                 : (leftSh[1]
                                        ? a[27]
                                        : a[25])
                              ) 
-                           : (temp[2] 
-                                 ? (temp[1]
+                           : (leftSh[2] 
+                                 ? (leftSh[1]
                                        ? a[23]
                                        : a[21])
-                                 : (temp[1]
+                                 : (leftSh[1]
                                        ? a[19]
                                        : a[17])
                              )
                        )
-                     : (temp[3] 
-                           ? (temp[2] 
-                                 ? (temp[1]
+                     : (leftSh[3] 
+                           ? (leftSh[2] 
+                                 ? (leftSh[1]
                                        ? a[15]
                                        : a[13])
-                                 : (temp[1]
+                                 : (leftSh[1]
                                        ? a[11]
                                        : a[9])
                                   ) 
-                           : (temp[2] 
-                                 ? (temp[1]
+                           : (leftSh[2] 
+                                 ? (leftSh[1]
                                        ? a[7]
                                        : a[5])
-                                 : (temp[1]
+                                 : (leftSh[1]
                                        ? a[3]
                                        : a[1])
                                   )
                           )
 		  );
-
-assign leftSh = ~temp;
-assign b = a << leftSh;
 
 endmodule

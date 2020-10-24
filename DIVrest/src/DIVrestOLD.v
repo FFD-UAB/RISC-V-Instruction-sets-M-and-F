@@ -1,72 +1,94 @@
 // Telecommunications Master Dissertation - Francis Fuentes 8-10-2020
-// Divider HW model following a restoring design.
+// Divider HW model following a restoring design (32 clk cycles).
 
-module DIVrest(a, b, start, clk, rstlow, q, r, busy, count);
-input		[31:0] a; 	// Dividend
-input		[31:0] b; 	// Divisor
-input		start;		// Start signal
-input		clk;		// Clock signal
-input 		rstlow;		// Reset signal at low
+module DIVrest(a_in, b_in, unsignLow, count, start, busy, clk, rstlow, q_out, r_out);
+input		[31:0] a_in; 	// Dividend.
+input		[31:0] b_in; 	// Divisor.
+input		unsignLow;	// Indicator signal of unsigned inputs when low.
+input		[5:0] count;	// Iteration loop counter.
+input		start;		// Start operation flag (take operands).
+input		clk;		// Clock signal.
+input 		rstlow;		// Reset signal at low.
 
-output		[31:0] q;
-output		[31:0] r;
-output reg	[4:0]  count;	// Iteration counter
-output reg	busy;
+output		[31:0] q_out;	// Quotient output.
+output		[31:0] r_out;	// Remainder output.
+output reg	busy;		// Busy flag. Lowered when ready to new operation.
+
+reg		[31:0] reg_q;	// Dividend register that ends with the quotient.
+reg		[31:0] reg_r;	// Remainder or partial remainder register.
+reg		[31:0] reg_b;	// Divisor register.
 
 
-reg		[31:0] reg_q;	// Dividend register that ends with the quotient
-reg		[31:0] reg_r;	// Remainder or partial remainder register
-reg		[31:0] reg_b;	// Divisor register
-
-		// Subtraction combinational result
+// *****************************
+// ** Restoring divisor logic **
+// *****************************
+//
+		// Subtraction combinational result.
 wire		[32:0] res = {reg_r[31:0], reg_q[31]} - {1'b0, reg_b};
 
-		// Output operands assignment to registers
-assign 		q = reg_q;
-assign		r = reg_r;
+		// Output unsigned operands to registers.
+//wire 		[31:0] q = {reg_q[30:0], !res[32]};
+//wire		[31:0] r = (res[32] ? {reg_r[30:0], reg_q[31]}
+//				    : res[31:0]);
+wire q = reg_q;
+wire r = reg_r;
 
-		// State machine registers and parameter values.
-reg 		[1:0] State, NextState;	// All possible outcomes has to be defined.
-parameter	[1:0] Prep = 2'd1, Loop = 2'd2, Finish = 2'd0, FREE = 2'd3;
+// ******************************
+// ** Signed management module **
+// ******************************
+//
+		// Signed-to-Unsigned (input) if required (unsignLow = 1).
+		// Change to positive unsigned only if negative and signed.
+wire		[31:0] a = (unsignLow & a_in[31] ? (1 + ~a_in) 
+						 : a_in);
+wire		[31:0] b = (unsignLow & b_in[31] ? (1 + ~b_in) 
+						 : b_in);
+
+		// Unsigned-to-Signed (output) if required (unsignLow = 1).
+		// The quotient is only negative if the inputs have different sign.
+assign		q_out = (unsignLow & (a_in[31] ^ b_in[31]) ? (1 + ~q)
+					  		   : q);
+		// The remainder is only negative if the input dividend is.
+assign		r_out = (unsignLow & a_in[31] ? (1 + ~r)
+					      : r);
 
 
-// Synchronous state machine with asynchronous low reset (actual 
-// register rst using Prep phase occurs in next posedge clk).
+// ****************************************
+// ** Restoring divisor sequential logic **
+// ****************************************
+//
+// Preparation phase count = 0; Loop phase 0 < count < 32; Finish phase count > 31.
+//always @(posedge clk or negedge rstlow)
+//begin
+
+// The priority signal precedence is rst > busy > start. The operation will not restart
+// when a start signal is raised until the ongoing operation is finished.
 always @(posedge clk or negedge rstlow)
-	if (!rstlow)	State <= Prep;
-	else		State <= NextState;
+// Update reg_b with divisor b only when starting a operation (count = 0 -> |count).
+reg_b <= (rstlow & (|count) ? reg_b : b	// Reg no necessary if input divisor b is guaranteed 
+	 );				// to maintain its value. We don't take it as granted.
 
-// State machine. 1 clk Prep, 31 clk Loop, 1 clk Finish.
-always @(*)
-case (State)
-	Prep, FREE: 	if(start) 
-			NextState <= Loop;
-		else	NextState <= Prep;
-	Loop: 	if(count >= 5'd31)
-			NextState <= Finish;
-		else	NextState <= Loop;
-	Finish:	NextState <= Prep;
-endcase
-
-// Operation execution.
 always @(posedge clk or negedge rstlow)
-case(State)
-	Prep, FREE: begin	// Preparation or Idle phase.
-		reg_q <= a;
-		reg_b <= b;
-		reg_r <= 32'b0;
-		count <= 5'b0;
-		busy  <= 1'b0;
-	      end
+reg_q <= (!rstlow ? 32'b0 // rst: Load 0.
+		  : (busy ? {reg_q[30:0], !res[32]} // Loop: Load next shift.
+			  : (start ? a // Prep: Load dividend a (new operation).
+				   : reg_q // Fin: Maintain value until next operation (start = 1).
+	 )));
 
-	Loop: begin		// Loop or Operation phase.
-		busy  <= 1'b1;
-		count <= count + 5'b1;
-		{reg_r, reg_q} <= (res[32] ?
-			{reg_r[30:0], reg_q, !res[32]}	   :
-			{res[31:0], reg_q[30:0], !res[32]} );
-	      end
+always @(posedge clk or negedge rstlow)
+reg_r <= (!rstlow ? 32'b0 // rst: Load 0.
+		  : (busy ? (res[32] ? {reg_r[30:0], reg_q[31]} // Loop: LShift if subtraction res
+				     : res[31:0])	        // is neg, load res if pos.
+			  : (start ? 32'b0 // Prep: Load 0 (new operation);
+				   : reg_r // Fin: Maintain value until next operation (start = 1).
+	 )));
 
-	Finish: busy <= 1'b0;	// Finish phase.
-endcase
+always @(posedge clk or negedge rstlow)
+busy <= (!rstlow ? 1'b0 
+		 : (start ? 1'b0
+			  : (count < 6'd31 ? 1'b1 
+					   : 1'b0
+	))); // Loop only when count < 32 in order to do 32 iterations. 
+
+//end
 endmodule
