@@ -1,0 +1,26 @@
+/-/ tDIVrest32u - Theoretical restoring divisor without any upgrade. 32 clock cycles every division, no matter what are the input operands.
+/-/ bDIVrest32u - Basic restoring divisor. Checks if dividend "a" is lower than divisor "b", which skips the division operation (does it in one clock cycle).
+/-/ qsDIVrest32u - Quick start restoring divisor. Pushes the dividend to the left-most position in the quotient register at the start, which skips "n" number of left zeros the dividend has in clock cycles. Great when the dividend has a low value.
+/-/ eqsDIVrest32u - Even quicker start restoring divisor. Pushes the dividend to the highest bit position of the divisor in the remainder/quotient registers, which makes it to start even faster than quick start version. The number of clock cycles saved equals to the number of left zeros the dividend has, plus the number of bits to the right from the leftmost '1' of the divisor. Great when the dividend has a low value and when the divisor has a high value (but the dividend cannot be lower than the divisor because skips it).
+
+Testbench: Not a final testbench by far, just some statistical number using the same (using same seeds) division operands in a sample of 2000x4 divisions and only divisions (DIV/DIVU/REM/REMU).
+           There's even some times that aren't specific of the division operation inside this data, but is good enough data to use it in a comparison between the different versions of the divider. So DON'T take it seriously.
+______________|_Total_test_time_|_Time_saved_respect_theoretical_|_Clock_cycles_saved_respect_theoretical_|_Average_clock_cycle_latency_per_division_|
+  tDIVrest32u | 28015150 ns     |           0 us                 |           0 cc                         |    35.02 cc                              |
+  bDIVrest32u | 14815150 ns     |       13200 us                 |      132000 cc                         |    18.51 cc                              |
+ qsDIVrest32u | 14809150 ns     |       13206 us                 |      132060 cc                         |    18.51 cc                              |
+eqsDIVrest32u |  2402950 ns     |       25612.2 us               |      256122 cc                         |     3.00 cc                              |
+
+The random seed used for this test are:
+ A <= ($random(11037+i))%2147483648;
+ B <= ($random(11037-i))%2147483648;
+
+
+Now the same table but with always random value (without fixed seed):
+______________|_Total_test_time_|_Time_saved_respect_theoretical_|_Clock_cycles_saved_respect_theoretical_|_Average_clock_cycle_latency_per_division_|
+  tDIVrest32u | 28015150 ns     |           0 us                 |              0 cc                      |    35.02 cc                              |
+  bDIVrest32u | 14564300 ns     |       13450.85 us              |       134508.5 cc                      |    18.21 cc                              |
+ qsDIVrest32u | 14212900 ns     |       13802.25 us              |       138022.5 cc                      |    17.77 cc                              |
+eqsDIVrest32u |  2905100 ns     |       25110.05 us              |       251100.5 cc                      |     3.63 cc                              |
+
+

@@ -1,0 +1,44 @@
+E:/Uni/TFM/VerilogCode/DIVrest/src/bDIVrest32u.v {1 {vlog -work DIV -stats=none E:/Uni/TFM/VerilogCode/DIVrest/src/bDIVrest32u.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module bDIVrest32u
+
+Top level modules:
+	bDIVrest32u
+
+} {} {}} E:/Uni/TFM/VerilogCode/DIVrest/src/Normal32u.v {1 {vlog -work DIV -stats=none E:/Uni/TFM/VerilogCode/DIVrest/src/Normal32u.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module Normalize32u
+
+Top level modules:
+	Normalize32u
+
+} {} {}} E:/Uni/TFM/VerilogCode/DIVrest/src/qsDIVrest32u.v {1 {vlog -work DIV -stats=none E:/Uni/TFM/VerilogCode/DIVrest/src/qsDIVrest32u.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module qsDIVrest32u
+
+Top level modules:
+	qsDIVrest32u
+
+} {} {}} E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v {2 {vlog -work DIV -stats=none E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module testDIV
+** Warning: E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v(92): (vlog-2597) '4294967295' is being treated as 32-bit signed integer and will overflow.
+
+** Warning: E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v(93): (vlog-2597) '4294967295' is being treated as 32-bit signed integer and will overflow.
+
+** Warning: E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v(94): (vlog-2597) '4294967295' is being treated as 32-bit signed integer and will overflow.
+
+** Warning: E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v(95): (vlog-2597) '4294967295' is being treated as 32-bit signed integer and will overflow.
+
+
+Top level modules:
+	testDIV
+
+} {} {}} E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestGold.v {1 {vlog -work DIV -stats=none E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestGold.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module DIVrestGold
+
+Top level modules:
+	DIVrestGold
+
+} {} {}}

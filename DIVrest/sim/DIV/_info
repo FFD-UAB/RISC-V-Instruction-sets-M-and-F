@@ -1,0 +1,142 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dE:/Uni/TFM/VerilogCode/DIVrest/sim
+vbDIVrest32u
+Z1 !s110 1603456070
+!i10b 1
+!s100 GY6BGHT7@`8<e>LIjDW5X1
+IZ:5GV=A9dzko[g[T=z2:e3
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1603454194
+8E:/Uni/TFM/VerilogCode/DIVrest/src/bDIVrest32u.v
+FE:/Uni/TFM/VerilogCode/DIVrest/src/bDIVrest32u.v
+L0 5
+Z3 OP;L;10.4a;61
+r1
+!s85 0
+31
+Z4 !s108 1603456070.000000
+!s107 E:/Uni/TFM/VerilogCode/DIVrest/src/bDIVrest32u.v|
+!s90 -reportprogress|300|-work|DIV|-stats=none|E:/Uni/TFM/VerilogCode/DIVrest/src/bDIVrest32u.v|
+!s101 -O0
+!i113 1
+Z5 o-work DIV -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+nb@d@i@vrest32u
+vDIVrest
+!s110 1603455178
+!i10b 1
+!s100 X;aKlXbPH>bB`0B?L9]iF3
+IZOSPJ14F7T7Ki9Na;lOg?3
+R2
+R0
+w1602740849
+8E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestOLD.v
+FE:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestOLD.v
+L0 4
+R3
+r1
+!s85 0
+31
+!s108 1603455178.000000
+!s107 E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestOLD.v|
+!s90 -reportprogress|300|-work|DIV|-stats=none|E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestOLD.v|
+!s101 -O0
+!i113 1
+R5
+n@d@i@vrest
+vDIVrestGold
+Z6 !s110 1603456069
+!i10b 1
+!s100 IzaFm[a0PzbfaLI=obd:`0
+IT:z]lBi[QhDLHlkCKnT=P0
+R2
+R0
+w1602640891
+8E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestGold.v
+FE:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestGold.v
+L0 4
+R3
+r1
+!s85 0
+31
+Z7 !s108 1603456069.000000
+!s107 E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestGold.v|
+!s90 -reportprogress|300|-work|DIV|-stats=none|E:/Uni/TFM/VerilogCode/DIVrest/src/DIVrestGold.v|
+!s101 -O0
+!i113 1
+R5
+n@d@i@vrest@gold
+vNormalize32u
+R6
+!i10b 1
+!s100 73^oD>izJm]:Meo8791`=3
+I9T]A9Q[X2ID;A051U8;V90
+R2
+R0
+w1603456055
+8E:/Uni/TFM/VerilogCode/DIVrest/src/Normal32u.v
+FE:/Uni/TFM/VerilogCode/DIVrest/src/Normal32u.v
+L0 7
+R3
+r1
+!s85 0
+31
+R7
+!s107 E:/Uni/TFM/VerilogCode/DIVrest/src/Normal32u.v|
+!s90 -reportprogress|300|-work|DIV|-stats=none|E:/Uni/TFM/VerilogCode/DIVrest/src/Normal32u.v|
+!s101 -O0
+!i113 1
+R5
+n@normalize32u
+vqsDIVrest32u
+R1
+!i10b 1
+!s100 Z0Anz9^6C5MTQ4CJO2kTh1
+IZgzon`1[=B]80OoeRNdk20
+R2
+R0
+w1603455252
+8E:/Uni/TFM/VerilogCode/DIVrest/src/qsDIVrest32u.v
+FE:/Uni/TFM/VerilogCode/DIVrest/src/qsDIVrest32u.v
+L0 10
+R3
+r1
+!s85 0
+31
+R7
+!s107 E:/Uni/TFM/VerilogCode/DIVrest/src/qsDIVrest32u.v|
+!s90 -reportprogress|300|-work|DIV|-stats=none|E:/Uni/TFM/VerilogCode/DIVrest/src/qsDIVrest32u.v|
+!s101 -O0
+!i113 1
+R5
+nqs@d@i@vrest32u
+vtestDIV
+R1
+!i10b 1
+!s100 FJn5dPCB4znh=zZ2P2RT22
+IiOdFV8oKlf[lBe9gdckKf2
+R2
+R0
+w1603455177
+8E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v
+FE:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v
+L0 6
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v|
+!s90 -reportprogress|300|-work|DIV|-stats=none|E:/Uni/TFM/VerilogCode/DIVrest/tb/DIVrestTEST.v|
+!s101 -O0
+!i113 1
+R5
+ntest@d@i@v
