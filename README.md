@@ -8,7 +8,7 @@ Authors of previous project used as starting point of this project are:
  - Pau Casacoverta Orta for implementing a base core RV32I compliant with the base instruction set fixed by the ISA standard.
  - Raimon Casanova Mohr for tutoring and adding pipeline structure to the core, facilitating the addition of expansions and increasing the data througput.
 
-All hardware design is performed using Verilog HDL and some System Verilog when necessary. The project folders are distributed by type of sub-project used by prototyping different parts of the project:
+All hardware design is performed using Verilog HDL and some System Verilog when necessary. The project folders are distributed by type of sub-project used in the prototyping of different parts of the project:
  - "Core" includes the files of the last update on the whole RISC-V core. The MULDIV module implementation is in WIP.
  - "MULDIV" includes the files of the modules capable of implementing the instruction set M.
     As the MUL operations are expected to use a open source IP capable of implementing a single-cycle unsigned operation, the current model used is the reference.
