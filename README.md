@@ -7,6 +7,7 @@ The objective of this project is to carry out the required modifications to a 5-
 Authors of previous project used as starting point of this project are:
  - Pau Casacoverta Orta for implementing a base core RV32I compliant with the base instruction set fixed by the ISA standard.
  - Raimon Casanova Mohr for tutoring and adding pipeline structure to the core, facilitating the addition of expansions and increasing the data througput.
+ - The open source PULPino's HW infraestructure authors (https://github.com/pulp-platform/pulpino), as this project uses their external core build at the synthesis phase on FPGA board to use the various I/O interfaces like SPI, UART, GPIO, between others.
 
 All hardware design is performed using Verilog HDL and some System Verilog when necessary. The project folders are distributed by type of sub-project used in the prototyping of different parts of the project:
  - "Core" includes the files of the last update on the whole RISC-V core. The MULDIV module implementation is in WIP.
