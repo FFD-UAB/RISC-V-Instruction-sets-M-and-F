@@ -862,7 +862,7 @@ task encodeSltiu;
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     $display("mem[%d] = %b", pc, top_inst.mem_prog_inst.progArray[pc]);
     pc = pc + 32'd4;
-   end
+   nd
 endtask
 
 // TASK XORI

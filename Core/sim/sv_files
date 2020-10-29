@@ -22,9 +22,11 @@
 ../src/mem/mem_prog.v
 ../tb/testbench.sv
 ../tb/load_store.v
+../tb/arithmeticologicM.v
 ../src/core/core.v
 ../src/top.v
 ../src/core/core_execution_unit/core_execution_unit_alu_m.v
 ../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v
 ../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
 ../src/core/core_execution_unit/MULDIV/MULgold.v
+../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v

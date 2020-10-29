@@ -335,7 +335,7 @@ module control_unit
                            regfile_wr = 1'b1;
                            i_r1_o = 1'b1;
                            i_r2_o = 1'b1;
-                           if(funct7[0]) // Check if its an operation from Instruction set M
+                           if(funct7[0] == 1'b1) // Check if its an operation from Instruction set M
                              case(funct3)
                                FUNCT3_MUL    : ALU_op = `ALU_OP_MUL;
                                FUNCT3_MULH   : ALU_op = `ALU_OP_MULH;
@@ -348,14 +348,14 @@ module control_unit
                              endcase
                            else 
                            case(funct3)
-                               FUNCT3_ADD_SUB: ALU_op = funct7[5] == 1'b1 ? `ALU_OP_SUB : `ALU_OP_ADD;
-                               FUNCT3_SLL:     ALU_op = `ALU_OP_SLL;
-                               FUNCT3_SLT:     ALU_op = `ALU_OP_SLT;
-                               FUNCT3_SLTU:    ALU_op = `ALU_OP_SLTU;
-                               FUNCT3_XOR:     ALU_op = `ALU_OP_XOR;
-                               FUNCT3_SRL_SRA: ALU_op = funct7[5] == 1'b1 ? `ALU_OP_SRA : `ALU_OP_SRL;
-                               FUNCT3_OR:      ALU_op = `ALU_OP_OR;
-                               FUNCT3_AND:     ALU_op = `ALU_OP_AND;
+                               FUNCT3_ADD_SUB : ALU_op = funct7[5] == 1'b1 ? `ALU_OP_SUB : `ALU_OP_ADD;
+                               FUNCT3_SLL     : ALU_op = `ALU_OP_SLL;
+                               FUNCT3_SLT     : ALU_op = `ALU_OP_SLT;
+                               FUNCT3_SLTU    : ALU_op = `ALU_OP_SLTU;
+                               FUNCT3_XOR     : ALU_op = `ALU_OP_XOR;
+                               FUNCT3_SRL_SRA : ALU_op = funct7[5] == 1'b1 ? `ALU_OP_SRA : `ALU_OP_SRL;
+                               FUNCT3_OR      : ALU_op = `ALU_OP_OR;
+                               FUNCT3_AND     : ALU_op = `ALU_OP_AND;
                            endcase
                           end
             OPCODE_I_FENCE: begin

@@ -110,6 +110,7 @@
 `define FUNCT7_SUB         7'b0100000
 `define FUNCT7_SRL         7'b0000000
 `define FUNCT7_SRA         7'b0100000
+`define FUNCT7_MULDIV      7'b0000001
 
 // I_SYSTEM
 `define IMM_ECALL          12'b000000000000

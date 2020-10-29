@@ -53,7 +53,7 @@ module id_stage
  input  wire [4:0]                     w_regfile_waddr_i;
  input  wire [`DATA_WIDTH-1:0]         w_regfile_rd_i;
 
- output reg  [3:0]                     e_ALU_op_o;
+ output reg  [`ALU_OP_WIDTH-1:0]       e_ALU_op_o;
  output reg  [1:0]                     e_STORE_op_o;
  output reg  [2:0]                     e_LOAD_op_o;
  output reg  [`DATA_ORIGIN_WIDTH-1:0]  e_data_origin_o;  // To indicate what data to use by the execution unit 
@@ -90,7 +90,7 @@ module id_stage
  wire [4:0]                            regfile_waddr_t; 
  wire [`DATA_WIDTH-1:0]                reg_file_rs1_t;
  wire [`DATA_WIDTH-1:0]                reg_file_rs2_t;
- wire [3:0]                            ALU_op_t;
+ wire [`ALU_OP_WIDTH-1:0]              ALU_op_t;
  wire [1:0]                            STORE_op_t;
  wire [2:0]                            LOAD_op_t;
  wire [2:0]                            BR_op_t;

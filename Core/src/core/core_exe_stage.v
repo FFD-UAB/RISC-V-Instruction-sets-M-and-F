@@ -77,12 +77,21 @@ module exe_stage
  reg  [`DATA_WIDTH-1:0]                data_wdata;
  wire [`DATA_WIDTH-1:0]                alu_I; // Different ALU outputs.
  wire [`DATA_WIDTH-1:0]                alu_M;
+ wire                                  start_DIVop;
 
  //Logic for ALU operand selection   
  assign op1_ALU = e_regfile_rs1_i;
  assign op2_ALU = (e_data_origin_i[0] ? e_imm_val_i : e_regfile_rs2_i);
+
+ // Output selection. Revise if the number of ALU operations are increased.
  assign alu_o   = (e_ALU_op_i[4] ? alu_M : alu_I);
- 
+
+ // Start signal for a multi-cycle operation (only divisions).
+ assign start_DIVop = |{(e_ALU_op_i == `ALU_OP_MUL),    (e_ALU_op_i == `ALU_OP_MULH),
+                        (e_ALU_op_i == `ALU_OP_MULHSU), (e_ALU_op_i == `ALU_OP_MULHU),
+                        (e_ALU_op_i == `ALU_OP_DIV),    (e_ALU_op_i == `ALU_OP_DIVU),
+                        (e_ALU_op_i == `ALU_OP_REM),    (e_ALU_op_i == `ALU_OP_REMU)}; 
+
  always @*
   case (e_data_target_i)
    2'd0: reg_file_rd = alu_o;
@@ -91,7 +100,7 @@ module exe_stage
    2'd3: reg_file_rd = (e_data_origin_i[1] ? e_pc4_i : e_brj_pc_i);
   endcase    
  
-  // ALU Module that implements the ALU operations of the I Base Instruction Set
+  // ALU Module that implements the ALU operations of the 32I Base Instruction Set
   alu ALU (
          .ALU_op_i                     (e_ALU_op_i         ),
          .s1_i                         (op1_ALU            ),
@@ -102,14 +111,14 @@ module exe_stage
 
   // ALU Module that implements the ALU operations of the 32M Standard Extension Instruction Set
   MULDIV ALU_M (
-         .rs1                          (op1_ALU_M          ),
-         .rs2                          (op2_ALU_M          ),
-         .funct3                       (e_ALU_op_i[2:0]    ),
-         .start                        (e_ALU_op_i[4]      ),
+         .rs1_i                        (op1_ALU            ),
+         .rs2_i                        (op2_ALU            ),
+         .funct3_i                     (e_ALU_op_i[2:0]    ),
+         .start_i                      (start_DIVop        ), // Start multi-cycle DIV module only when it's required.
          .clk                          (clk                ),
          .rstLow                       (rst_n              ),
-         .c_out                        (alu_M              ),
-         .busy                         (e_alu_busy_o       )
+         .c_o                          (alu_M              ),
+         .busy_o                       (e_alu_busy_o       )
           );
 
 

@@ -49,9 +49,9 @@ MULgold MULmod(.a_in(a),
 	.b_in(b),
 	.c_out(c_mul));
 
-Signed2Unsigned S2U1(.a_signed(rs1), .a_unsigned(a_unsigned));
+Signed2Unsigned S2U1(.a_signed(rs1_i), .a_unsigned(a_unsigned));
 
-Signed2Unsigned S2U2(.a_signed(rs2), .a_unsigned(b_unsigned));
+Signed2Unsigned S2U2(.a_signed(rs2_i), .a_unsigned(b_unsigned));
 
 //***********************
 //** Flags and results **
