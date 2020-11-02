@@ -27,16 +27,20 @@ module if_stage
     output wire [`DATA_WIDTH-1:0]      d_instruction_o;
     output reg  [`DATA_WIDTH-1:0]      d_pc_o;
     output reg  [`DATA_WIDTH-1:0]      d_pc4_o;
-    input  wire stall_i;
-    output wire flush_inst_o;
+    input  wire                        stall_i;
+    output wire                        flush_inst_o;
                 
     wire [`DATA_WIDTH-1:0]             pc4;
+    wire [`DATA_WIDTH-1:0]             pcm4;
     reg  [`DATA_WIDTH-1:0]             pc;
     reg  [`DATA_WIDTH-1:0]             dd_instruction;
+    reg                                stall_reg;
+
     
     assign instruction_addr_o = pc[`MEM_ADDR_WIDTH-1:0];
 
-    assign pc4 = pc + {{`DATA_WIDTH-3{1'b0}},3'd4};
+    assign pc4  = pc + {{`DATA_WIDTH-3{1'b0}}, 3'd4};
+    assign pcm4 = pc - {{`DATA_WIDTH-3{1'b0}}, 3'd4};
 
     assign flush_inst_o = !brj_i;
     
@@ -46,6 +50,7 @@ module if_stage
                  if (brj_i === 1'b1) pc <= brj_pc_i;
                  else pc <= pc4;
               end
+          else if (!stall_reg) pc <= pcm4;
               
     //Registered instruction and PC for pipeline
     always@(posedge clk or negedge rst_n)
@@ -53,29 +58,28 @@ module if_stage
                   d_pc_o <= {`DATA_WIDTH{1'b0}};
                   d_pc4_o <= {`DATA_WIDTH{1'b0}};
                  end
-     else if (!stall_i) begin
-            d_pc_o <= pc;
-            d_pc4_o <= pc4;
-           end
+     else begin
+           d_pc_o <= pc;
+           d_pc4_o <= pc4;
+          end
            
     //The output of the program memory is registered!
-    reg d_stall;  
     always @(posedge clk or negedge rst_n)
      if (!rst_n) begin
-                  d_stall <= 1'b0;
+                  stall_reg <= 1'b0;
                  end
      else begin
-            d_stall <= stall_i;
+            stall_reg <= stall_i;
            end 
  
      always @(posedge clk or negedge rst_n)
      if (!rst_n) begin
-                  dd_instruction <= {25'b0, 7'b0010011}; // If rst, ADDI instruction -> dd_instruction??? Instruction by default? QUESTION
+                  dd_instruction <= {25'b0, 7'b0010011};
                  end
-     else if (!d_stall) begin
+     else if (!stall_i) begin
             dd_instruction <= instruction_rdata_i;
            end 
-                
-    assign d_instruction_o = d_stall ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
+
+     assign d_instruction_o = stall_i ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
 
 endmodule 

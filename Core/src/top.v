@@ -94,8 +94,8 @@ core core_inst(
         .data_addr_o          (core_data_addr),
         .data_rdata_i         (core_data_rdata),
         .data_wdata_o         (core_data_wdata),
-        .data_req_o           (core_data_req),  // Request to make actiopn
-        .data_gnt_i           (core_data_gnt),  // Action Granted 
+        .data_req_o           (core_data_req),    // Request to make actiopn
+        .data_gnt_i           (core_data_gnt),    // Action Granted 
         .data_rvalid_i        (core_data_rvalid), // Valid when write is ok
         .instruction_addr_o   (core_instr_addr),
         .instruction_rdata_i  (core_instr_rdata),
@@ -105,10 +105,10 @@ core core_inst(
 
 
 progMem mem_prog_inst (
-        .rst_n (flush_inst_t)		,  // Reset Neg
-        .clk (clk),             // Clk
-        .addr (instruction_addr)		,  // Address
-        .data_out (instruction_rdata)	   // Output Data
+        .rst_n (flush_inst_t),         // Reset Neg
+        .clk (clk),                    // Clk
+        .addr (instruction_addr),      // Address
+        .data_out (instruction_rdata)  // Output Data
     );
 
  
@@ -127,7 +127,7 @@ instr_ram_wrap
     .rdata_o     ( instr_mem_rdata ),
     .we_i        ( instr_mem_we    ),
     .be_i        ( instr_mem_be    ),
-    .bypass_en_i ( 1'b0      )
+    .bypass_en_i ( 1'b0            )
   );
 
 /*  axi_mem_if_SP_wrap
@@ -167,21 +167,21 @@ instr_ram_wrap
     .clk            ( clk               ),
     .rst_n          ( rst_n             ),
 
-    .port0_req_i    ( 1'b0     ),
+    .port0_req_i    ( 1'b0              ),
     .port0_gnt_o    (                   ),
     .port0_rvalid_o (                   ),
     .port0_addr_i   ( {INSTR_ADDR_WIDTH{1'b0}}),
     .port0_we_i     ( 1'b0      ),
-    .port0_be_i     ( {(AXI_DATA_WIDTH/8){1'b0}}      ),
+    .port0_be_i     ( {(AXI_DATA_WIDTH/8){1'b0}}            ),
     .port0_rdata_o  ( ),
-    .port0_wdata_i  ( {AXI_DATA_WIDTH{1'b0}}   ),
+    .port0_wdata_i  ( {AXI_DATA_WIDTH{1'b0}}                ),
 
     .port1_req_i    ( core_instr_req    ),
     .port1_gnt_o    ( core_instr_gnt    ),
     .port1_rvalid_o ( core_instr_rvalid ),
     .port1_addr_i   ( core_instr_addr[INSTR_ADDR_WIDTH-1:0] ),
     .port1_we_i     ( 1'b0              ),
-    .port1_be_i     ( {(AXI_DATA_WIDTH/8){1'b0}}              ),
+    .port1_be_i     ( {(AXI_DATA_WIDTH/8){1'b0}}            ),
     .port1_rdata_o  ( core_instr_rdata  ),
     .port1_wdata_i  ( 0                 ),
 

@@ -119,24 +119,25 @@
 // ALU_OPERATIONS
 `define ALU_OP_WIDTH      5
 
-`define ALU_OP_ADD        0        
-`define ALU_OP_SUB        1
-`define ALU_OP_SLL        2
-`define ALU_OP_SLT        3
-`define ALU_OP_SLTU       4
-`define ALU_OP_XOR        5
-`define ALU_OP_SRL        6
-`define ALU_OP_SRA        7
-`define ALU_OP_OR         8
-`define ALU_OP_AND        9
-`define ALU_OP_MUL        16  // Instruction set M -> ALU_OP[4] = 1;
-`define ALU_OP_MULH       17  // Then, it can be used as start_M signal.
-`define ALU_OP_MULHSU     18
-`define ALU_OP_MULHU      19
-`define ALU_OP_DIV        20
-`define ALU_OP_DIVU       21
-`define ALU_OP_REM        22
-`define ALU_OP_REMU       23
+// {funct7[0], funct7[5], funct3};
+`define ALU_OP_ADD        5'b00000        
+`define ALU_OP_SUB        5'b01000
+`define ALU_OP_SLL        5'b00001
+`define ALU_OP_SLT        5'b00010
+`define ALU_OP_SLTU       5'b00011
+`define ALU_OP_XOR        5'b00100
+`define ALU_OP_SRL        5'b00101
+`define ALU_OP_SRA        5'b01101
+`define ALU_OP_OR         5'b00110
+`define ALU_OP_AND        5'b00111
+`define ALU_OP_MUL        5'b10000  // Instruction set M -> ALU_OP[4] = 1;
+`define ALU_OP_MULH       5'b10001  // Then, it can be used as start_M signal.
+`define ALU_OP_MULHSU     5'b10010
+`define ALU_OP_MULHU      5'b10011
+`define ALU_OP_DIV        5'b10100
+`define ALU_OP_DIVU       5'b10101
+`define ALU_OP_REM        5'b10110
+`define ALU_OP_REMU       5'b10111
 
 // LOAD_OPERATIONS
 `define LOAD_OP_WIDTH     3

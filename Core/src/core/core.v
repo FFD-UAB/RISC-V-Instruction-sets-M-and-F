@@ -70,7 +70,7 @@ module core
  wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs2_t;
  wire [1:0]                            e_data_target_t;
  wire                                  stall_t;
- wire                                  e_alu_busy_t;
+ wire                                  d_alu_busy_t;
 
  wire [`DATA_WIDTH-1:0]                alu_t;
  wire [`DATA_WIDTH-1:0]                data_rdata_t;
@@ -127,7 +127,8 @@ module core
         .m_is_load_store_i             (m_is_load_store_t),
         .m_regfile_wr_i                (m_regfile_wr_t),
         .brj_pc_o                      (brj_pc_t),
-        .brj_o                         (brj_t)
+        .brj_o                         (brj_t),
+        .d_busy_alu_i                  (d_alu_busy_t)
         );
     
   exe_stage exe_stage_inst(
@@ -160,7 +161,7 @@ module core
         .e_data_write_transfer_i       (e_data_write_transfer_t),
         .m_data_write_transfer_o       (m_data_write_transfer_t),
         .e_data_target_i               (e_data_target_t),
-        .e_alu_busy_o                  (e_alu_busy_t),
+        .d_alu_busy_o                  (d_alu_busy_t),
         .alu_o                         (alu_t)
         );
 

@@ -8,22 +8,23 @@
 module MULDIV(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
 input [`DATA_WIDTH-1:0] rs1_i;    	// Multiplicand or dividend.
 input [`DATA_WIDTH-1:0] rs2_i;    	// Multiplier or divisor.
-input             [2:0] funct3_i;   // DIVMUL type funct3 selector.
-input start_i;          // Start flag for DIV module (multiple-cycle execution).
-input clk;              // Clock signal.
-input rstLow;           // Reset at low control signal.
+input             [2:0] funct3_i;       // DIVMUL type funct3 selector.
+input                   start_i;        // Start flag for possible multiple-cycle execution.
+input                   clk;            // Clock signal.
+input                   rstLow;         // Reset at low control signal.
 
 output reg [`DATA_WIDTH-1:0] c_o;// 32-bit output result.
-output busy_o;		// Busy flag for DIV module (multiple-cycle execution),
+output busy_o;      // Busy flag for DIV module (multiple-cycle execution),
                     // high when operating, low when ready for next operation.
 
-wire startDIV;		                 // Execute a division operation using DIVrest32u module.
-wire   [`DATA_WIDTH-1:0] a;		     // Unsigned multiplicand/dividend input to the operation modules.
-wire   [`DATA_WIDTH-1:0] b;		     // Unsigned multiplier/divisor input to the operation modules.
+wire                     startDIV;   // Execute a division operation using DIVrest32u module.
+wire                     busy_t;     // Put on high the busy flag on the first cycle to halt the core.
+wire   [`DATA_WIDTH-1:0] a;          // Unsigned multiplicand/dividend input to the operation modules.
+wire   [`DATA_WIDTH-1:0] b;          // Unsigned multiplier/divisor input to the operation modules.
 wire   [`DATA_WIDTH-1:0] a_unsigned; // Unsigned multiplicand/dividend output of the S2U modules.
 wire   [`DATA_WIDTH-1:0] b_unsigned; // Unsigned multiplier/divisor output of the S2U modules.
-wire   [`DATA_WIDTH-1:0] q;	         // Quotient result from DIV module.
-wire   [`DATA_WIDTH-1:0] r;	         // Remainder result from DIV module.
+wire   [`DATA_WIDTH-1:0] q;          // Quotient result from DIV module.
+wire   [`DATA_WIDTH-1:0] r;          // Remainder result from DIV module.
 wire [2*`DATA_WIDTH-1:0] c_mul;      // Multiplication result from MUL module.
 
 // MULDIV type of operation.
@@ -43,7 +44,7 @@ eqsDIVrest32u DIVmod(.a_in(a), // Various options are t, b, qs, eqsDIVrest32u.
 	.rstLow(rstLow),
 	.q_out(q),
 	.r_out(r),
-	.busy(busy_o));
+	.busy(busy_t));
 
 MULgold MULmod(.a_in(a),
 	.b_in(b),
@@ -113,7 +114,6 @@ assign r_output = (div0 ? rs1_i // Divisor == 0 -> r = dividend.
 //*********************************************
 // If previous division asks quotient, the remainder is also generated, so if the operands have not 
 // changed and maintains the same type signed/unsigned, deliver the remainder in one-cycle.
-
 reg [`DATA_WIDTH-1:0] A_prev;
 reg [`DATA_WIDTH-1:0] B_prev;
 reg             [2:0] funct3_prev;
@@ -121,12 +121,14 @@ wire oneCycleRemainder;
 
 // Load previous operands and function type.
 always @(posedge clk or negedge rstLow)
- if (!rstLow) A_prev <= {`DATA_WIDTH{1'b0}};
- else A_prev <= rs1_i;
-
-always @(posedge clk or negedge rstLow)
- if (!rstLow) B_prev <= {`DATA_WIDTH{1'b0}};
- else B_prev <= rs2_i;
+ if (!rstLow) begin
+   A_prev <= {`DATA_WIDTH{1'b0}};
+   B_prev <= {`DATA_WIDTH{1'b0}};
+ end
+ else if(startDIV) begin
+   A_prev <= rs1_i;
+   B_prev <= rs2_i;
+ end
 
 always @(posedge clk or negedge rstLow)
  if (!rstLow) funct3_prev <= 3'b0; // Only remember function if there isn't a remainder
@@ -142,8 +144,14 @@ assign oneCycleRemainder = (
 // Start the DIV module only if is a division operation that doesn't fall in a special case
 // (check div0 always, but only divOF if its a signed operation (DIV and REM), that is !funct3[0]).
 // Also, if the previous operation was a quotient request with the same operands, don't trigger startDIV.
-assign startDIV = (funct3_i[2] & !(div0 | (divOF & !funct3_i[0])) & !oneCycleRemainder ? start_i : 1'b0);
+reg    oneCycleStartSignal; // Used to only send the start signal one clock cycle pulse.
 
+always @(posedge clk or negedge rstLow)
+ if (!rstLow) oneCycleStartSignal <= 1'b0;
+ else oneCycleStartSignal <= oneCycleStartSignal ? busy_t : startDIV;
+
+assign startDIV = (funct3_i[2] & !(div0 | (divOF & !funct3_i[0])) & !oneCycleRemainder ? start_i : 1'b0) & !oneCycleStartSignal;
+assign busy_o   = (startDIV ? 1'b1 : busy_t);
 
 
 //**************************************

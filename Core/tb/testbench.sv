@@ -376,12 +376,12 @@ task test_mul;
     $display("MUL Test");
     pc = 32'b0;
     encodeAddi(5'h0, 5'h3, 12'd5); // Reg3 = 5;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -5;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -5; SUB IS RS1-RS2
     encodeAddi(5'h0, 5'h4, 12'd1); // Reg4 = 1;
-    encodeSub(5'h4, 5'h0, 5'h4);   // Reg4 = -1;
+    encodeSub(5'h0, 5'h4, 5'h4);   // Reg4 = -1;
     encodeMUL(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; -5 x -1 = 5
     rst_n = 1'b1;
-    waitNclockCycles(8);
+    waitNclockCycles(10);
     if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'd5) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
       $display("ERROR: reg5 has to be 5 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
@@ -401,7 +401,7 @@ task test_mulh;
     encodeSlli(5'h4, 5'h4, 5'h1E); // Reg4 = 2^30;
     encodeMULH(5'h3, 5'h4, 5'h5);  // Reg5 = 32MSB(Reg3*Reg4); aka -8*2^30 = -2^33 => -2 on 32MSB
     rst_n = 1'b1;
-    waitNclockCycles(8);
+    waitNclockCycles(10);
     if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'd2) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
       $display("ERROR: reg5 has to be -2 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
@@ -416,12 +416,12 @@ task test_mulhsu;
     $display("MULHSU Test");
     pc = 32'b0;
     encodeAddi(5'h0, 5'h3, 12'd4); // Reg3 = 4;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -4;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -4;
     encodeAddi(5'h0, 5'h4, 12'd1); // Reg4 = 1;
     encodeSlli(5'h4, 5'h4, 5'h1F); // Reg4 = -2^31; but in unsigned format is 2^31
     encodeMULHSU(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; -4 x 2^31 = -2^33 => -2 on 32MSB
     rst_n = 1'b1;
-    waitNclockCycles(8);
+    waitNclockCycles(10);
     if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'd2) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
       $display("ERROR: reg5 has to be -2 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
@@ -436,15 +436,15 @@ task test_mulhu;
     $display("MULHU Test");
     pc = 32'b0;
     encodeAddi(5'h0, 5'h3, 12'd4); // Reg3 = 4;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -4; but in unsigned format is 0xFFFF FFFC
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -4; but in unsigned format is 0xFFFF FFFC
     encodeAddi(5'h0, 5'h4, 12'd1); // Reg4 = 1;
     encodeSlli(5'h4, 5'h4, 5'h1F); // Reg4 = -2^31; but in unsigned format is 2^31
-    encodeMULHU(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; 0xFFFF FFFC x 2^31 => 0x7FFF FFFF on 32MSB
+    encodeMULHU(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; 0xFFFF FFFC x 2^31 => 0x7FFF FFFE on 32MSB
     rst_n = 1'b1;
-    waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFF) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    waitNclockCycles(10);
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 0x7FFF FFFF but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -456,12 +456,14 @@ task test_div;
     $display("DIV Test");
     pc = 32'b0;
     encodeAddi(5'h0, 5'h3, 12'd5); // Reg3 = 5;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -5; 
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -5; 
     encodeAddi(5'h0, 5'h4, 12'd2); // Reg4 = 2;
-    encodeSub(5'h4, 5'h0, 5'h4);   // Reg4 = -2;
-    encodeDIV(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3/Reg4; -5/-2 = 2
+    encodeSub(5'h0, 5'h4, 5'h4);   // Reg4 = -2;
+    encodeDIV(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3/Reg4; -5/-2 => q = 2, r = -1.
     rst_n = 1'b1;
     waitNclockCycles(8);
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    waitNclockCycles(3);
     if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'd2) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
       $display("ERROR: reg5 has to be 2 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
@@ -475,16 +477,18 @@ task test_divu;
   begin
     $display("DIVU Test");
     pc = 32'b0;
-    encodeAddi(5'h0, 5'h3, 12'd4); // Reg3 = 4;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -4; but in unsigned format is 0xFFFF FFFC
+    encodeAddi(5'h0, 5'h3, 12'd3); // Reg3 = 3;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -3; but in unsigned format is 0xFFFF FFFD
     encodeAddi(5'h0, 5'h4, 12'd2); // Reg4 = 2;
-    encodeSub(5'h4, 5'h0, 5'h4);   // Reg4 = -2; but in unsigned format is 0xFFFF FFFE
-    encodeDIVU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 1, r = 2.
+    encodeDIVU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 0x7FFF FFFE, r = 1.
+    encodeNOOP();
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h1) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    waitNclockCycles(3);
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 1 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -495,16 +499,18 @@ task test_rem;
   begin
     $display("REM Test");
     pc = 32'b0;
-    encodeAddi(5'h0, 5'h3, 12'd4); // Reg3 = 4;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -4; but in unsigned format is 0xFFFF FFFC
+    encodeAddi(5'h0, 5'h3, 12'd5); // Reg3 = 5;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -5; 
     encodeAddi(5'h0, 5'h4, 12'd2); // Reg4 = 2;
-    encodeSub(5'h4, 5'h0, 5'h4);   // Reg4 = -2; but in unsigned format is 0xFFFF FFFE
-    encodeDIVU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 1, r = 2.
+    encodeSub(5'h0, 5'h4, 5'h4);   // Reg4 = -2;
+    encodeREM(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3/Reg4; -5/-2 => q = 2, r = -1.
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h2) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    waitNclockCycles(3);
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'h1) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 2 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be -1 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -515,16 +521,46 @@ task test_remu;
   begin
     $display("REMU Test");
     pc = 32'b0;
-    encodeAddi(5'h0, 5'h3, 12'd4); // Reg3 = 4;
-    encodeSub(5'h3, 5'h0, 5'h3);   // Reg3 = -4; but in unsigned format is 0xFFFF FFFC
-    encodeAddi(5'h0, 5'h4, 12'd1); // Reg4 = 1;
-    encodeSlli(5'h4, 5'h4, 5'h1F); // Reg4 = -2^31; but in unsigned format is 2^31
-    encodeREMU(5'h4, 5'h3, 5'h5);  // Reg5 = Reg4/Reg3; 2^31 < 0xFFFF FFFC => quotient = 0.
+    encodeAddi(5'h0, 5'h3, 12'd3); // Reg3 = 3;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -3; but in unsigned format is 0xFFFF FFFD
+    encodeAddi(5'h0, 5'h4, 12'd2); // Reg4 = 2;
+    encodeREMU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 0x7FFF FFFE, r = 1.
+    encodeNOOP();
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    waitNclockCycles(3);
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h1) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 0 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 1 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      //$fatal;
+    end
+    #400;
+  end
+endtask
+
+task test_oncecycle_divrem;
+  begin
+    $display("One-Cycle DIVU/REMU Test");
+    pc = 32'b0;
+    encodeAddi(5'h0, 5'h3, 12'd3); // Reg3 = 3;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -3; but in unsigned format is 0xFFFF FFFD
+    encodeAddi(5'h0, 5'h4, 12'd2); // Reg4 = 2;
+    encodeDIVU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 0x7FFF FFFE.
+    encodeREMU(5'h3, 5'h4, 5'h6);  // Reg6 = Reg3/Reg4; r = 1.
+//    encodeREMU(5'h3, 5'h4, 5'h6);  // Reg6 = Reg3/Reg4; r = 1.
+    rst_n = 1'b1;
+    waitNclockCycles(8);
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    waitNclockCycles(8);
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    else begin
+      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      //$fatal;
+    end
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h1) $display("OK: reg6 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+    else begin
+      $display("ERROR: reg6 has to be 1 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -880,7 +916,7 @@ task encodeAndi;
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
-  	$display("mem[%d] = %b", pc, top_inst.mem_prog_inst.progArray[pc]);
+    $display("mem[%d] = %b", pc, top_inst.mem_prog_inst.progArray[pc]);
     pc = pc + 32'd4;
   end
 endtask
@@ -960,8 +996,8 @@ task encodeSlt;
   begin
     instruction = {immediate, rs1, 3'b010, rd, `OPCODE_R_ALU};
     top_inst.mem_prog_inst.progArray[pc >> 2] = instruction;
-  	top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-  	top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
   	$display("mem[%d] = %b", pc, top_inst.mem_prog_inst.progArray[pc]);
@@ -976,7 +1012,7 @@ task encodeSltu;
   begin
     instruction = {immediate, rs1, 3'b011, rd, `OPCODE_R_ALU};
     top_inst.mem_prog_inst.progArray[pc >> 2] = instruction;
-  	top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
@@ -1019,7 +1055,7 @@ task encodeNOOP;
   begin
     instruction = {12'b0, 5'h0, 3'h0, 5'h0, `OPCODE_I_IMM};
     top_inst.mem_prog_inst.progArray[pc >> 2] = instruction;
-  	top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
@@ -1050,7 +1086,7 @@ task iniProgMem;
   begin
     for (addr = 0; addr < 1024; addr = addr + 1)
     begin
-  	  top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][0] = 8'h0;
+      top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][0] = 8'h0;
       top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][1] = 8'h0;
       top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][2] = 8'h0;
       top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][3] = 8'h0;		

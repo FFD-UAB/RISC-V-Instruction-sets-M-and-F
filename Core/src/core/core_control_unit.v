@@ -163,8 +163,8 @@ module control_unit
  
  reg                                   data_wr;
  reg                                   regfile_wr;
- reg [`DATA_WIDTH-1:0]                 imm_val_o;
- wire[`DATA_WIDTH-1:0]                 instruction;
+ reg  [`DATA_WIDTH-1:0]                imm_val_o;
+ wire [`DATA_WIDTH-1:0]                instruction;
  wire [6:0]                            opcode; 
  //  Type R
  wire [2:0]                            funct3;
@@ -288,11 +288,12 @@ module control_unit
                              default: $display("Ilegal LOAD FUNCT3");  // TODO Throw interruption
                             endcase
                            end
+
             OPCODE_S_STORE: begin  // Store
                              is_load_store = 1'b1;
                              ALU_op = `ALU_OP_ADD;  // to add the immideate value to the addr
                              data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
-                             imm_val_o = {{`DATA_WIDTH - 12 {imm12s[11]}},  imm12s[11:0]  };
+                             imm_val_o = {{`DATA_WIDTH - 12 {imm12s[11]}}, imm12s[11:0] };
                              data_wr = 1'b1;  // Set the bit to write to memory
                              data_target_o = 2'b1;
                              i_r1_o = 1'b1;
@@ -313,6 +314,7 @@ module control_unit
                               default: $display("Ilegal STORE FUNCT3");  // TODO Throw interruption
                              endcase
                             end
+
             OPCODE_I_IMM: begin
                            data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
                            imm_val_o = { {`DATA_WIDTH - 12 {imm12[11]}}, imm12[11:0] };
@@ -331,10 +333,13 @@ module control_unit
                                FUNCT3_AND:     ALU_op = `ALU_OP_AND;   // andi       "Set rd to the bitwise and of rs1 with the sign-extended 12-bit immediate"
                            endcase
                           end
+
             OPCODE_R_ALU: begin
                            regfile_wr = 1'b1;
                            i_r1_o = 1'b1;
                            i_r2_o = 1'b1;
+                           ALU_op = {funct7[0], funct7[5], funct3};
+                           /* Old way of encoding. Not necessary if well handled at the execution stage.
                            if(funct7[0] == 1'b1) // Check if its an operation from Instruction set M
                              case(funct3)
                                FUNCT3_MUL    : ALU_op = `ALU_OP_MUL;
@@ -356,8 +361,9 @@ module control_unit
                                FUNCT3_SRL_SRA : ALU_op = funct7[5] == 1'b1 ? `ALU_OP_SRA : `ALU_OP_SRL;
                                FUNCT3_OR      : ALU_op = `ALU_OP_OR;
                                FUNCT3_AND     : ALU_op = `ALU_OP_AND;
-                           endcase
+                           endcase*/
                           end
+
             OPCODE_I_FENCE: begin
             // fence      "Order device I/O and memory accesses viewed by other threads and devices"
             // fence.i    "Synchronize the instruction and data streams

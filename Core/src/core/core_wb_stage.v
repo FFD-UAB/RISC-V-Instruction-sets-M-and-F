@@ -20,7 +20,7 @@ module core_wb_stage
  assign reg_file_rd_o = (w_is_load_store_i === 1'b0) ? w_regfile_rd_i : int_data_rdata_t;  // mux at the end
 
  //LOAD logic
- always @ * begin
+ always @ *
   case(w_LOAD_op_i)
    `LOAD_LB:  int_data_rdata_t = { {`DATA_WIDTH - 8 {w_data_rdata_i[7]}}, w_data_rdata_i[7:0] };     // Load 8-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
    `LOAD_LH:  int_data_rdata_t = { {`DATA_WIDTH - 16 {w_data_rdata_i[15]}}, w_data_rdata_i[15:0] };  // Load 16-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
@@ -29,6 +29,6 @@ module core_wb_stage
    `LOAD_LHU: int_data_rdata_t = { {`DATA_WIDTH - 16 {1'b0}}, w_data_rdata_i[15:0] };                // Load 16-bit value from addr in rs1 plus the 12-bit signed immediate and place zero-extended result into rd
      default: int_data_rdata_t = {`DATA_WIDTH{1'b0}};
   endcase
- end
+
 
 endmodule

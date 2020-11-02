@@ -2,7 +2,7 @@
 `include "../src/defines.vh"
 
 module alu(
-        input  wire [`ALU_OP_WIDTH-1:0]  ALU_op_i,
+        input  wire             [3:0]   ALU_op_i,
         input  wire [`DATA_WIDTH-1:0]   s1_i,
         input  wire [`DATA_WIDTH-1:0]   s2_i,
         output reg  [`DATA_WIDTH-1:0]   result_o,
@@ -25,6 +25,6 @@ module alu(
           `ALU_OP_SRA  :  result_o = $signed(s1_i) >>> shift;// Shift s1_i right by the by the lower 5 bits in s2_i and place the result into d while retaining the sign
           `ALU_OP_OR   :  result_o = s1_i | s2_i;               // Set d to the bitwise OR of s1_i and s2_i
           `ALU_OP_AND  :  result_o = s1_i & s2_i;               // Set d to the bitwise AND of s1_i and s2_i
-          default     :  result_o = {`DATA_WIDTH{1'b0}};
+          default      :  result_o = {`DATA_WIDTH{1'b0}};
          endcase
 endmodule

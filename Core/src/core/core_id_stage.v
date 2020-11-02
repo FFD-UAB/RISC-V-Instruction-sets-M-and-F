@@ -43,7 +43,8 @@ module id_stage
         m_regfile_waddr_i,
         m_regfile_wr_i,
         brj_pc_o,
-        brj_o
+        brj_o,
+        d_busy_alu_i // Ongoing multi-cycle operation when high flag.
         );
 
  input  wire                           clk;
@@ -86,6 +87,7 @@ module id_stage
  input  wire                           m_regfile_wr_i;
  output wire [`DATA_WIDTH-1:0]         brj_pc_o;
  output wire                           brj_o;
+ input  wire                           d_busy_alu_i; // Flag of multi-cycle operation ongoing when high.
  
  wire [4:0]                            regfile_waddr_t; 
  wire [`DATA_WIDTH-1:0]                reg_file_rs1_t;
@@ -120,6 +122,7 @@ module id_stage
  wire [`CSR_OP_WIDTH-1:0]              csr_op_rs2_t;
  wire [`CSR_IMM_WIDTH-1:0]             csr_imm_t;
  
+
  control_unit control_unit_inst(
         .instruction                   (d_instruction_i    ),  // Instruction from prog mem input
         .ALU_op                        (ALU_op_t           ),  // ALU operation output
@@ -204,7 +207,8 @@ module id_stage
            
  //Hazard detection unit
   assign stall_o =  (e_data_rd_o & ((i_r1_t & (e_regfile_waddr_o == regfile_raddr_rs1_t)) | (i_r2_t & (e_regfile_waddr_o == regfile_raddr_rs2_t))))
-                   |(m_data_rd_i & ((i_r1_t & (m_regfile_waddr_i == regfile_raddr_rs1_t)) | (i_r2_t & (m_regfile_waddr_i == regfile_raddr_rs2_t))));
+                   |(m_data_rd_i & ((i_r1_t & (m_regfile_waddr_i == regfile_raddr_rs1_t)) | (i_r2_t & (m_regfile_waddr_i == regfile_raddr_rs2_t))))
+                   | d_busy_alu_i;
 
  always @(*)
   case(csr_op_rs1_t)
@@ -231,7 +235,7 @@ module id_stage
     e_regfile_raddr_rs2_o <= 5'h0;
     e_regfile_rs1_o <= {`DATA_WIDTH{1'b0}};
     e_regfile_rs2_o <= {`DATA_WIDTH{1'b0}};
-    e_ALU_op_o <= 4'h0;
+    e_ALU_op_o <= {`ALU_OP_WIDTH{1'b0}};;
     e_STORE_op_o <= 2'h0;
     e_LOAD_op_o <= 3'h0;
     e_data_origin_o <= {`DATA_WIDTH{1'b0}};
@@ -245,7 +249,7 @@ module id_stage
     e_pc4_o <= {`DATA_WIDTH{1'b0}};
     e_brj_pc_o <= {`DATA_WIDTH{1'b0}};
    end
-  else  
+  else 
    begin
     e_regfile_waddr_o <= regfile_waddr_t;
     e_regfile_raddr_rs1_o <= regfile_raddr_rs1_t;
@@ -256,9 +260,9 @@ module id_stage
     e_STORE_op_o <= STORE_op_t;
     e_LOAD_op_o <= LOAD_op_t;
     e_data_origin_o <= data_origin_t;
-    e_regfile_wr_o <= reg_file_wr_t & (!stall_o);
+    e_regfile_wr_o <= reg_file_wr_t;
     e_is_load_store_o <= is_load_store_t;
-    e_data_wr_o <= data_wr_t & (!stall_o);
+    e_data_wr_o <= data_wr_t;
     e_data_rd_o <= data_rd_t;
     e_imm_val_o <= imm_val_t;
     e_data_write_transfer_o <= data_write_transfer_t;

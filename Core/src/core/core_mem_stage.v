@@ -116,7 +116,7 @@ module core_mem_stage
     w_is_load_store_o <= 1'b0;
     w_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
-  else 
+  else
    begin
     w_regfile_waddr_o <= m_regfile_waddr_i;
     w_regfile_rd_o <= m_regfile_rd_i;

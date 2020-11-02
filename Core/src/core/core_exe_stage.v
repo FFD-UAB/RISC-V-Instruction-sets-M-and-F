@@ -33,9 +33,10 @@ module exe_stage
         m_data_wr_o,
         m_data_write_transfer_o,
         e_data_target_i,
-        e_alu_busy_o,
-        alu_o
-       );
+        d_alu_busy_o,
+        alu_o,
+        stall_core
+        );
 
  input  wire                           clk;
  input  wire                           rst_n;
@@ -67,30 +68,21 @@ module exe_stage
  output reg  [2:0]                     m_LOAD_op_o;
  input  wire [1:0]                     e_data_target_i;
  output wire [`DATA_WIDTH-1:0]         alu_o;
- output wire                           e_alu_busy_o;
-
+ output wire                           d_alu_busy_o;  // Not a reg because is a flag.
+ input  wire                           stall_core; // Stall core flag
 
  wire                                  ALU_zero_t;
  wire [`DATA_WIDTH-1:0]                op1_ALU;
  wire [`DATA_WIDTH-1:0]                op2_ALU;
  reg  [`DATA_WIDTH-1:0]                reg_file_rd;
  reg  [`DATA_WIDTH-1:0]                data_wdata;
- wire [`DATA_WIDTH-1:0]                alu_I; // Different ALU outputs.
- wire [`DATA_WIDTH-1:0]                alu_M;
- wire                                  start_DIVop;
+ wire [`DATA_WIDTH-1:0]                alu_I; // Different ALU outputs,
+ wire [`DATA_WIDTH-1:0]                alu_M; // RV32I and RV32M.
+
 
  //Logic for ALU operand selection   
  assign op1_ALU = e_regfile_rs1_i;
  assign op2_ALU = (e_data_origin_i[0] ? e_imm_val_i : e_regfile_rs2_i);
-
- // Output selection. Revise if the number of ALU operations are increased.
- assign alu_o   = (e_ALU_op_i[4] ? alu_M : alu_I);
-
- // Start signal for a multi-cycle operation (only divisions).
- assign start_DIVop = |{(e_ALU_op_i == `ALU_OP_MUL),    (e_ALU_op_i == `ALU_OP_MULH),
-                        (e_ALU_op_i == `ALU_OP_MULHSU), (e_ALU_op_i == `ALU_OP_MULHU),
-                        (e_ALU_op_i == `ALU_OP_DIV),    (e_ALU_op_i == `ALU_OP_DIVU),
-                        (e_ALU_op_i == `ALU_OP_REM),    (e_ALU_op_i == `ALU_OP_REMU)}; 
 
  always @*
   case (e_data_target_i)
@@ -100,9 +92,35 @@ module exe_stage
    2'd3: reg_file_rd = (e_data_origin_i[1] ? e_pc4_i : e_brj_pc_i);
   endcase    
  
+ reg  [`DATA_WIDTH-1:0]   op1_ALU_reg;
+ reg  [`DATA_WIDTH-1:0]   op2_ALU_reg;
+ reg  [`ALU_OP_WIDTH-1:0] ALU_op_reg;
+ wire [`DATA_WIDTH-1:0]   op1_ALU_M;
+ wire [`DATA_WIDTH-1:0]   op2_ALU_M;
+ wire [`ALU_OP_WIDTH-1:0] ALU_op_M;
+
+ // Registred input operands for multi-cycle operation
+ always @(posedge clk or negedge rst_n)
+  if (!rst_n) begin
+    op1_ALU_reg <= {`DATA_WIDTH{1'b0}};
+    op2_ALU_reg <= {`DATA_WIDTH{1'b0}};
+    ALU_op_reg  <= {`ALU_OP_WIDTH{1'b0}};
+  end else if (!stall_core) begin
+    op1_ALU_reg <= op1_ALU;
+    op2_ALU_reg <= op2_ALU;
+    ALU_op_reg  <= e_ALU_op_i;
+  end
+
+ assign op1_ALU_M = ALU_op_reg[4] ? op1_ALU_reg : op1_ALU;
+ assign op2_ALU_M = ALU_op_reg[4] ? op2_ALU_reg : op2_ALU;
+ assign ALU_op_M  = ALU_op_reg[4] ? ALU_op_reg  : e_ALU_op_i;
+
+ // Output selection. Check if the operation is from the instruction set M.
+ assign alu_o   = (ALU_op_M[4] ? alu_M : alu_I);
+
   // ALU Module that implements the ALU operations of the 32I Base Instruction Set
   alu ALU (
-         .ALU_op_i                     (e_ALU_op_i         ),
+         .ALU_op_i                     (e_ALU_op_i[3:0]    ),
          .s1_i                         (op1_ALU            ),
          .s2_i                         (op2_ALU            ),
          .result_o                     (alu_I              ),
@@ -111,14 +129,14 @@ module exe_stage
 
   // ALU Module that implements the ALU operations of the 32M Standard Extension Instruction Set
   MULDIV ALU_M (
-         .rs1_i                        (op1_ALU            ),
-         .rs2_i                        (op2_ALU            ),
-         .funct3_i                     (e_ALU_op_i[2:0]    ),
-         .start_i                      (start_DIVop        ), // Start multi-cycle DIV module only when it's required.
+         .rs1_i                        (op1_ALU_M          ),
+         .rs2_i                        (op2_ALU_M          ),
+         .funct3_i                     (ALU_op_M[2:0]      ),
+         .start_i                      (ALU_op_M[4]        ), // Start operation of this module.
          .clk                          (clk                ),
          .rstLow                       (rst_n              ),
          .c_o                          (alu_M              ),
-         .busy_o                       (e_alu_busy_o       )
+         .busy_o                       (d_alu_busy_o       )
           );
 
 
@@ -146,7 +164,7 @@ module exe_stage
     m_is_load_store_o <= 1'b0;
     m_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
-  else 
+  else
    begin
     m_regfile_waddr_o <= e_regfile_waddr_i;
     m_regfile_rd_o <= reg_file_rd;
