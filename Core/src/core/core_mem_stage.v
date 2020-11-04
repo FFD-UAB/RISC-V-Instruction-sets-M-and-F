@@ -29,7 +29,7 @@ module core_mem_stage
         w_is_load_store_o,
         m_LOAD_op_i,
         w_LOAD_op_o,
-        stall_i
+        stall_general_i
         );
 
  input  wire                           clk;
@@ -59,7 +59,7 @@ module core_mem_stage
  output reg                            w_is_load_store_o;
  input  wire [2:0]                     m_LOAD_op_i;
  output reg  [2:0]                     w_LOAD_op_o;
- input  wire                           stall_i;
+ input  wire                           stall_general_i;
 
  reg [1:0]                             state;
  reg [1:0]                             nextState;
@@ -118,7 +118,7 @@ module core_mem_stage
     w_is_load_store_o <= 1'b0;
     w_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
-  else if(!stall_i)
+  else if(!stall_general_i)
    begin
     w_regfile_waddr_o <= m_regfile_waddr_i;
     w_regfile_rd_o <= m_regfile_rd_i;

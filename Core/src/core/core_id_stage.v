@@ -44,7 +44,8 @@ module id_stage
         m_regfile_wr_i,
         brj_pc_o,
         brj_o,
-        d_busy_alu_i // Ongoing multi-cycle operation when high flag.
+        d_busy_alu_i, // Ongoing multi-cycle operation when high flag.
+        stall_general_o
         );
 
  input  wire                           clk;
@@ -88,6 +89,7 @@ module id_stage
  output wire [`DATA_WIDTH-1:0]         brj_pc_o;
  output wire                           brj_o;
  input  wire                           d_busy_alu_i; // Flag of multi-cycle operation ongoing when high.
+ output wire                           stall_general_o; // which enables the general stall of the core.
  
  wire [4:0]                            regfile_waddr_t; 
  wire [`DATA_WIDTH-1:0]                reg_file_rs1_t;
@@ -190,7 +192,11 @@ module id_stage
         .jalr_i                        (jalr_t             )
          );
 
-  
+
+  // The forwarding logic sets the ability to input operands at the ALU (through the output registers of the id_stage) from the ALU's output, the DataMem input (aka, 
+  // the exe_stage output registers), the DataMem (through the mem_stage output registers) or the RegFile registers, while keeping the recording function to the correct
+  // location. This means that whatever are the ALU's inputs, even if is a recent result, from the DataMem or Regfile, the correct operand will be at the input and 
+  // whatever result will continue its way to be recorded by the instruction assignment.
   //Forwarding logic op1   
  always @*
   if (e_regfile_wr_o && ( e_regfile_waddr_o != 0) && ( e_regfile_waddr_o == regfile_raddr_rs1_t) && (e_is_load_store_o == 1'b0)) e_regfile_rs1_t = alu_i;
@@ -204,12 +210,14 @@ module id_stage
   else if (m_regfile_wr_i && ( m_regfile_waddr_i != 0) && ( m_regfile_waddr_i == regfile_raddr_rs2_t) && (m_is_load_store_i == 1'b0)) e_regfile_rs2_t = m_regfile_rd_i;
         else if (w_regfile_wr_i & (i_r2_t & (regfile_raddr_rs2_t == w_regfile_waddr_i))) e_regfile_rs2_t = w_regfile_rd_i;
              else e_regfile_rs2_t = reg_file_rs2_t;
-           
+   
+ // The possible data hazards are reading or storing (COMPLETE...), which requires a single clock cycle stall, and a mutli-cycle operation, which stalls the whole core many clock cycles.
  //Hazard detection unit
   assign stall_o =  (e_data_rd_o & ((i_r1_t & (e_regfile_waddr_o == regfile_raddr_rs1_t)) | (i_r2_t & (e_regfile_waddr_o == regfile_raddr_rs2_t))))
-                   |(m_data_rd_i & ((i_r1_t & (m_regfile_waddr_i == regfile_raddr_rs1_t)) | (i_r2_t & (m_regfile_waddr_i == regfile_raddr_rs2_t))))
-                   | d_busy_alu_i;
+                   |(m_data_rd_i & ((i_r1_t & (m_regfile_waddr_i == regfile_raddr_rs1_t)) | (i_r2_t & (m_regfile_waddr_i == regfile_raddr_rs2_t))));
+  assign stall_general_o = d_busy_alu_i;
 
+ 
  always @(*)
   case(csr_op_rs1_t)
    2'd0: e_regfile_rs1_tt = e_regfile_rs1_t;
@@ -249,7 +257,7 @@ module id_stage
     e_pc4_o <= {`DATA_WIDTH{1'b0}};
     e_brj_pc_o <= {`DATA_WIDTH{1'b0}};
    end
-  else if(!stall_o)
+  else if(!stall_general_o)
    begin
     e_regfile_waddr_o <= regfile_waddr_t;
     e_regfile_raddr_rs1_o <= regfile_raddr_rs1_t;

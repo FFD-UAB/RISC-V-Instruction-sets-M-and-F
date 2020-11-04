@@ -35,8 +35,7 @@ module exe_stage
         e_data_target_i,
         d_alu_busy_o,
         alu_o,
-        stall_i,
-        e_finish_mco_i
+        stall_general_i
         );
 
  input  wire                           clk;
@@ -70,8 +69,7 @@ module exe_stage
  input  wire [1:0]                     e_data_target_i;
  output wire [`DATA_WIDTH-1:0]         alu_o;
  output wire                           d_alu_busy_o;  // Not a reg because is a flag.
- input  wire                           stall_i;       // Here could be used "d_alu_busy_o", but stall_i is a general case.
- input  wire                           e_finish_mco_i; // Signal to indicate "do not repeat the multi-cycle operation"
+ input  wire                           stall_general_i;       // Here could be used "d_alu_busy_o", but stall_general_i is a general case.
 
  wire                                  ALU_zero_t;
  wire [`DATA_WIDTH-1:0]                op1_ALU;
@@ -96,7 +94,13 @@ module exe_stage
 
  // Start signal controlled to avoid repeating the same multi-cycle operation.
  wire   ctrlStart;
- assign ctrlStart = e_ALU_op_i[4] & !e_finish_mco_i;
+ reg    finish_mco;
+
+ always@(posedge clk or negedge rst_n)
+  if (!rst_n) finish_mco <= 1'b0;
+  else finish_mco <= d_alu_busy_o;
+
+ assign ctrlStart = e_ALU_op_i[4] & !finish_mco;
 
  // Output selection. Check if the operation is from the instruction set M.
  assign alu_o   = (e_ALU_op_i[4] ? alu_M : alu_I);
@@ -147,7 +151,7 @@ module exe_stage
     m_is_load_store_o <= 1'b0;
     m_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
-  else if(!stall_i)
+  else if(!stall_general_i)
    begin
     m_regfile_waddr_o <= e_regfile_waddr_i;
     m_regfile_rd_o <= reg_file_rd;

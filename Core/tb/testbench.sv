@@ -277,7 +277,7 @@ task test_store_stall;
     encodeLW(5'h0, 5'h10, 12'h0);
     //encodeAddi(5'h0, 5'h0, 12'h0);//NOOP
     encodeLW(5'h0, 5'h11, 12'h4);
-    encodeAdd(5'h10, 5'h11, 5'h15);        
+    encodeAdd(5'h10, 5'h11, 5'h15);   
     //TEST
     rst_n = 1'b1;
     waitNclockCycles(17);

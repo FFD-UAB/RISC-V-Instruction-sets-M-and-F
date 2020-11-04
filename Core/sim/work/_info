@@ -10,7 +10,7 @@ cModel Technology
 Z0 dE:/Uni/TFM/VerilogCode/Core/sim
 valu
 Z1 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
-Z2 !s110 1604455316
+Z2 !s110 1604482223
 !i10b 1
 !s100 `@b;55YbRM4T0BH<Ne[fe3
 IGk:Hk5IibBWlVWf11liEL3
@@ -26,7 +26,7 @@ Z4 OP;L;10.4a;61
 r1
 !s85 0
 31
-Z5 !s108 1604455316.000000
+Z5 !s108 1604482223.000000
 Z6 !s107 ../src/defines.vh|../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v|../src/core/core_execution_unit/MULDIV/MULgold.v|../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v|../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v|../src/core/core_execution_unit/core_execution_unit_alu_m.v|../src/top.v|../src/core/core.v|../tb/arithmeticologicM.v|../tb/load_store.v|../tb/testbench.sv|../src/mem/mem_prog.v|../src/mem/mem_data.v|../src/core/core_csr_unit/core_csr_unit_timer.v|../src/core/core_csr_unit/core_csr_unit_counter.v|../src/core/core_csr_unit/core_csr_unit.v|../src/core/core_reg_file.v|../src/core/core_wb_stage.v|../src/core/core_mem_stage.v|../src/core/core_exe_stage.v|../src/core/core_if_stage.v|../src/core/core_id_stage.v|../src/core/core_control_unit.v|../src/core/core_execution_unit/core_execution_unit_alu.v|../src/core/core_execution_unit/core_branchig_unit.v|../src/pulp/sp_ram.sv|../src/pulp/sp_ram_wrap.sv|../src/pulp/boot_rom_wrap.sv|../src/pulp/boot_code.sv|../src/pulp/instr_ram_wrap.sv|../src/pulp/ram_mux.sv|../src/pulp/config.sv|../src/pulp/axi_bus.sv|
 Z7 !s90 -reportprogress|300|-sv|-f|sv_files|
 !s101 -O0
@@ -181,13 +181,13 @@ vcore
 R1
 R2
 !i10b 1
-!s100 FdV^`lQnTY@SebAc6F@R=0
-Id[Xc[Kz8C2[KFX@IQ[=bQ0
+!s100 eOilP@24jFR3`KDNWJ]9]0
+I95VAg8>ofnSF5X>fUTAQW0
 R3
 !s105 core_v_unit
 S1
 R0
-w1604450143
+w1604481536
 8../src/core/core.v
 F../src/core/core.v
 L0 4
@@ -205,13 +205,13 @@ vcore_mem_stage
 R1
 R2
 !i10b 1
-!s100 lQ0RU7J3;[IKf?8n]5hKf2
-IVZSJWj7_8KXZgDjN7DE@?3
+!s100 dVz9H@0D8UlTo[l:DjUOG3
+Idb8LgB9;K`B7Rz>>9UGM^2
 R3
 !s105 core_mem_stage_v_unit
 S1
 R0
-w1604448801
+w1604479510
 8../src/core/core_mem_stage.v
 F../src/core/core_mem_stage.v
 L0 4
@@ -351,13 +351,13 @@ vexe_stage
 R1
 R2
 !i10b 1
-!s100 hf4:4GSkjX:8n8g43:^aR1
-IoW9hGhUcUe<7kZZ6iZ[hQ0
+!s100 n[Y;EW3j?zAP5zCa4hJ5Q1
+IbYlzD_0ZSNRDTL[mJkko`1
 R3
 !s105 core_exe_stage_v_unit
 S1
 R0
-w1604452421
+w1604481507
 8../src/core/core_exe_stage.v
 F../src/core/core_exe_stage.v
 L0 5
@@ -400,13 +400,13 @@ vid_stage
 R1
 R2
 !i10b 1
-!s100 NVSTK[N7S;zM;<@]Lg@ZA3
-IZXbCY5G1n:n8AIbTD?9`a0
+!s100 YU=QKmVdb:09lmIohK8JP0
+IKM;Xf3YCJ0[FbP:A^H>ej2
 R3
 !s105 core_id_stage_v_unit
 S1
 R0
-w1604449097
+w1604481461
 8../src/core/core_id_stage.v
 F../src/core/core_id_stage.v
 L0 6
@@ -424,13 +424,13 @@ vif_stage
 R1
 R2
 !i10b 1
-!s100 23dIN2Y7;V?k[gDC_:8J21
-IbO2g?jgDzEgZgii3Id2=31
+!s100 3]hUm2]Ho@>Y9O1`6JBLf3
+I?78^80Z41=C>Hn_g>hRNR1
 R3
 !s105 core_if_stage_v_unit
 S1
 R0
-w1604451662
+w1604481946
 8../src/core/core_if_stage.v
 F../src/core/core_if_stage.v
 L0 6
@@ -698,7 +698,7 @@ R3
 !s105 testbench_sv_unit
 S1
 R0
-w1604455305
+w1604482186
 8../tb/testbench.sv
 F../tb/testbench.sv
 L0 9
