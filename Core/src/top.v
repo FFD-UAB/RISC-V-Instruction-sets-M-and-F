@@ -104,12 +104,12 @@ core core_inst(
     );
 
 
-progMem mem_prog_inst (
+/* progMem mem_prog_inst (
         .rst_n (flush_inst_t),         // Reset Neg
         .clk (clk),                    // Clk
         .addr (instruction_addr),      // Address
         .data_out (instruction_rdata)  // Output Data
-    );
+    );*/
 
  
 instr_ram_wrap

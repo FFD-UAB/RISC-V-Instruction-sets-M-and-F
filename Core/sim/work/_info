@@ -10,7 +10,7 @@ cModel Technology
 Z0 dE:/Uni/TFM/VerilogCode/Core/sim
 valu
 Z1 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
-Z2 !s110 1604482223
+Z2 !s110 1604532918
 !i10b 1
 !s100 `@b;55YbRM4T0BH<Ne[fe3
 IGk:Hk5IibBWlVWf11liEL3
@@ -26,7 +26,7 @@ Z4 OP;L;10.4a;61
 r1
 !s85 0
 31
-Z5 !s108 1604482223.000000
+Z5 !s108 1604532918.000000
 Z6 !s107 ../src/defines.vh|../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v|../src/core/core_execution_unit/MULDIV/MULgold.v|../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v|../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v|../src/core/core_execution_unit/core_execution_unit_alu_m.v|../src/top.v|../src/core/core.v|../tb/arithmeticologicM.v|../tb/load_store.v|../tb/testbench.sv|../src/mem/mem_prog.v|../src/mem/mem_data.v|../src/core/core_csr_unit/core_csr_unit_timer.v|../src/core/core_csr_unit/core_csr_unit_counter.v|../src/core/core_csr_unit/core_csr_unit.v|../src/core/core_reg_file.v|../src/core/core_wb_stage.v|../src/core/core_mem_stage.v|../src/core/core_exe_stage.v|../src/core/core_if_stage.v|../src/core/core_id_stage.v|../src/core/core_control_unit.v|../src/core/core_execution_unit/core_execution_unit_alu.v|../src/core/core_execution_unit/core_branchig_unit.v|../src/pulp/sp_ram.sv|../src/pulp/sp_ram_wrap.sv|../src/pulp/boot_rom_wrap.sv|../src/pulp/boot_code.sv|../src/pulp/instr_ram_wrap.sv|../src/pulp/ram_mux.sv|../src/pulp/config.sv|../src/pulp/axi_bus.sv|
 Z7 !s90 -reportprogress|300|-sv|-f|sv_files|
 !s101 -O0
@@ -36,13 +36,13 @@ varithmeticologic_test
 R1
 R2
 !i10b 1
-!s100 1bTRC6;3jklFZld4Q]IA>2
-I_iS0b5f06i6RMRZM?LPQ41
+!s100 XN=5z5?KN6cNCIT2`fQX`2
+I2GzLNNc=`7@mibR2j;Y>a1
 R3
 !s105 arithmeticologicM_v_unit
 S1
 R0
-w1604453395
+w1604532536
 8../tb/arithmeticologicM.v
 F../tb/arithmeticologicM.v
 L0 7
@@ -472,13 +472,13 @@ vload_store_test
 R1
 R2
 !i10b 1
-!s100 W:>XCL@O:;@G:iPUTf^<03
-IfO;BlAASdLXl6Id^NU:h52
+!s100 hX8kCcg=76f<278Gc@;R=0
+II8V=<TIjC^h;^GTUN[93h1
 R3
 !s105 load_store_v_unit
 S1
 R0
-w1604052703
+w1604532579
 8../tb/load_store.v
 F../tb/load_store.v
 L0 7
@@ -644,13 +644,13 @@ vsp_ram
 R1
 R2
 !i10b 1
-!s100 G^NG7?`Ued6[D=CEXa[=z0
-IU?3Bj^GcmT9lWIHkko0o`1
+!s100 iUYDhaQ?8TK7b@8lJeS2[3
+I0g@?4ig6OGOZUf@QN;OMQ2
 R3
 !s105 sp_ram_sv_unit
 S1
 R0
-w1583342647
+w1604532912
 8../src/pulp/sp_ram.sv
 F../src/pulp/sp_ram.sv
 R10
@@ -668,13 +668,13 @@ vsp_ram_wrap
 R1
 R2
 !i10b 1
-!s100 jX2CdEm8O2>HIC;DEEhd<0
-I@a0l74ncoEAgUgNcGe5fL2
+!s100 5aUI04VQFkP@M=4R^:mlL1
+Ii>Z>T>fAkk[e_JCMLd4:m2
 R3
 !s105 sp_ram_wrap_sv_unit
 S1
 R0
-w1579855167
+w1604529026
 8../src/pulp/sp_ram_wrap.sv
 F../src/pulp/sp_ram_wrap.sv
 L0 13
@@ -692,13 +692,13 @@ vtb
 R1
 R2
 !i10b 1
-!s100 U`DJ0SIb7UUPz:`aBE_NJ3
-IP8mlMO5NV[8kZ7NMk^]AJ2
+!s100 k8g;1kQc?Eb6<BMT=_IT?0
+IOdfYKLQg>J40N0@_MUR:L0
 R3
 !s105 testbench_sv_unit
 S1
 R0
-w1604482186
+w1604531180
 8../tb/testbench.sv
 F../tb/testbench.sv
 L0 9
@@ -740,13 +740,13 @@ vtop
 R1
 R2
 !i10b 1
-!s100 jVQn^5BAVIEX[@3dm_dPl0
-I>0k63N<XnOg8IlTlk50zY2
+!s100 J`C5bdg5`zCYzV1:?dljH0
+Ig^]JT0>cX2lWSYJ6m15?i2
 R3
 !s105 top_v_unit
 S1
 R0
-w1604203799
+w1604527211
 8../src/top.v
 F../src/top.v
 L0 4

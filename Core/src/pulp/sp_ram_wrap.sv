@@ -78,7 +78,7 @@ module sp_ram_wrap
   sp_ram_i
   (
     .clk     ( clk       ),
-
+    .rstn_i  ( rstn_i    ), //FFD added
     .en_i    ( en_i      ),
     .addr_i  ( addr_i    ),
     .wdata_i ( wdata_i   ),

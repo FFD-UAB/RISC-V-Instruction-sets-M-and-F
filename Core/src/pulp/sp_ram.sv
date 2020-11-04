@@ -16,7 +16,7 @@ module sp_ram
   )(
     // Clock and Reset
     input  logic                    clk,
-
+    input  logic                    rstn_i, //FFD added
     input  logic                    en_i,
     input  logic [ADDR_WIDTH-1:0]   addr_i,
     input  logic [DATA_WIDTH-1:0]   wdata_i,
@@ -27,18 +27,20 @@ module sp_ram
 
   localparam words = NUM_WORDS/(DATA_WIDTH/8);
 
-  logic [DATA_WIDTH/8-1:0][7:0] mem[words];
+  reg [DATA_WIDTH/8-1:0][7:0] mem[words];
   logic [DATA_WIDTH/8-1:0][7:0] wdata;
   logic [ADDR_WIDTH-1-$clog2(DATA_WIDTH/8):0] addr;
 
   integer i;
+  integer j; //FFD added
 
 
   assign addr = addr_i[ADDR_WIDTH-1:$clog2(DATA_WIDTH/8)];
 
 
-  always @(posedge clk)
-  begin
+  always @(posedge clk or negedge rstn_i) //FFD added or negedge rstn_i
+  if (!rstn_i) for (i=0; i < 96; i++) for (j=0; j<4; j++) mem[i][j] <= {8{1'b0}}; //FFD added
+  else begin //FFD added else
     if (en_i && we_i)
     begin
       for (i = 0; i < DATA_WIDTH/8; i++) begin
@@ -56,7 +58,8 @@ module sp_ram
       assign wdata[w] = wdata_i[(w+1)*8-1:w*8];
     end
   endgenerate
-  
+
+/* // Initialized not required because the rst implementation FFD added
   initial
    begin
      mem[0] = 0;
@@ -83,5 +86,6 @@ module sp_ram
      mem[84] = 0;
      mem[88] = 0;
      mem[92] = 0;
-   end
+   end */
+
 endmodule

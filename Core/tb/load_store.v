@@ -11,12 +11,16 @@ module load_store_test();
 	initial begin 
 
 		TB.pc = 32'b0;
-                TB.top_inst.mem_prog_inst.initializeProgMem;
+        //TB.top_inst.mem_prog_inst.initializeProgMem;
 
 		// Initialize registers
-		TB.clk = 1'b0;
-		TB.rst_n = 1'b0;
-		#100
+  TB.clk = 1'b0;
+  TB.rst_n = 1'b0; // Reset cycle to initialize the ProgMem,
+  #100             // without this procedure, the core allways
+  TB.rst_n = 1'b1; // loads the first instruction from the previous
+  #100             // test and doesn't execute the first test.
+  TB.rst_n = 1'b0;
+  #100
 		
 		// Load memory
 		//$readmemb("data/programMem_b.mem", TB.top_inst.mem_prog_inst.progArray, 0, 3);
