@@ -539,20 +539,20 @@ task test_remu;
   end
 endtask
 
-task test_oncecycle_divrem;
+task test_oncecycle_divrem; // Tests the OneCycleRemainder capability.
   begin
-    $display("One-Cycle DIVU/REMU Test");
+    $display("One-Cycle Remainder DIVU/REMU Test");
     pc = 32'b0;
     encodeAddi(5'h0, 5'h3, 12'd3); // Reg3 = 3;
     encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -3; but in unsigned format is 0xFFFF FFFD
     encodeAddi(5'h0, 5'h4, 12'd2); // Reg4 = 2;
     encodeDIVU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 0x7FFF FFFE.
     encodeREMU(5'h3, 5'h4, 5'h6);  // Reg6 = Reg3/Reg4; r = 1.
-//    encodeREMU(5'h3, 5'h4, 5'h6);  // Reg6 = Reg3/Reg4; r = 1.
+
     rst_n = 1'b1;
     waitNclockCycles(8);
     while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
-    waitNclockCycles(8);
+    waitNclockCycles(3);
     if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
       $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
@@ -560,7 +560,40 @@ task test_oncecycle_divrem;
     end
     if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h1) $display("OK: reg6 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
     else begin
-      $display("ERROR: reg6 has to be 1 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg6 has to be 1 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+      //$fatal;
+    end
+    #400;
+  end
+endtask
+
+task test_div2; // Tests two multi-cycle operations in a row.
+  begin
+    $display("DIV/DIVU Test");
+    pc = 32'b0;
+    encodeAddi(5'h0, 5'h3, 12'd3); // Reg3 = 3;
+    encodeSub(5'h0, 5'h3, 5'h3);   // Reg3 = -3; but in unsigned format is 0xFFFF FFFD
+    encodeAddi(5'h0, 5'h5, 12'd5); // Reg5 = 5;
+    encodeSub(5'h0, 5'h5, 5'h5);   // Reg5 = -5; 
+    encodeAddi(5'h0, 5'h6, 12'd2); // Reg6 = 2;
+    encodeSub(5'h0, 5'h6, 5'h6);   // Reg6 = -2;
+    encodeDIV(5'h5, 5'h6, 5'h5);   // Reg5 = Reg5/Reg6; -5/-2 => q = 2, r = -1.
+    encodeDIVU(5'h3, 5'h5, 5'h6);  // Reg6 = Reg3/Reg5; uns(-3)/2  => q = 0x7FFF FFFE.
+
+    rst_n = 1'b1;
+    waitNclockCycles(9); // 2 clock cycles to start with the first operation + 6 normal operations (one cycle) + 1 to check when already started.
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk); // Continues at the start of the next operation.
+    waitNclockCycles(1);  // 1 clock cycle to check to the next division when already started.
+    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    waitNclockCycles(3);
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h2) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    else begin
+      $display("ERROR: reg5 has to be 2 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      //$fatal;
+    end
+    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h7FFFFFFE) $display("OK: reg6 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+    else begin
+      $display("ERROR: reg6 has to be 0x7FFF FFFE but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
       //$fatal;
     end
     #400;

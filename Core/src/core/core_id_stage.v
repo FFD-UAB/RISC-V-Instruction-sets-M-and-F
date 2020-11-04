@@ -249,7 +249,7 @@ module id_stage
     e_pc4_o <= {`DATA_WIDTH{1'b0}};
     e_brj_pc_o <= {`DATA_WIDTH{1'b0}};
    end
-  else 
+  else if(!stall_o)
    begin
     e_regfile_waddr_o <= regfile_waddr_t;
     e_regfile_raddr_rs1_o <= regfile_raddr_rs1_t;

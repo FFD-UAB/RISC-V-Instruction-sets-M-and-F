@@ -70,6 +70,12 @@ module arithmeticologic_test();
   #100
 
   TB.test_oncecycle_divrem;
+  #100
+  TB.rst_n = 1'b0;
+  TB.top_inst.mem_prog_inst.initializeProgMem;
+  #100
+
+  TB.test_div2;
 
   #1000
   $stop;

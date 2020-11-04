@@ -10,7 +10,7 @@ cModel Technology
 Z0 dE:/Uni/TFM/VerilogCode/Core/sim
 valu
 Z1 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
-Z2 !s110 1604339120
+Z2 !s110 1604455316
 !i10b 1
 !s100 `@b;55YbRM4T0BH<Ne[fe3
 IGk:Hk5IibBWlVWf11liEL3
@@ -26,7 +26,7 @@ Z4 OP;L;10.4a;61
 r1
 !s85 0
 31
-Z5 !s108 1604339120.000000
+Z5 !s108 1604455316.000000
 Z6 !s107 ../src/defines.vh|../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v|../src/core/core_execution_unit/MULDIV/MULgold.v|../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v|../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v|../src/core/core_execution_unit/core_execution_unit_alu_m.v|../src/top.v|../src/core/core.v|../tb/arithmeticologicM.v|../tb/load_store.v|../tb/testbench.sv|../src/mem/mem_prog.v|../src/mem/mem_data.v|../src/core/core_csr_unit/core_csr_unit_timer.v|../src/core/core_csr_unit/core_csr_unit_counter.v|../src/core/core_csr_unit/core_csr_unit.v|../src/core/core_reg_file.v|../src/core/core_wb_stage.v|../src/core/core_mem_stage.v|../src/core/core_exe_stage.v|../src/core/core_if_stage.v|../src/core/core_id_stage.v|../src/core/core_control_unit.v|../src/core/core_execution_unit/core_execution_unit_alu.v|../src/core/core_execution_unit/core_branchig_unit.v|../src/pulp/sp_ram.sv|../src/pulp/sp_ram_wrap.sv|../src/pulp/boot_rom_wrap.sv|../src/pulp/boot_code.sv|../src/pulp/instr_ram_wrap.sv|../src/pulp/ram_mux.sv|../src/pulp/config.sv|../src/pulp/axi_bus.sv|
 Z7 !s90 -reportprogress|300|-sv|-f|sv_files|
 !s101 -O0
@@ -36,13 +36,13 @@ varithmeticologic_test
 R1
 R2
 !i10b 1
-!s100 X@693I:ULCO@0NCbSXnKj0
-Ik8hHoZchXHlTLeWmeoWfA1
+!s100 1bTRC6;3jklFZld4Q]IA>2
+I_iS0b5f06i6RMRZM?LPQ41
 R3
 !s105 arithmeticologicM_v_unit
 S1
 R0
-w1604332833
+w1604453395
 8../tb/arithmeticologicM.v
 F../tb/arithmeticologicM.v
 L0 7
@@ -181,13 +181,13 @@ vcore
 R1
 R2
 !i10b 1
-!s100 B`YAPFi`Z]4j0mnUF`[=I0
-ITEI4fO^G??2:Ag]e[nm4^3
+!s100 FdV^`lQnTY@SebAc6F@R=0
+Id[Xc[Kz8C2[KFX@IQ[=bQ0
 R3
 !s105 core_v_unit
 S1
 R0
-w1604337933
+w1604450143
 8../src/core/core.v
 F../src/core/core.v
 L0 4
@@ -205,13 +205,13 @@ vcore_mem_stage
 R1
 R2
 !i10b 1
-!s100 ba^8@H;_]_cGmkBh<<CzB3
-I1JPYnXkN96PDz^4m4iK_d2
+!s100 lQ0RU7J3;[IKf?8n]5hKf2
+IVZSJWj7_8KXZgDjN7DE@?3
 R3
 !s105 core_mem_stage_v_unit
 S1
 R0
-w1604337827
+w1604448801
 8../src/core/core_mem_stage.v
 F../src/core/core_mem_stage.v
 L0 4
@@ -235,7 +235,7 @@ R3
 !s105 core_wb_stage_v_unit
 S1
 R0
-w1604336193
+w1604448820
 8../src/core/core_wb_stage.v
 F../src/core/core_wb_stage.v
 L0 4
@@ -351,13 +351,13 @@ vexe_stage
 R1
 R2
 !i10b 1
-!s100 ]M]i5nW=4HOLnUg4k_iG13
-IVHYcH1CiYMTDTQ0:i[bKf0
+!s100 hf4:4GSkjX:8n8g43:^aR1
+IoW9hGhUcUe<7kZZ6iZ[hQ0
 R3
 !s105 core_exe_stage_v_unit
 S1
 R0
-w1604337787
+w1604452421
 8../src/core/core_exe_stage.v
 F../src/core/core_exe_stage.v
 L0 5
@@ -400,13 +400,13 @@ vid_stage
 R1
 R2
 !i10b 1
-!s100 3Sln]U`VB6d2YFd9Hz0GY0
-ITF>V5NjV9>=0_NR_LOKDR2
+!s100 NVSTK[N7S;zM;<@]Lg@ZA3
+IZXbCY5G1n:n8AIbTD?9`a0
 R3
 !s105 core_id_stage_v_unit
 S1
 R0
-w1604337862
+w1604449097
 8../src/core/core_id_stage.v
 F../src/core/core_id_stage.v
 L0 6
@@ -424,13 +424,13 @@ vif_stage
 R1
 R2
 !i10b 1
-!s100 iI@KVL:<B?B6O[IaN3eK00
-IC=7o>kJam8MTX7L74cQEb3
+!s100 23dIN2Y7;V?k[gDC_:8J21
+IbO2g?jgDzEgZgii3Id2=31
 R3
 !s105 core_if_stage_v_unit
 S1
 R0
-w1604338624
+w1604451662
 8../src/core/core_if_stage.v
 F../src/core/core_if_stage.v
 L0 6
@@ -692,13 +692,13 @@ vtb
 R1
 R2
 !i10b 1
-!s100 RNMN4N7XgoG36FF]QWaXJ0
-IgalY<<E_9K:AY52O<SSO;2
+!s100 U`DJ0SIb7UUPz:`aBE_NJ3
+IP8mlMO5NV[8kZ7NMk^]AJ2
 R3
 !s105 testbench_sv_unit
 S1
 R0
-w1604334354
+w1604455305
 8../tb/testbench.sv
 F../tb/testbench.sv
 L0 9

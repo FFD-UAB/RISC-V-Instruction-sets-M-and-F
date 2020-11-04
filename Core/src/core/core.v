@@ -69,8 +69,10 @@ module core
  wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs1_t;	
  wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs2_t;
  wire [1:0]                            e_data_target_t;
- wire                                  stall_t;
  wire                                  d_alu_busy_t;
+ wire                                  stall_t;
+ wire                                  finish_mco_t;
+
 
  wire [`DATA_WIDTH-1:0]                alu_t;
  wire [`DATA_WIDTH-1:0]                data_rdata_t;
@@ -88,6 +90,7 @@ module core
         .instruction_addr_o            (instruction_addr_o),
         .instruction_rdata_i           (instruction_rdata_i),
         .stall_i                       (stall_t),
+        .e_finish_mco_o                (finish_mco_t),
         .flush_inst_o                  (flush_inst_o)
          );
         
@@ -162,7 +165,9 @@ module core
         .m_data_write_transfer_o       (m_data_write_transfer_t),
         .e_data_target_i               (e_data_target_t),
         .d_alu_busy_o                  (d_alu_busy_t),
-        .alu_o                         (alu_t)
+        .alu_o                         (alu_t),
+        .stall_i                       (stall_t),
+        .e_finish_mco_i                (finish_mco_t)
         );
 
 core_mem_stage core_mem_stage_inst
@@ -192,7 +197,8 @@ core_mem_stage core_mem_stage_inst
         .m_is_load_store_i             (m_is_load_store_t),
         .w_is_load_store_o             (w_is_load_store_t),
         .m_LOAD_op_i                   (m_LOAD_op_t),
-        .w_LOAD_op_o                   (w_LOAD_op_t)
+        .w_LOAD_op_o                   (w_LOAD_op_t),
+        .stall_i                       (stall_t)
         );
 
 core_wb_stage core_wb_stageinst
