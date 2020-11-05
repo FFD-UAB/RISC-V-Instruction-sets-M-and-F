@@ -27,7 +27,7 @@ module sp_ram
 
   localparam words = NUM_WORDS/(DATA_WIDTH/8);
 
-  reg [DATA_WIDTH/8-1:0][7:0] mem[words];
+  logic [DATA_WIDTH/8-1:0][7:0] mem[words];
   logic [DATA_WIDTH/8-1:0][7:0] wdata;
   logic [ADDR_WIDTH-1-$clog2(DATA_WIDTH/8):0] addr;
 
@@ -39,13 +39,14 @@ module sp_ram
 
 
   always @(posedge clk or negedge rstn_i) //FFD added or negedge rstn_i
-  if (!rstn_i) for (i=0; i < 96; i++) for (j=0; j<4; j++) mem[i][j] <= {8{1'b0}}; //FFD added
+  if (!rstn_i) for (j = 0; j < words; j++)   //FFD added Following the #32
+                 for (i = 0; i < DATA_WIDTH/8; i++) mem[j][i] = {8{1'b0}}; //FFD added
   else begin //FFD added else
     if (en_i && we_i)
     begin
       for (i = 0; i < DATA_WIDTH/8; i++) begin
         if (be_i[i])
-          mem[addr][i] <= wdata[i];
+          mem[addr][i] = wdata[i];
       end
     end
 
