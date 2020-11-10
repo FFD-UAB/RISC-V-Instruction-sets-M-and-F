@@ -35,9 +35,12 @@ assign pushedDividend = a_in << LeftShifts; // as the maximum number of leftshif
 
 // Output and start blocking in special case of dividend < quotient to single-cycle.
 wire start;
-assign 	start = (a_in < b_in ? 1'b0  : start_in);
-assign 	q_out = (a_in < b_in ? 32'b0 : reg_q);
-assign 	r_out = (a_in < b_in ? a_in  : reg_r);
+wire DividendLowerDivisor;
+
+assign  DividendLowerDivisor = a_in < b_in;
+assign 	start = (DividendLowerDivisor ? 1'b0  : start_in);
+assign 	q_out = (DividendLowerDivisor ? 32'b0 : reg_q);
+assign 	r_out = (DividendLowerDivisor ? a_in  : reg_r);
 
 // Intern control signals.
 reg		 [4:0] count;	// Iteration counter.
