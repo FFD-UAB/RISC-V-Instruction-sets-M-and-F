@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-`include "../src/defines.vh"
+`include "../defines.vh"
 
 // Module Declaration
 module id_stage 
@@ -38,7 +38,6 @@ module id_stage
         alu_i,
         m_regfile_rd_i,
         m_data_rd_i,  
-        data_rdata_i,
         m_is_load_store_i,
         m_regfile_waddr_i,
         m_regfile_wr_i,
@@ -82,7 +81,6 @@ module id_stage
  input  wire [`DATA_WIDTH-1:0]         alu_i;
  input  wire [`DATA_WIDTH-1:0]         m_regfile_rd_i;
  input  wire                           m_data_rd_i;
- input  wire [`DATA_WIDTH-1:0]         data_rdata_i;
  input  wire                           m_is_load_store_i;
  input  wire [4:0]                     m_regfile_waddr_i;
  input  wire                           m_regfile_wr_i;
@@ -246,7 +244,7 @@ module id_stage
     e_ALU_op_o <= {`ALU_OP_WIDTH{1'b0}};;
     e_STORE_op_o <= 2'h0;
     e_LOAD_op_o <= 3'h0;
-    e_data_origin_o <= {`DATA_WIDTH{1'b0}};
+    e_data_origin_o <= {`DATA_ORIGIN_WIDTH{1'b0}};
     e_regfile_wr_o <= 1'b0;
     e_is_load_store_o <= 1'b0;
     e_data_wr_o <= 1'b0;

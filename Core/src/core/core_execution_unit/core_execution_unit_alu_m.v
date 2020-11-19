@@ -1,9 +1,10 @@
 // Telecommunications Master Dissertation - Francis Fuentes 16-10-2020
-// MULDIV HW block implementing instruction set M.
+// MULDIV HW block implementing instruction expansion set M.
 // Is expected that the core does polling on the busy flag to know if
-// the operation is done.
+// the operation is done. This version uses a single clock cycle 
+// unsigned multiplier module and mutli-cycle unsigned divider module.
 
-`include "../src/defines.vh"
+`include "../../defines.vh"
 
 module MULDIV(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
 input [`DATA_WIDTH-1:0] rs1_i;    	// Multiplicand or dividend.
@@ -26,6 +27,7 @@ wire   [`DATA_WIDTH-1:0] b_unsigned; // Unsigned multiplier/divisor output of th
 wire   [`DATA_WIDTH-1:0] q;          // Quotient result from DIV module.
 wire   [`DATA_WIDTH-1:0] r;          // Remainder result from DIV module.
 wire [2*`DATA_WIDTH-1:0] c_mul;      // Multiplication result from MUL module.
+wire                     signedInputSharedFlag;
 
 // MULDIV type of operation.
 /*     MUL = 3'b000, // SxS 32LSB
@@ -35,9 +37,13 @@ wire [2*`DATA_WIDTH-1:0] c_mul;      // Multiplication result from MUL module.
 	   DIV = 3'b100, // S/S quotient
 	  DIVU = 3'b101, // U/U quotient
 	   REM = 3'b110, // S/S remainder
-	  REMU = 3'b111; // U/U remainder*/
+	  REMU = 3'b111; // U/U remainder */
 
-eqsDIVrest32u DIVmod(.a_in(a), // Various options are t, b, qs, eqsDIVrest32u.
+/////////////////////////////////////////////////////////////////////////////////////
+// Module selection for the operations. Select only one divider and one multiplier //
+/////////////////////////////////////////////////////////////////////////////////////
+  // Unsigned 32bit divider 
+dseDIVrest32u DIVmod(.a_in(a), // Options available are t, b, qs, eqs, d, deqsDIVrest32u.
 	.b_in(b),
 	.start_in(startDIV),
 	.clk(clk),
@@ -45,10 +51,22 @@ eqsDIVrest32u DIVmod(.a_in(a), // Various options are t, b, qs, eqsDIVrest32u.
 	.q_out(q),
 	.r_out(r),
 	.busy(busy_t));
-
+/*
+  // Unsigned 32bit multiplier without using IP megafunction.
 MULgold MULmod(.a_in(a),
 	.b_in(b),
 	.c_out(c_mul));
+
+*/
+
+ // LPM_MULT module. Works only with unsigned inputs/outputs (less resource usage, higher latency)
+LPM_MULT32 MULmod(
+        .dataa  (a),
+        .datab  (b),
+        .result (c_mul)
+        );
+
+
 
 Signed2Unsigned S2U1(.a_signed(rs1_i), .a_unsigned(a_unsigned));
 
@@ -114,9 +132,9 @@ assign r_output = (div0 ? rs1_i // Divisor == 0 -> r = dividend.
 //*********************************************
 // If previous division asks quotient, the remainder is also generated, so if the operands have not 
 // changed and maintains the same type signed/unsigned, deliver the remainder in one-cycle.
+// Also works for two divisions with the same operands (aka, DIV/DIVU with same absolute inputs).
 reg [`DATA_WIDTH-1:0] A_prev;
 reg [`DATA_WIDTH-1:0] B_prev;
-reg             [2:0] funct3_prev;
 wire oneCycleRemainder;
 
 // Load previous operands and function type.
@@ -126,19 +144,13 @@ always @(posedge clk or negedge rstLow)
    B_prev <= {`DATA_WIDTH{1'b0}};
  end
  else if(startDIV) begin
-   A_prev <= rs1_i;
-   B_prev <= rs2_i;
+   A_prev <= a;
+   B_prev <= b;
  end
 
-always @(posedge clk or negedge rstLow)
- if (!rstLow) funct3_prev <= 3'b0; // Only remember function if there isn't a remainder
- else if (!oneCycleRemainder) funct3_prev <= funct3_i; // to load after.
-
 // Flag only high when asking remainder of a division operation previously done for the quotient.
-// First check if appropiated funct3 types. (DIV with REM and DIVU with REMU, but not between them)
-assign oneCycleRemainder = (
- ((funct3_i == `FUNCT3_REMU) & (funct3_prev == `FUNCT3_DIVU)) | ((funct3_i == `FUNCT3_REM) & (funct3_prev == `FUNCT3_DIV)) 
-                           ) & (A_prev == rs1_i) & (B_prev == rs2_i); // Second, check if operands haven't changed.
+// Because the DIV module only works with unsigned, no matter if the funct3 is unsigned or signed that the operands will be
+assign oneCycleRemainder = (A_prev == a) & (B_prev == b); // translated to unsigned, so if they're the same operation, skip it.
 
 
 // Start the DIV module only if is a division operation that doesn't fall in a special case
@@ -160,7 +172,6 @@ assign busy_o   = (startDIV ? 1'b1 : busy_t);
 // Unsign the input for the DIV and MUL modules if the inputs are signed.
 // The instruction set M standard fixes what funct3 input values are signed.
 
-wire   signedInputSharedFlag;
 assign signedInputSharedFlag = |{(funct3_i == `FUNCT3_MUL),
                                  (funct3_i == `FUNCT3_MULH),
                                  (funct3_i == `FUNCT3_DIV), 

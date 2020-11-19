@@ -16,7 +16,7 @@ module sp_ram
   )(
     // Clock and Reset
     input  logic                    clk,
-    input  logic                    rstn_i, //FFD added
+    input  logic                    rstn_i,
     input  logic                    en_i,
     input  logic [ADDR_WIDTH-1:0]   addr_i,
     input  logic [DATA_WIDTH-1:0]   wdata_i,
@@ -32,35 +32,34 @@ module sp_ram
   logic [ADDR_WIDTH-1-$clog2(DATA_WIDTH/8):0] addr;
 
   integer i;
-  integer j; //FFD added
 
 
   assign addr = addr_i[ADDR_WIDTH-1:$clog2(DATA_WIDTH/8)];
 
 
-  always @(posedge clk or negedge rstn_i) //FFD added or negedge rstn_i
-  if (!rstn_i) for (j = 0; j < words; j++)   //FFD added Following the #32
-                 for (i = 0; i < DATA_WIDTH/8; i++) mem[j][i] = {8{1'b0}}; //FFD added
-  else begin //FFD added else
-    if (en_i && we_i)
+  always @(posedge clk)
     begin
+     if (en_i && we_i)
+     begin
       for (i = 0; i < DATA_WIDTH/8; i++) begin
         if (be_i[i])
           mem[addr][i] = wdata[i];
       end
+     end
     end
 
-    rdata_o <= mem[addr];
-  end
+  always @(posedge clk or negedge rstn_i)
+    if (!rstn_i) rdata_o <= {{DATA_WIDTH-7{1'b0}}, 7'b0010011}; // NOOP 
+    else rdata_o <= mem[addr];
+
 
   genvar w;
   generate for(w = 0; w < DATA_WIDTH/8; w++)
-    begin
+    begin: data_array1
       assign wdata[w] = wdata_i[(w+1)*8-1:w*8];
     end
   endgenerate
-
-/* // Initialized not required because the rst implementation FFD added
+/*
   initial
    begin
      mem[0] = 0;
@@ -87,6 +86,6 @@ module sp_ram
      mem[84] = 0;
      mem[88] = 0;
      mem[92] = 0;
-   end */
-
+   end 
+*/
 endmodule

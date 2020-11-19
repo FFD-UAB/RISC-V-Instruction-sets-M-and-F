@@ -1,6 +1,6 @@
 //`default_nettype none
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../defines.vh"
 
 module exe_stage
        (
@@ -68,8 +68,8 @@ module exe_stage
  output reg  [2:0]                     m_LOAD_op_o;
  input  wire [1:0]                     e_data_target_i;
  output wire [`DATA_WIDTH-1:0]         alu_o;
- output wire                           d_alu_busy_o;  // Not a reg because is a flag.
- input  wire                           stall_general_i;       // Here could be used "d_alu_busy_o", but stall_general_i is a general case.
+ output wire                           d_alu_busy_o;    // Not a reg because is a flag.
+ input  wire                           stall_general_i; // Here could be used "d_alu_busy_o", but stall_general_i is a general case.
 
  wire                                  ALU_zero_t;
  wire [`DATA_WIDTH-1:0]                op1_ALU;

@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../defines.vh"
 
 
 // Module Declaration
@@ -70,12 +70,13 @@ module if_stage
     //The output of the program memory is registered!
      always @(posedge clk or negedge rst_n)
      if (!rst_n) begin
-                  dd_instruction <= {25'b0, 7'b0010011};
+                  dd_instruction <= {25'b0, 7'b0010011}; // NOOP
                  end
      else if (!stall_reg) begin
             dd_instruction <= instruction_rdata_i;
            end 
 
-     assign d_instruction_o = stall_reg ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
+     assign d_instruction_o = brj_i ? {25'b0, 7'b0010011} : // NOOP
+                                                stall_reg ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
 
 endmodule 

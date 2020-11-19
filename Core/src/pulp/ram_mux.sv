@@ -72,7 +72,7 @@ module ram_mux
       end
 
       for(i0 = 0; i0 < IN0_RATIO; i0++)
-      begin
+      begin: data_array2
         assign port0_be[(i0+1) * IN0_WIDTH/8 -1:i0*IN0_WIDTH/8] =
                 (i0 == port0_addr_i[IN0_ADDR_HIGH:IN0_ADDR_LOW]) ? port0_be_i : '0;
 
@@ -112,7 +112,7 @@ module ram_mux
       end
 
       for(i1 = 0; i1 < OUT_WIDTH/IN1_WIDTH; i1++)
-      begin
+      begin: data_array3
         assign port1_be[(i1+1) * IN1_WIDTH/8 -1:i1*IN1_WIDTH/8] =
                 (i1 == port1_addr_i[IN1_ADDR_HIGH:IN1_ADDR_LOW]) ? port1_be_i : '0;
 

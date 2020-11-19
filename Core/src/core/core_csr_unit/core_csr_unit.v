@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../../defines.vh"
 
 module crs_unit
        (

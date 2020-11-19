@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../../defines.vh"
 
 module alu(
         input  wire             [3:0]   ALU_op_i,

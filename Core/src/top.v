@@ -40,7 +40,7 @@ module top
   wire         core_instr_req;
   wire         core_instr_gnt;
   wire         core_instr_rvalid;
-  wire [31:0]  core_instr_addr;
+  wire [`MEM_ADDR_WIDTH-1:0]  core_instr_addr;
   wire [31:0]  core_instr_rdata;
 
   wire         core_data_req;
@@ -155,6 +155,7 @@ instr_ram_wrap
   );*/
 
 
+
   ram_mux
   #(
     .ADDR_WIDTH ( INSTR_ADDR_WIDTH ),
@@ -179,7 +180,7 @@ instr_ram_wrap
     .port1_req_i    ( core_instr_req    ),
     .port1_gnt_o    ( core_instr_gnt    ),
     .port1_rvalid_o ( core_instr_rvalid ),
-    .port1_addr_i   ( core_instr_addr[INSTR_ADDR_WIDTH-1:0] ),
+    .port1_addr_i   ( {{(INSTR_ADDR_WIDTH - `MEM_ADDR_WIDTH){1'b0}}, core_instr_addr}),
     .port1_we_i     ( 1'b0              ),
     .port1_be_i     ( {(AXI_DATA_WIDTH/8){1'b0}}            ),
     .port1_rdata_o  ( core_instr_rdata  ),
@@ -194,7 +195,6 @@ instr_ram_wrap
   );
 
  assign core_instr_req = 1'b1;
- assign core_instr_addr = {{(32-`MEM_ADDR_WIDTH){1'b0}}, instruction_addr};
 
   //----------------------------------------------------------------------------//
   // Data RAM
@@ -266,7 +266,7 @@ instr_ram_wrap
     .port1_req_i    ( core_data_req    ),
     .port1_gnt_o    ( core_data_gnt    ),
     .port1_rvalid_o ( core_data_rvalid ),
-    .port1_addr_i   ( {22'h0, core_data_addr[9:0]} ),
+    .port1_addr_i   ( {5'h0, core_data_addr[9:0]} ),
     .port1_we_i     ( core_data_we     ),
     .port1_be_i     ( 4'b1111     ),
     .port1_rdata_o  ( core_data_rdata  ),

@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../defines.vh"
 
 module core
        (
@@ -75,7 +75,6 @@ module core
 
 
  wire [`DATA_WIDTH-1:0]                alu_t;
- wire [`DATA_WIDTH-1:0]                data_rdata_t;
  wire [`DATA_WIDTH-1:0]                brj_pc_t;
  wire                                  brj_t;
                     
@@ -126,7 +125,6 @@ module core
         .m_regfile_rd_i                (m_regfile_rd_t),
         .m_data_rd_i                   (m_data_rd_t),
         .m_regfile_waddr_i             (m_regfile_waddr_t),
-        .data_rdata_i                  (data_rdata_t),
         .m_is_load_store_i             (m_is_load_store_t),
         .m_regfile_wr_i                (m_regfile_wr_t),
         .brj_pc_o                      (brj_pc_t),
@@ -190,8 +188,7 @@ core_mem_stage core_mem_stage_inst
         .data_rdata_i                  (data_rdata_i),
         .data_wdata_o                  (data_wdata_o),
         .data_write_transfer_o         (data_write_transfer_o),
-        .data_rdata_o                  (data_rdata_t),
-        .data_req_o                    (data_req_o ),
+        .data_req_o                    (data_req_o),
         .data_gnt_i                    (data_gnt_i),
         .data_rvalid_i                 (data_rvalid_i),
         .m_is_load_store_i             (m_is_load_store_t),
@@ -205,7 +202,7 @@ core_wb_stage core_wb_stageinst
         (
         .w_is_load_store_i             (w_is_load_store_t),
         .w_regfile_rd_i                (w_regfile_rd_t),
-        .w_data_rdata_i                (data_rdata_t),
+        .w_data_rdata_i                (w_data_rdata_t),
         .w_LOAD_op_i                   (w_LOAD_op_t),
         .reg_file_rd_o                 (reg_file_rd_t)
         );

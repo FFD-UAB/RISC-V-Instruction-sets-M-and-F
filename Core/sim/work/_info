@@ -10,7 +10,7 @@ cModel Technology
 Z0 dE:/Uni/TFM/VerilogCode/Core/sim
 valu
 Z1 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
-Z2 !s110 1604532918
+Z2 !s110 1605780457
 !i10b 1
 !s100 `@b;55YbRM4T0BH<Ne[fe3
 IGk:Hk5IibBWlVWf11liEL3
@@ -18,7 +18,7 @@ Z3 VDg1SIo80bB@j0V0VzS_@n1
 !s105 core_execution_unit_alu_v_unit
 S1
 R0
-w1604087388
+w1605273242
 8../src/core/core_execution_unit/core_execution_unit_alu.v
 F../src/core/core_execution_unit/core_execution_unit_alu.v
 L0 4
@@ -26,8 +26,8 @@ Z4 OP;L;10.4a;61
 r1
 !s85 0
 31
-Z5 !s108 1604532918.000000
-Z6 !s107 ../src/defines.vh|../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v|../src/core/core_execution_unit/MULDIV/MULgold.v|../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v|../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v|../src/core/core_execution_unit/core_execution_unit_alu_m.v|../src/top.v|../src/core/core.v|../tb/arithmeticologicM.v|../tb/load_store.v|../tb/testbench.sv|../src/mem/mem_prog.v|../src/mem/mem_data.v|../src/core/core_csr_unit/core_csr_unit_timer.v|../src/core/core_csr_unit/core_csr_unit_counter.v|../src/core/core_csr_unit/core_csr_unit.v|../src/core/core_reg_file.v|../src/core/core_wb_stage.v|../src/core/core_mem_stage.v|../src/core/core_exe_stage.v|../src/core/core_if_stage.v|../src/core/core_id_stage.v|../src/core/core_control_unit.v|../src/core/core_execution_unit/core_execution_unit_alu.v|../src/core/core_execution_unit/core_branchig_unit.v|../src/pulp/sp_ram.sv|../src/pulp/sp_ram_wrap.sv|../src/pulp/boot_rom_wrap.sv|../src/pulp/boot_code.sv|../src/pulp/instr_ram_wrap.sv|../src/pulp/ram_mux.sv|../src/pulp/config.sv|../src/pulp/axi_bus.sv|
+Z5 !s108 1605780457.000000
+Z6 !s107 ../src/defines.vh|..\src\core\core_csr_unit\..\..\defines.vh|..\src\core\..\defines.vh|..\src\core\core_execution_unit\..\..\defines.vh|..\src\pulp\config.sv|../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v|../src/core/core_execution_unit/MULDIV/MULgold.v|../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v|../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v|../src/core/core_execution_unit/core_execution_unit_alu_m.v|../tb/arithmeticologicM.v|../tb/load_store.v|../tb/testbench.sv|../src/top.v|../src/core/core.v|../src/core/core_csr_unit/core_csr_unit_timer.v|../src/core/core_csr_unit/core_csr_unit_counter.v|../src/core/core_csr_unit/core_csr_unit.v|../src/core/core_reg_file.v|../src/core/core_wb_stage.v|../src/core/core_mem_stage.v|../src/core/core_exe_stage.v|../src/core/core_if_stage.v|../src/core/core_id_stage.v|../src/core/core_control_unit.v|../src/core/core_execution_unit/core_execution_unit_alu.v|../src/core/core_execution_unit/core_branchig_unit.v|../src/pulp/sp_ram.sv|../src/pulp/sp_ram_wrap.sv|../src/pulp/boot_rom_wrap.sv|../src/pulp/boot_code.sv|../src/pulp/instr_ram_wrap.sv|../src/pulp/ram_mux.sv|../src/pulp/config.sv|../src/pulp/axi_bus.sv|
 Z7 !s90 -reportprogress|300|-sv|-f|sv_files|
 !s101 -O0
 !i113 1
@@ -42,7 +42,7 @@ R3
 !s105 arithmeticologicM_v_unit
 S1
 R0
-w1604532536
+w1604649386
 8../tb/arithmeticologicM.v
 F../tb/arithmeticologicM.v
 L0 7
@@ -91,10 +91,10 @@ R3
 !s105 boot_code_sv_unit
 S1
 R0
-Z9 w1559118589
+w1559118589
 8../src/pulp/boot_code.sv
 F../src/pulp/boot_code.sv
-Z10 L0 11
+Z9 L0 11
 R4
 r1
 !s85 0
@@ -115,10 +115,10 @@ R3
 !s105 boot_rom_wrap_sv_unit
 S1
 R0
-w1579855136
+w1605273020
 8../src/pulp/boot_rom_wrap.sv
 F../src/pulp/boot_rom_wrap.sv
-Z11 L0 14
+Z10 L0 14
 R4
 r1
 !s85 0
@@ -139,7 +139,7 @@ R3
 !s105 core_branchig_unit_v_unit
 S1
 R0
-w1603369344
+w1605272952
 8../src/core/core_execution_unit/core_branchig_unit.v
 F../src/core/core_execution_unit/core_branchig_unit.v
 L0 4
@@ -157,13 +157,13 @@ vcontrol_unit
 R1
 R2
 !i10b 1
-!s100 dDa>LW_hkLUZEV<h:99P00
-IXmZi5AXK?_Al4TAEj`a6G3
+!s100 oDIk`XKloFkNb?I0@m4=i1
+I^DN__fiIO5OJECN?I1=G:3
 R3
 !s105 core_control_unit_v_unit
 S1
 R0
-w1604089162
+w1605274856
 8../src/core/core_control_unit.v
 F../src/core/core_control_unit.v
 L0 4
@@ -181,13 +181,13 @@ vcore
 R1
 R2
 !i10b 1
-!s100 eOilP@24jFR3`KDNWJ]9]0
-I95VAg8>ofnSF5X>fUTAQW0
+!s100 9;ZkM]VAWDLdkcP5TBodS1
+Ib31l>D<OE?37aFB37<OlU3
 R3
 !s105 core_v_unit
 S1
 R0
-w1604481536
+w1605778533
 8../src/core/core.v
 F../src/core/core.v
 L0 4
@@ -205,13 +205,13 @@ vcore_mem_stage
 R1
 R2
 !i10b 1
-!s100 dVz9H@0D8UlTo[l:DjUOG3
-Idb8LgB9;K`B7Rz>>9UGM^2
+!s100 nbYmSWX52ZajbIRk8hi7d1
+I15>6aU82kC3[RhbfRP[hU3
 R3
 !s105 core_mem_stage_v_unit
 S1
 R0
-w1604479510
+w1605273135
 8../src/core/core_mem_stage.v
 F../src/core/core_mem_stage.v
 L0 4
@@ -235,7 +235,7 @@ R3
 !s105 core_wb_stage_v_unit
 S1
 R0
-w1604448820
+w1605273117
 8../src/core/core_wb_stage.v
 F../src/core/core_wb_stage.v
 L0 4
@@ -259,7 +259,7 @@ R3
 !s105 core_csr_unit_counter_v_unit
 S1
 R0
-w1603170689
+w1605272913
 8../src/core/core_csr_unit/core_csr_unit_counter.v
 F../src/core/core_csr_unit/core_csr_unit_counter.v
 L0 4
@@ -283,7 +283,7 @@ R3
 !s105 core_csr_unit_v_unit
 S1
 R0
-w1603171007
+w1605272924
 8../src/core/core_csr_unit/core_csr_unit.v
 F../src/core/core_csr_unit/core_csr_unit.v
 L0 4
@@ -297,20 +297,20 @@ R7
 !s101 -O0
 !i113 1
 R8
-vdataMem
+vdseDIVrest32u
 R1
 R2
 !i10b 1
-!s100 d:SVAf<OgE<kBW@h5di3E0
-I>`<<4VIzggjNZ6dJY9i=B2
+!s100 HSJ<WbV2nJ_^jXdGML5Y41
+I?1Hd8fOA5La?oRaS:@4HP1
 R3
-!s105 mem_data_v_unit
+!s105 dseDIVrest32u_v_unit
 S1
 R0
-w1579195875
-8../src/mem/mem_data.v
-F../src/mem/mem_data.v
-L0 10
+w1605047191
+8../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
+F../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
+L0 9
 R4
 r1
 !s85 0
@@ -321,10 +321,10 @@ R7
 !s101 -O0
 !i113 1
 R8
-ndata@mem
+ndse@d@i@vrest32u
 veqsDIVrest32u
 R1
-R2
+!s110 1605780237
 !i10b 1
 !s100 3YSge>zMD3DnnYGTK631H2
 I:]acWda^N^RVobGec39UF3
@@ -340,8 +340,8 @@ R4
 r1
 !s85 0
 31
-R5
-R6
+!s108 1605780237.000000
+!s107 ../src/defines.vh|..\src\core\core_csr_unit\..\..\defines.vh|..\src\core\..\defines.vh|..\src\core\core_execution_unit\..\..\defines.vh|..\src\pulp\config.sv|../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v|../src/core/core_execution_unit/MULDIV/MULgold.v|../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v|../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v|../src/core/core_execution_unit/core_execution_unit_alu_m.v|../tb/arithmeticologicM.v|../tb/load_store.v|../tb/testbench.sv|../src/top.v|../src/core/core.v|../src/core/core_csr_unit/core_csr_unit_timer.v|../src/core/core_csr_unit/core_csr_unit_counter.v|../src/core/core_csr_unit/core_csr_unit.v|../src/core/core_reg_file.v|../src/core/core_wb_stage.v|../src/core/core_mem_stage.v|../src/core/core_exe_stage.v|../src/core/core_if_stage.v|../src/core/core_id_stage.v|../src/core/core_control_unit.v|../src/core/core_execution_unit/core_execution_unit_alu.v|../src/core/core_execution_unit/core_branchig_unit.v|../src/pulp/sp_ram.sv|../src/pulp/sp_ram_wrap.sv|../src/pulp/boot_rom_wrap.sv|../src/pulp/boot_code.sv|../src/pulp/instr_ram_wrap.sv|../src/pulp/ram_mux.sv|../src/pulp/config.sv|../src/pulp/axi_bus.sv|
 R7
 !s101 -O0
 !i113 1
@@ -357,7 +357,7 @@ R3
 !s105 core_exe_stage_v_unit
 S1
 R0
-w1604481507
+w1605273177
 8../src/core/core_exe_stage.v
 F../src/core/core_exe_stage.v
 L0 5
@@ -400,13 +400,13 @@ vid_stage
 R1
 R2
 !i10b 1
-!s100 YU=QKmVdb:09lmIohK8JP0
-IKM;Xf3YCJ0[FbP:A^H>ej2
+!s100 _dUFi1DCSXjT]TIJNK[K42
+I3EENBHKW5TF@bnMV?m^iK3
 R3
 !s105 core_id_stage_v_unit
 S1
 R0
-w1604481461
+w1605274477
 8../src/core/core_id_stage.v
 F../src/core/core_id_stage.v
 L0 6
@@ -424,13 +424,13 @@ vif_stage
 R1
 R2
 !i10b 1
-!s100 3]hUm2]Ho@>Y9O1`6JBLf3
-I?78^80Z41=C>Hn_g>hRNR1
+!s100 eUV>hR@miX0;iE4oX0?aH1
+IU<Roh@J:HDTLPangKG:d^3
 R3
 !s105 core_if_stage_v_unit
 S1
 R0
-w1604481946
+w1605771942
 8../src/core/core_if_stage.v
 F../src/core/core_if_stage.v
 L0 6
@@ -454,10 +454,10 @@ R3
 !s105 instr_ram_wrap_sv_unit
 S1
 R0
-w1579768622
+w1605273008
 8../src/pulp/instr_ram_wrap.sv
 F../src/pulp/instr_ram_wrap.sv
-R11
+R10
 R4
 r1
 !s85 0
@@ -496,16 +496,16 @@ vMULDIV
 R1
 R2
 !i10b 1
-!s100 NgY1Ejzi`cMIlB:FZ[7>P0
-IP`[e;lz>^]D^?elOTj<C21
+!s100 o2El=C1U64jF480<nC=d_1
+ISdIaSXfEBLHG@RWE5Y8Sn2
 R3
 !s105 core_execution_unit_alu_m_v_unit
 S1
 R0
-w1604306356
+w1605780449
 8../src/core/core_execution_unit/core_execution_unit_alu_m.v
 F../src/core/core_execution_unit/core_execution_unit_alu_m.v
-L0 8
+L0 9
 R4
 r1
 !s85 0
@@ -542,45 +542,20 @@ R7
 !i113 1
 R8
 n@m@u@lgold
-vprogMem
-R1
-R2
-!i10b 1
-!s100 z^OW4;:4VAchG]]_dLCIG1
-Ij2?@2hQbR`GI5<1M=OLVe1
-R3
-!s105 mem_prog_v_unit
-S1
-R0
-w1589003789
-8../src/mem/mem_prog.v
-F../src/mem/mem_prog.v
-L0 9
-R4
-r1
-!s85 0
-31
-R5
-R6
-R7
-!s101 -O0
-!i113 1
-R8
-nprog@mem
 vram_mux
 R1
 R2
 !i10b 1
-!s100 C>ozz;k73AB`f>[LhLNTM0
-IG<lF5VmeUU=mOE[EQLW9i3
+!s100 ZEV1BL6Bc^DganVQj6MlY2
+IT@9MEJc<hmDKTU=gNlBOd2
 R3
 !s105 ram_mux_sv_unit
 S1
 R0
-R9
+w1605273274
 8../src/pulp/ram_mux.sv
 F../src/pulp/ram_mux.sv
-R10
+R9
 R4
 r1
 !s85 0
@@ -595,13 +570,13 @@ vreg_file
 R1
 R2
 !i10b 1
-!s100 HbmkgQzCUS<kX?YAFo_NT1
-Iz`e:KjgB`QTgXQT[E<9PO1
+!s100 zGBKdDgNKZ3KESD;k@jMn2
+IFWoXI@bzAD@Yf1LOb7H9]1
 R3
 !s105 core_reg_file_v_unit
 S1
 R0
-w1603460503
+w1605274657
 8../src/core/core_reg_file.v
 F../src/core/core_reg_file.v
 L0 4
@@ -644,16 +619,16 @@ vsp_ram
 R1
 R2
 !i10b 1
-!s100 iUYDhaQ?8TK7b@8lJeS2[3
-I0g@?4ig6OGOZUf@QN;OMQ2
+!s100 CfFD;lajEANgS0TfS62Z13
+I0=fn^bfUICb6EBVXzP1^c1
 R3
 !s105 sp_ram_sv_unit
 S1
 R0
-w1604532912
+w1605772361
 8../src/pulp/sp_ram.sv
 F../src/pulp/sp_ram.sv
-R10
+R9
 R4
 r1
 !s85 0
@@ -674,7 +649,7 @@ R3
 !s105 sp_ram_wrap_sv_unit
 S1
 R0
-w1604529026
+w1605773035
 8../src/pulp/sp_ram_wrap.sv
 F../src/pulp/sp_ram_wrap.sv
 L0 13
@@ -692,13 +667,13 @@ vtb
 R1
 R2
 !i10b 1
-!s100 k8g;1kQc?Eb6<BMT=_IT?0
-IOdfYKLQg>J40N0@_MUR:L0
+!s100 [7Vo786UoFYaYbfZnMI><2
+IEgzL1mlJYm>b>zU2?f1<[2
 R3
 !s105 testbench_sv_unit
 S1
 R0
-w1604531180
+w1604668826
 8../tb/testbench.sv
 F../tb/testbench.sv
 L0 9
@@ -722,7 +697,7 @@ R3
 !s105 core_csr_unit_timer_v_unit
 S1
 R0
-w1600019702
+w1605272894
 8../src/core/core_csr_unit/core_csr_unit_timer.v
 F../src/core/core_csr_unit/core_csr_unit_timer.v
 L0 4
@@ -740,13 +715,13 @@ vtop
 R1
 R2
 !i10b 1
-!s100 J`C5bdg5`zCYzV1:?dljH0
-Ig^]JT0>cX2lWSYJ6m15?i2
+!s100 ^z:f_0PTdFn9?Y3W0b2Me1
+INf:@>]I0zFgQMl[6hSTZ]2
 R3
 !s105 top_v_unit
 S1
 R0
-w1604527211
+w1605777036
 8../src/top.v
 F../src/top.v
 L0 4

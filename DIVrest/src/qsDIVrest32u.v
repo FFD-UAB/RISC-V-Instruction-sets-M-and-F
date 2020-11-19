@@ -3,7 +3,7 @@
 // Normal operation includes maintaining the results until there's a synchronous start signal.
 // This quick start version manages to finish the division operation faster normalizing the 
 // dividend to start counting in the quotient at lower clock cycles. The clock cycles saved 
-// depend on  the operands and only takes effect on the first sub-operation. The exact number 
+// depend on  the dividend and only takes effect on the first sub-operation. The exact number 
 // of clock cycles saved is stored in the counter at the Preparation phase, which equals the 
 // number of leftShift taken in the divdend.
 
@@ -34,9 +34,12 @@ Normalize32u NORM(.a(a_in), .b(a_norm), .leftSh(normLShifts));
 
 // Output and start blocking in case of dividend < quotient to single-cycle.
 wire start;
-assign 	start = (a_in < b_in ? 1'b0  : start_in);
-assign 	q_out = (a_in < b_in ? 32'b0 : reg_q);
-assign 	r_out = (a_in < b_in ? a_in  : reg_r);
+wire DividendLowerDivisor;
+
+assign DividendLowerDivisor = a_in < b_in;
+assign 	start = (DividendLowerDivisor ? 1'b0  : start_in);
+assign 	q_out = (DividendLowerDivisor ? 32'b0 : reg_q);
+assign 	r_out = (DividendLowerDivisor ? a_in  : reg_r);
 
 // Intern control signals.
 reg		 [4:0] count;	// Iteration counter.

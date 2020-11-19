@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../defines.vh"
 
 module control_unit 
        (
@@ -403,8 +403,10 @@ module control_unit
                         csr_cntr_o = 1'b1;
                         imm_val_o = regfile_raddr_rs1_i;
                     end
+                    default: ;
                 endcase
             end
+            default: ;
         endcase
  end
 endmodule

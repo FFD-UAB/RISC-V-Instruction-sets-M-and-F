@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../src/defines.vh"
+`include "../defines.vh"
 
 module core_mem_stage 
        (
@@ -21,7 +21,6 @@ module core_mem_stage
         data_rdata_i,
         data_wdata_o,
         data_write_transfer_o,
-        data_rdata_o,
         data_req_o,  
         data_gnt_i,   
         data_rvalid_i,
@@ -48,10 +47,9 @@ module core_mem_stage
  output wire                           data_wr_o;
  output wire [`MEM_ADDR_WIDTH-1:0]     data_addr_o;
  input  wire [`DATA_WIDTH-1:0]         data_rdata_i;
- output reg  [`DATA_WIDTH-1:0]         w_data_rdata_o;
+ output wire [`DATA_WIDTH-1:0]         w_data_rdata_o;
  output wire [`DATA_WIDTH-1:0]         data_wdata_o;
  output wire [`MEM_TRANSFER_WIDTH-1:0] data_write_transfer_o;
- output wire [`DATA_WIDTH-1:0]         data_rdata_o;
  output wire                           data_req_o;  
  input  wire                           data_gnt_i;
  input  wire                           data_rvalid_i;
@@ -73,7 +71,7 @@ module core_mem_stage
  assign data_wdata_o = m_regfile_rd_i;
  assign data_wr_o = m_data_wr_i;
  assign data_write_transfer_o = m_data_write_transfer_i;
- assign data_rdata_o = data_rdata_i;
+ assign w_data_rdata_o = data_rdata_i;
  assign data_req_o = m_data_wr_i | m_data_rd_i;       
 
  always@(posedge clk or negedge rst_n)
@@ -96,6 +94,7 @@ module core_mem_stage
    default: nextState = IDLE;
    endcase
     
+/*  It's not used, so 
  always @(*)
   case (state)
    IDLE: if (m_data_rd_i) stall_o = 1'b1; //stall the pipeline
@@ -106,7 +105,7 @@ module core_mem_stage
    WRITE: if (m_data_wr_i && data_gnt_i) stall_o = 1'b0; //Write new data. Not stall
           else stall_o = 1'b0; //No more consequtive writtings. Not stall.
   endcase
-    
+*/
     //Registered PC for pipeline
  always@(posedge clk or negedge rst_n)
   if (!rst_n) 
@@ -114,7 +113,6 @@ module core_mem_stage
     w_regfile_waddr_o <= {`REG_ADDR_WIDTH{1'b0}};
     w_regfile_rd_o <= {`DATA_WIDTH{1'b0}};
     w_regfile_wr_o <= 1'b0;
-    w_data_rdata_o <= {`DATA_WIDTH{1'b0}};
     w_is_load_store_o <= 1'b0;
     w_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end

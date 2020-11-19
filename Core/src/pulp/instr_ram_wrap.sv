@@ -9,7 +9,7 @@
 // specific language governing permissions and limitations under the License.
 
 
-`include "../src/pulp/config.sv"
+`include "config.sv"
 
 module instr_ram_wrap
   #(

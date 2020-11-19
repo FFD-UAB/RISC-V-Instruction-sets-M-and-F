@@ -1,5 +1,5 @@
 // Telecommunications Master Dissertation - Francis Fuentes 8-10-2020
-// Divider HW model following a restoring design for unsigned inputs.
+// Divider HW model following a restoring design.
 // Normal operation includes maintaining the results until there's a synchronous start signal.
 
 module bDIVrest32u(a_in, b_in, start_in, clk, rstLow, q_out, r_out, busy);
@@ -8,7 +8,7 @@ input		[31:0] a_in; 	// Dividend
 input		[31:0] b_in; 	// Divisor
 input		start_in;	// start operation flag.
 input		clk;		// Clock signal
-input 	        rstLow;		// Reset signal at low
+input 	rstLow;			// Reset signal at low
 
 // Output results and busy flag.
 output		[31:0] q_out;	// Quotient result.
@@ -19,11 +19,15 @@ output reg	busy;		// Ongoing operation flag (results when goes low).
 reg		[31:0] reg_q;	// Dividend register that ends with the quotient.
 reg		[31:0] reg_r;	// Remainder or partial remainder register.
 
-// Output and start blocking in case of dividend < quotient to single-cycle.
+// Output and start blocking in case of dividend < quotient to single-cycle results.
 wire start;
-assign 	start = (a_in < b_in ? 1'b0  : start_in);
-assign 	q_out = (a_in < b_in ? 32'b0 : reg_q);
-assign 	r_out = (a_in < b_in ? a_in  : reg_r);
+wire DividendLowerDivisor;
+
+assign DividendLowerDivisor = a_in < b_in;
+
+assign 	start = (DividendLowerDivisor ? 1'b0  : start_in);
+assign 	q_out = (DividendLowerDivisor ? 32'b0 : reg_q);
+assign 	r_out = (DividendLowerDivisor ? a_in  : reg_r);
 
 // Intern control signals.
 reg		 [4:0] count;	// Iteration counter.
@@ -46,7 +50,7 @@ parameter	[1:0] Prep = 2'd0, Loop = 2'd1, Finish = 2'd2, Free = 2'd3;
 always @(posedge clk or negedge rstLow)
  if (!rstLow) State <= Finish;
  else case(State) // All possible outcomes must be defined to avoid latches.
- 	Prep:     // Load in one cycle the operands and continue to Loop.
+ 	Prep:   // Load in one cycle the operands and continue to Loop.
 		State = Loop;
 
 	Loop:	// Change to Finish when count = 31 or to Prep if is rst.
@@ -73,7 +77,7 @@ always @(State)
 	Finish, Free: begin	// Finish or Idle phase:
 		busy = 1'b0;	// Stop operating and wait
 	   	init = 1'b0; 	// maintaing the results,
-	      end	        // until a new operation 
+	        end	        // until a new operation 
  endcase		        // is requested.
 
 
@@ -96,6 +100,6 @@ always @(posedge clk or negedge rstLow)
  if (!rstLow) reg_r <= 32'b0;
  else if (init) reg_r <= 32'b0;
       else if (busy) reg_r <= (res[32] ? {reg_r[30:0], reg_q[31]}
-                                       : res[31:0]);
+				: res[31:0]);
 											 
 endmodule

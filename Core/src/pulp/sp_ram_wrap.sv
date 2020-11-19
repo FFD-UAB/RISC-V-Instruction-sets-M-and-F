@@ -8,7 +8,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
-`include "../src/pulp/config.sv"
+`include "config.sv"
 
 module sp_ram_wrap
   #(
@@ -78,7 +78,7 @@ module sp_ram_wrap
   sp_ram_i
   (
     .clk     ( clk       ),
-    .rstn_i  ( rstn_i    ), //FFD added
+    .rstn_i  (rstn_i     ),
     .en_i    ( en_i      ),
     .addr_i  ( addr_i    ),
     .wdata_i ( wdata_i   ),
