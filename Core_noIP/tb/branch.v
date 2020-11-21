@@ -8,7 +8,7 @@ module branch_test();
 tb TB();
  initial begin 
 //$dumpfile("vcd/riscV.vcd");
-//$dumpvars(0, TB.top_inst);
+//$dumpvars(0, TB.top_CoreMem_inst);
 
   TB.pc = 32'b0;
 // Initialize registers
@@ -21,8 +21,8 @@ tb TB();
   #100
 
 // Load memory
-//$readmemb("data/programMem_b.mem", TB.top_inst.mem_prog_inst.progArray, 0, 3);
-//$readmemh("data/dataMem_h.mem", TB.top_inst.mem_data_inst.dataArray, 0, 3/*TB.test_jal;
+//$readmemb("data/programMem_b.mem", TB.top_CoreMem_inst.mem_prog_inst.progArray, 0, 3);
+//$readmemh("data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.dataArray, 0, 3/*TB.test_jal;
   TB.test_jal;
   TB.rst_n = 1'b0;
   #100

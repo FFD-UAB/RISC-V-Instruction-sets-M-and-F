@@ -29,9 +29,9 @@ module exe_stage
         e_pc4_i,
         e_brj_pc_i,
         e_data_wr_i,
-        e_data_write_transfer_i,
+        e_data_be_i,
         m_data_wr_o,
-        m_data_write_transfer_o,
+        m_data_be_o,
         e_data_target_i,
         d_alu_busy_o,
         alu_o,
@@ -56,7 +56,7 @@ module exe_stage
  input  wire                           e_is_load_store_i;
  input  wire                           e_data_wr_i;
  input  wire                           e_data_rd_i;
- input  wire [`MEM_TRANSFER_WIDTH-1:0] e_data_write_transfer_i;
+ input  wire [`MEM_TRANSFER_WIDTH-1:0] e_data_be_i;
  output reg                            m_regfile_wr_o;
  output reg                            m_is_load_store_o;
  output reg  [4:0]                     m_regfile_waddr_o;
@@ -64,7 +64,7 @@ module exe_stage
  output reg  [`DATA_WIDTH-1:0]         m_data_addr_o;
  output reg                            m_data_wr_o;
  output reg                            m_data_rd_o;
- output reg  [`MEM_TRANSFER_WIDTH-1:0] m_data_write_transfer_o;
+ output reg  [`MEM_TRANSFER_WIDTH-1:0] m_data_be_o;
  output reg  [2:0]                     m_LOAD_op_o;
  input  wire [1:0]                     e_data_target_i;
  output wire [`DATA_WIDTH-1:0]         alu_o;
@@ -147,7 +147,7 @@ module exe_stage
     m_data_wr_o <= 1'b0;
     m_data_rd_o <= 1'b0;
     m_data_addr_o <= {`DATA_WIDTH{1'b0}};
-    m_data_write_transfer_o <= {`MEM_TRANSFER_WIDTH{1'b0}};
+    m_data_be_o <= {`MEM_TRANSFER_WIDTH{1'b0}};
     m_is_load_store_o <= 1'b0;
     m_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
@@ -159,7 +159,7 @@ module exe_stage
     m_data_wr_o <= e_data_wr_i;
     m_data_rd_o <= e_data_rd_i;
     m_data_addr_o <= alu_o;
-    m_data_write_transfer_o <= e_data_write_transfer_i;
+    m_data_be_o <= e_data_be_i;
     m_is_load_store_o <= e_is_load_store_i;
     m_LOAD_op_o <= e_LOAD_op_i;
    end

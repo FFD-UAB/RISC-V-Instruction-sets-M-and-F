@@ -27,7 +27,7 @@ module id_stage
         e_regfile_waddr_o,
         
         e_imm_val_o,  //execution unit imm val rs1
-        e_data_write_transfer_o,
+        e_data_be_o,
         
         w_regfile_wr_i,
         w_regfile_waddr_i,
@@ -71,7 +71,7 @@ module id_stage
  output reg  [4:0]                     e_regfile_waddr_o;
  output reg  [`DATA_WIDTH-1:0]         e_regfile_rs1_o;
  output reg  [`DATA_WIDTH-1:0]         e_regfile_rs2_o;
- output reg  [`MEM_TRANSFER_WIDTH-1:0] e_data_write_transfer_o;
+ output reg  [`MEM_TRANSFER_WIDTH-1:0] e_data_be_o;
  input  wire [`DATA_WIDTH-1:0]         d_pc_i;
  input  wire [`DATA_WIDTH-1:0]         d_pc4_i;
  output reg  [`DATA_WIDTH-1:0]         e_pc4_o;
@@ -101,7 +101,7 @@ module id_stage
  wire                                  is_load_store_t;
  wire                                  data_wr_t;
  wire [`DATA_WIDTH-1:0]                imm_val_t;
- wire [`MEM_TRANSFER_WIDTH-1:0]        data_write_transfer_t;
+ wire [`MEM_TRANSFER_WIDTH-1:0]        data_be_t;
  wire [1:0]                            data_target_t;
  wire                                  data_rd_t;
  wire                                  i_r1_t;
@@ -139,7 +139,7 @@ module id_stage
         .data_rd_o                     (data_rd_t          ),
         .data_target_o                 (data_target_t      ),
         .data_wr                       (data_wr_t          ),  // LoadStore indicator output
-        .data_write_transfer_o         (data_write_transfer_t),
+        .data_be_o                     (data_be_t          ),
         .branch_i                      (branch_t           ),  // Branch indicator output
         .brj_o                         (brj_t              ),
         .is_load_store                 (is_load_store_t    ),  // execution_unit 
@@ -250,7 +250,7 @@ module id_stage
     e_data_wr_o <= 1'b0;
     e_data_rd_o <= 1'b0;
     e_imm_val_o <= {`DATA_WIDTH{1'b0}};
-    e_data_write_transfer_o <= {`MEM_TRANSFER_WIDTH{1'b0}};
+    e_data_be_o <= {`MEM_TRANSFER_WIDTH{1'b0}};
     e_data_target_o <= 2'b0;
     e_pc4_o <= {`DATA_WIDTH{1'b0}};
     e_brj_pc_o <= {`DATA_WIDTH{1'b0}};
@@ -271,7 +271,7 @@ module id_stage
     e_data_wr_o <= data_wr_t;
     e_data_rd_o <= data_rd_t;
     e_imm_val_o <= imm_val_t;
-    e_data_write_transfer_o <= data_write_transfer_t;
+    e_data_be_o <= data_be_t;
     e_data_target_o <= data_target_t;
     e_pc4_o <= d_pc4_i;
     e_brj_pc_o <= brj_pc_o;

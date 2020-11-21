@@ -26,7 +26,7 @@ module control_unit
         data_rd_o,
         data_target_o,
         data_wr,  // data_wrrite
-        data_write_transfer_o,
+        data_be_o,
         i_r1_o,
         i_r2_o,
         jalr_o
@@ -154,7 +154,7 @@ module control_unit
  output wire [`REG_ADDR_WIDTH-1:0]     regfile_waddr;
  input wire                            branch_i;
  output wire                           brj_o;  // branch indicator
- output      [`MEM_TRANSFER_WIDTH-1:0] data_write_transfer_o;
+ output      [`MEM_TRANSFER_WIDTH-1:0] data_be_o;
  output reg [1:0]                      data_target_o;
  output reg                            data_rd_o;
  output reg                            i_r1_o;
@@ -186,7 +186,7 @@ module control_unit
  reg [`ALU_OP_WIDTH-1:0]               ALU_op;
  reg [`BR_OP_WIDTH-1:0]                BR_op_o;
  reg [`DATA_ORIGIN_WIDTH-1:0]          data_origin_o;
- reg [`MEM_TRANSFER_WIDTH-1:0]         data_write_transfer_o;
+ reg [`MEM_TRANSFER_WIDTH-1:0]         data_be_o;
 
  assign opcode = instruction[6:0]; 
  assign funct7 = instruction[31:25];  
@@ -206,7 +206,7 @@ module control_unit
     always@(*) 
      begin
         data_wr = 1'b0;
-        data_write_transfer_o = {`MEM_TRANSFER_WIDTH{1'b0}};
+        data_be_o = {`MEM_TRANSFER_WIDTH{1'b0}};
         is_load_store = 1'b0;
         regfile_wr = 1'b0;
         jump = 1'b0;
@@ -301,15 +301,15 @@ module control_unit
                              case(funct3)
                               FUNCT3_SB: begin  // sb         "Store 8-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
                                           STORE_op = `STORE_SB;
-                                          data_write_transfer_o = 4'b0001;
+                                          data_be_o = 4'b0001;
                                          end
                               FUNCT3_SH: begin  // sh         "Store 16-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
                                           STORE_op = `STORE_SH;  
-                                          data_write_transfer_o = 4'b0011;
+                                          data_be_o = 4'b0011;
                                          end 
                               FUNCT3_SW: begin // sw         "Store 32-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
                                           STORE_op = `STORE_SW;  
-                                          data_write_transfer_o = 4'b1111;
+                                          data_be_o = 4'b1111;
                                          end
                               default: $display("Ilegal STORE FUNCT3");  // TODO Throw interruption
                              endcase
@@ -403,10 +403,10 @@ module control_unit
                         csr_cntr_o = 1'b1;
                         imm_val_o = regfile_raddr_rs1_i;
                     end
-                    default: ;
+                    default: ; //default required by Quartus II 13.1
                 endcase
             end
-            default: ;
+            default: ; //default required by Quartus II 13.1
         endcase
  end
 endmodule

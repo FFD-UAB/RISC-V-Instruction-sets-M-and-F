@@ -1,10 +1,7 @@
 // Code your testbench here
 // or browse Examples
 `timescale 1ns/1ps
-
 `include "../src/defines.vh"
-
-//`include"../src/top.v"
 
 module tb();
 reg clk;
@@ -15,44 +12,12 @@ reg [31:0] pc;
 reg [31:0] rd;
 reg [31:0] expectedResult;
 
-top top_inst(
+top_CoreMem top_CoreMem_inst(
             .clk            (clk),
             .rst_n          (rst_n)
             );
 
 always #50 clk = !clk;
-
-    // Old way to test
-
-	// initial begin 
-
-	// 	$dumpfile("vcd/riscV.vcd");
-	// 	$dumpvars(0, top_inst);
-	// 	// Load memory
-	// 	$readmemb("data/programMem_b.mem", top_inst.mem_prog_inst.progArray, 0, 3);
-	// 	$readmemh("data/dataMem_h.mem", top_inst.mem_data_inst.dataArray, 0, 3);
-		
-	// 	pc = 32'b0;
-
-	// 	// Initialize registers
-	// 	clk = 1'b0;
-	// 	rst_n = 1'b0;
-	// 	#100
-		
-    //     $readmemh("data/dataMem_h.mem", top_inst.mem_data_inst.dataArray, 0, 3);
-    //     //top_inst.mem_data_inst.dataArray[1] = 32'hff04a1c0;
-	 	//test_add;
-	// 	//test_lui;
-	// 	//test_auipc;
-    //     //test_load;
-    //     //test_store;
-    //     test_jal;
-    //     rst_n = 1'b0;
-    //     #100
-    //     test_beq;
-
-	 	//$finish;
-	// end
 
 //*********************************
 //** Instruction set RV32I Tests **
@@ -80,9 +45,9 @@ task test_andi;
     
     rst_n = 1'b1;
     waitNclockCycles(6);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0000404) $display("OK: reg5 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0000404) $display("OK: reg5 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be h0000404 but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be h0000404 but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
   end
@@ -98,9 +63,9 @@ task test_slli;
           
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h000000C) $display("OK: reg5 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h000000C) $display("OK: reg5 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be h000000C but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be h000000C but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
   end
@@ -117,14 +82,14 @@ task test_slti;
     
     rst_n	= 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0000001) $display("OK: reg5 is : %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0000001) $display("OK: reg5 is : %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be h0000001 but is: %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be h0000001 but is: %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h0000001) $display("OK: reg6 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h0000001) $display("OK: reg6 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
     else begin
-      $display("ERROR: reg6 has to be h0000001 but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+      $display("ERROR: reg6 has to be h0000001 but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
       //$fatal;
     end
   end
@@ -141,14 +106,14 @@ task test_sltiu;
     
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0000001) $display("    OK: reg5 is : %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h0000001) $display("    OK: reg5 is : %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be h0000001 but is: %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be h0000001 but is: %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3] == 32'h0000000) $display("OK: reg3 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3] == 32'h0000000) $display("OK: reg3 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
     else begin
-      $display("ERROR: reg3 has to be h0000000 but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+      $display("ERROR: reg3 has to be h0000000 but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
       //$fatal;
     end
   end
@@ -165,9 +130,9 @@ task test_add;
     
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 7) $display("OK: reg5 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 7) $display("OK: reg5 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 7 but is: %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 7 but is: %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -185,9 +150,9 @@ task test_and;
     //TEST
     rst_n = 1'b1;
     waitNclockCycles(8);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h000000FF) $display("OK: reg5 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h000000FF) $display("OK: reg5 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be h000000FF but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be h000000FF but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
   end
@@ -229,9 +194,9 @@ task test_load;
     //TEST
     rst_n = 1'b1;
     waitNclockCycles(10);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'hf04a1c0f) $display("OK: reg5 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'hf04a1c0f) $display("OK: reg5 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be hf04a1c0f but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be hf04a1c0f but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
    
@@ -261,19 +226,19 @@ task test_store;
     //TEST
     rst_n = 1'b1;
     waitNclockCycles(16);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h10101010) $display("OK: reg5 is : %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h10101010) $display("OK: reg5 is : %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be h10101010 but is: %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be h10101010 but is: %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h00001c0f) $display("OK: reg6 is : %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h00001c0f) $display("OK: reg6 is : %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
     else begin
-       $display("ERROR: reg6 has to be h00001c0f but is: %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+       $display("ERROR: reg6 has to be h00001c0f but is: %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
        //$fatal;
     end
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[7] == 32'h00000011) $display("OK: reg7 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[7]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[7] == 32'h00000011) $display("OK: reg7 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[7]);
     else begin
-      $display("ERROR: reg7 has to be h00000011 but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[7]);
+      $display("ERROR: reg7 has to be h00000011 but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[7]);
       //$fatal;
     end
   end
@@ -304,9 +269,9 @@ task test_jal;  // Not sure if the JAL works as intended
     encodeJal(5'h5, {21'h1FFFF8}); // -8
     rst_n = 1'b1;
     waitNclockCycles(16);
-    if (top_inst.core_inst.if_stage_inst.instruction_addr_o == 0) $display("OK: PC is: %d \n", top_inst.core_inst.if_stage_inst.instruction_addr_o);
+    if (top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o == 0) $display("OK: PC is: %d \n", top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o);
     else begin
-      $display("ERROR: PC has to be 0 but is: %d \n", top_inst.core_inst.if_stage_inst.instruction_addr_o);
+      $display("ERROR: PC has to be 0 but is: %d \n", top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o);
       //$fatal;
     end
   end
@@ -322,9 +287,9 @@ task test_jalr;  // Not sure if the JAL works as intended
     encodeJalr(5'h7, 5'h3, {21'h1FFFF8}); // -8
     rst_n = 1'b1;
     waitNclockCycles(16);
-    if (top_inst.core_inst.if_stage_inst.instruction_addr_o == 0) $display("OK: PC is: %d \n", top_inst.core_inst.if_stage_inst.instruction_addr_o);
+    if (top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o == 0) $display("OK: PC is: %d \n", top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o);
     else begin
-      $display("ERROR: PC has to be 0 but is: %d \n", top_inst.core_inst.if_stage_inst.instruction_addr_o);
+      $display("ERROR: PC has to be 0 but is: %d \n", top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o);
       //$fatal;
     end
   end
@@ -341,9 +306,9 @@ task test_beq;
     encodeBeq(5'h3, 5'h4, 13'h1FF8);
     rst_n = 1'b1;
     waitNclockCycles(16);
-    if (top_inst.core_inst.if_stage_inst.instruction_addr_o == 252) $display("OK: PC is: %d \n", top_inst.core_inst.if_stage_inst.instruction_addr_o);
+    if (top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o == 252) $display("OK: PC is: %d \n", top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o);
     else begin
-      $display("ERROR: PC has to be 252 but is: %d \n", top_inst.core_inst.if_stage_inst.instruction_addr_o);
+      $display("ERROR: PC has to be 252 but is: %d \n", top_CoreMem_inst.core_inst.if_stage_inst.instruction_addr_o);
       //$fatal;
     end
   end
@@ -360,9 +325,9 @@ task test_csr;
     encodeCsr(12'hC02, 5'h0, `FUNCT3_CSRRS, 5'h3);
     rst_n = 1'b1;
     #400;
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3] == 32'h0000002) $display("    OK: reg3 is : %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3] == 32'h0000002) $display("    OK: reg3 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
     else begin
-      $display("ERROR: reg3 has to be h0000002 but is: %h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+      $display("ERROR: reg3 has to be h0000002 but is: %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
       //$fatal;
     end
   end
@@ -398,9 +363,9 @@ task test_mul;
     encodeMUL(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; -5 x -1 = 5
     rst_n = 1'b1;
     waitNclockCycles(10);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'd5) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'd5) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 5 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 5 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -419,9 +384,9 @@ task test_mulh;
     encodeMULH(5'h3, 5'h4, 5'h5);  // Reg5 = 32MSB(Reg3*Reg4); aka -8*2^30 = -2^33 => -2 on 32MSB
     rst_n = 1'b1;
     waitNclockCycles(10);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'd2) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'd2) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be -2 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be -2 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -440,9 +405,9 @@ task test_mulhsu;
     encodeMULHSU(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; -4 x 2^31 = -2^33 => -2 on 32MSB
     rst_n = 1'b1;
     waitNclockCycles(10);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'd2) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'd2) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be -2 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be -2 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -461,9 +426,9 @@ task test_mulhu;
     encodeMULHU(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3*Reg4; 0xFFFF FFFC x 2^31 => 0x7FFF FFFE on 32MSB
     rst_n = 1'b1;
     waitNclockCycles(10);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -482,11 +447,11 @@ task test_div;
     encodeDIV(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3/Reg4; -5/-2 => q = 2, r = -1.
     rst_n = 1'b1;
     waitNclockCycles(8);
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk);
     waitNclockCycles(3);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'd2) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'd2) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 2 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 2 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -504,11 +469,11 @@ task test_divu;
     encodeDIVU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 0x7FFF FFFE, r = 1.
     rst_n = 1'b1;
     waitNclockCycles(8);
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk);
     waitNclockCycles(3);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -527,11 +492,11 @@ task test_rem;
     encodeREM(5'h3, 5'h4, 5'h5);   // Reg5 = Reg3/Reg4; -5/-2 => q = 2, r = -1.
     rst_n = 1'b1;
     waitNclockCycles(8);
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk);
     waitNclockCycles(3);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'h1) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == -32'h1) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be -1 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be -1 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -549,11 +514,11 @@ task test_remu;
     encodeREMU(5'h3, 5'h4, 5'h5);  // Reg5 = Reg3/Reg4; q = 0x7FFF FFFE, r = 1.
     rst_n = 1'b1;
     waitNclockCycles(8);
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk);
     waitNclockCycles(3);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h1) $display("OK: reg5 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h1) $display("OK: reg5 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 1 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 1 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
     #400;
@@ -573,16 +538,16 @@ task test_oncecycle_divrem; // Tests the OneCycleRemainder capability.
 
     rst_n = 1'b1;
     waitNclockCycles(8);
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk);
     waitNclockCycles(3);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h7FFFFFFE) $display("OK: reg5 is : 0x%h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 0x7FFF FFFE but is: 0x%h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h1) $display("OK: reg6 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h1) $display("OK: reg6 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
     else begin
-      $display("ERROR: reg6 has to be 1 but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+      $display("ERROR: reg6 has to be 1 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
       //$fatal;
     end
     #400;
@@ -605,18 +570,18 @@ task test_div2; // Tests two multi-cycle operations in a row.
 
     rst_n = 1'b1;
     waitNclockCycles(9); // 2 clock cycles to start with the first operation + 6 normal operations (one cycle) + 1 to check when already started.
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk); // Continues at the start of the next operation.
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk); // Continues at the start of the next operation.
     waitNclockCycles(1);  // 1 clock cycle to check to the next division when already started.
-    while (top_inst.core_inst.d_alu_busy_t) @(posedge clk);
+    while (top_CoreMem_inst.core_inst.d_alu_busy_t) @(posedge clk);
     waitNclockCycles(3);
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h2) $display("OK: reg5 is : 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5] == 32'h2) $display("OK: reg5 is : 0x%h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
     else begin
-      $display("ERROR: reg5 has to be 2 but is: 0x%h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+      $display("ERROR: reg5 has to be 2 but is: 0x%h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
       //$fatal;
     end
-    if (top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h7FFFFFFE) $display("OK: reg6 is : 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6] == 32'h7FFFFFFE) $display("OK: reg6 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
     else begin
-      $display("ERROR: reg6 has to be 0x7FFF FFFE but is: 0x%h \n", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
+      $display("ERROR: reg6 has to be 0x7FFF FFFE but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[6]);
       //$fatal;
     end
     #400;
@@ -633,12 +598,12 @@ task encodeLui;
   input [19:0] immediate;
   begin
     instruction = {immediate[19:0], rd, `OPCODE_U_LUI};
-    // top_inst.mem_prog_inst.progArray[pc >> 2] = instruction;
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
-    // $display("mem[%d] = %b", pc, top_inst.mem_prog_inst.progArray[pc]);
+    // top_CoreMem_inst.mem_prog_inst.progArray[pc >> 2] = instruction;
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    // $display("mem[%d] = %b", pc, top_CoreMem_inst.mem_prog_inst.progArray[pc]);
     pc = pc + 32'd4;
   end
 endtask
@@ -648,10 +613,10 @@ task encodeAuipc;
   input [19:0] immediate;
   begin
     instruction = {immediate[19:0], rd, `OPCODE_U_AUIPC};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -671,10 +636,10 @@ task encodeJalr;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b0, rd, `OPCODE_I_JALR};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -685,10 +650,10 @@ task encodeBeq;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b0, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -699,10 +664,10 @@ task encodeBne;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b1, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -713,10 +678,10 @@ task encodeBlt;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b100, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -727,10 +692,10 @@ task encodeBge;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b101, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -741,10 +706,10 @@ task encodeBltu;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b110, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -755,10 +720,10 @@ task encodeBgeu;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b11, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -769,10 +734,10 @@ task encodeLB;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LB, rd, `OPCODE_I_LOAD};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -783,10 +748,10 @@ task encodeLH;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LH, rd, `OPCODE_I_LOAD};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -797,10 +762,10 @@ task encodeLW;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LW, rd, `OPCODE_I_LOAD};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -811,10 +776,10 @@ task encodeLBU;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LBU, rd, `OPCODE_I_LOAD};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -825,10 +790,10 @@ task encodeLHU;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LHU, rd, `OPCODE_I_LOAD};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -839,10 +804,10 @@ task encodeSB;
   input [11:0] offset;
   begin
     instruction = {offset[11:5], rs2, rs1, `FUNCT3_SB, offset[4:0], `OPCODE_S_STORE};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -853,10 +818,10 @@ task encodeSH;
   input [11:0] offset;
   begin
     instruction = {offset[11:5], rs2, rs1, `FUNCT3_SH, offset[4:0], `OPCODE_S_STORE};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -867,10 +832,10 @@ task encodeSW;
   input [11:0] offset;
   begin
     instruction = {offset[11:5], rs2, rs1, `FUNCT3_SW, offset[4:0], `OPCODE_S_STORE};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -881,10 +846,10 @@ task encodeAddi;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b000, rd, `OPCODE_I_IMM};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -895,10 +860,10 @@ task encodeSlti;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b010, rd, `OPCODE_I_IMM};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -909,10 +874,10 @@ task encodeSltiu;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b011, rd, `OPCODE_I_IMM};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
    end
 endtask
@@ -927,10 +892,10 @@ task encodeAndi;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b111, rd, `OPCODE_I_IMM};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -941,10 +906,10 @@ task encodeSlli;
   input [4:0] immediate;
   begin
     instruction = {7'h0, immediate, rs1, `FUNCT3_SLLI, rd, `OPCODE_I_IMM}; // 3'b001
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -959,10 +924,10 @@ task encodeAdd;
   input [4:0] rd;
   begin
     instruction = {7'b0, rs2, rs1, 3'b000, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -973,10 +938,10 @@ task encodeSub; // Added encodeSub because I didn't find it.
   input [4:0] rd;
   begin
     instruction = {7'h20, rs2, rs1, 3'b000, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -987,10 +952,10 @@ task encodeSll;
   input [4:0] immediate;
   begin
     instruction = {7'h0, immediate, rs1, 3'b001, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1001,10 +966,10 @@ task encodeSlt;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b010, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1015,10 +980,10 @@ task encodeSltu;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b011, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1037,10 +1002,10 @@ task encodeAnd;
   input [4:0] rd;
   begin
     instruction = {7'b0, rs2, rs1, 3'b111, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1054,10 +1019,10 @@ endtask
 task encodeNOOP;
   begin
     instruction = {12'b0, 5'h0, 3'h0, 5'h0, `OPCODE_I_IMM};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1069,10 +1034,10 @@ task encodeCsr;
   input [4:0] rd;
   begin
     instruction = {addr, rs1, FUNCT3_OP, rd, `OPCODE_I_SYSTEM};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1082,26 +1047,26 @@ task iniProgMem;
   begin
     for (addr = 0; addr < 1024; addr = addr + 1)
     begin
-      top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][0] = 8'h0;
-      top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][1] = 8'h0;
-      top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][2] = 8'h0;
-      top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][3] = 8'h0;		
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][0] = 8'h0;
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][1] = 8'h0;
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][2] = 8'h0;
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[addr][3] = 8'h0;		
     end
   end
 endtask
 
 //always @ (negedge clk) begin
-		// $display("reg5 = %d\npc = %d\ninst = %b", top_inst.reg_file_inst.regFile[5], top_inst.addr_progMem, top_inst.instruction_progmem);
-		// $display("reg1 = %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[1]);
-        // $display("reg2 = %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2]);
-        //$display("reg3 = %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
-        // $display("reg4 = %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4]);
-        //$display("reg5 = %h", top_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
-		// $display("rs2_exec_unit_t = %d", top_inst.rs2_exec_unit_t);
-		// $display("ALU_op_t = %d", top_inst.ALU_op_t);
-		//$display("is_imm_t = %d", top_inst.is_imm_t);
-		// $display("r_num_write_reg_file = %d", top_inst.r_num_write_reg_file);
-        //$display("pc = %d", top_inst.core_inst.program_counter_inst.addr);
+		// $display("reg5 = %d\npc = %d\ninst = %b", top_CoreMem_inst.reg_file_inst.regFile[5], top_CoreMem_inst.addr_progMem, top_CoreMem_inst.instruction_progmem);
+		// $display("reg1 = %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[1]);
+        // $display("reg2 = %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2]);
+        //$display("reg3 = %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+        // $display("reg4 = %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4]);
+        //$display("reg5 = %h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[5]);
+		// $display("rs2_exec_unit_t = %d", top_CoreMem_inst.rs2_exec_unit_t);
+		// $display("ALU_op_t = %d", top_CoreMem_inst.ALU_op_t);
+		//$display("is_imm_t = %d", top_CoreMem_inst.is_imm_t);
+		// $display("r_num_write_reg_file = %d", top_CoreMem_inst.r_num_write_reg_file);
+        //$display("pc = %d", top_CoreMem_inst.core_inst.program_counter_inst.addr);
 
 //end
 
@@ -1115,10 +1080,10 @@ task encodeMUL;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b000, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1129,10 +1094,10 @@ task encodeMULH;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b001, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1143,10 +1108,10 @@ task encodeMULHSU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b010, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1157,10 +1122,10 @@ task encodeMULHU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b011, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1171,10 +1136,10 @@ task encodeDIV;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b100, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1185,10 +1150,10 @@ task encodeDIVU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b101, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1199,10 +1164,10 @@ task encodeREM;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b110, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1213,10 +1178,10 @@ task encodeREMU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b111, rd, `OPCODE_R_ALU};
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
-    top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1226,10 +1191,10 @@ task rstProgMem;
   begin
     instruction = {{`DATA_WIDTH-7{1'b0}}, `OPCODE_I_IMM};
     for (i=0; i<1024; i=i+1) begin
-     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][0] = instruction[7:0];
-     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][1] = instruction[15:8];
-     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][2] = instruction[23:16];
-     top_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][3] = instruction[31:24];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][0] = instruction[7:0];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][1] = instruction[15:8];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][2] = instruction[23:16];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_i.sp_ram_i.mem[i][3] = instruction[31:24];
     end
   end
 endtask

@@ -4,9 +4,9 @@ add wave -noupdate /arithmeticologic_test/TB/clk
 add wave -noupdate /arithmeticologic_test/TB/rst_n
 add wave -noupdate /arithmeticologic_test/TB/instruction
 add wave -noupdate /arithmeticologic_test/TB/pc
-add wave -noupdate /arithmeticologic_test/TB/top_inst/mem_prog_inst/progArray
-add wave -noupdate /arithmeticologic_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regFile
-add wave -noupdate /arithmeticologic_test/TB/top_inst/instr_mem/sp_ram_wrap_i/sp_ram_i/mem
+add wave -noupdate /arithmeticologic_test/TB/top_CoreMem_inst/mem_prog_inst/progArray
+add wave -noupdate /arithmeticologic_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regFile
+add wave -noupdate /arithmeticologic_test/TB/top_CoreMem_inst/instr_mem/sp_ram_wrap_i/sp_ram_i/mem
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {1006481 ps} 0}
 quietly wave cursor active 1

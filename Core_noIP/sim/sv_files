@@ -1,11 +1,10 @@
-../src/pulp/axi_bus.sv
-../src/pulp/config.sv
-../src/pulp/ram_mux.sv
-../src/pulp/instr_ram_wrap.sv
-../src/pulp/boot_code.sv
-../src/pulp/boot_rom_wrap.sv
-../src/pulp/sp_ram_wrap.sv
-../src/pulp/sp_ram.sv
+../src/mem/config.sv
+../src/mem/ram_mux.sv
+../src/mem/instr_ram_wrap.sv
+../src/mem/boot_code.sv
+../src/mem/boot_rom_wrap.sv
+../src/mem/sp_ram_wrap.sv
+../src/mem/sp_ram.sv
 ../src/core/core_execution_unit/core_branchig_unit.v
 ../src/core/core_execution_unit/core_execution_unit_alu.v
 ../src/core/core_control_unit.v
@@ -19,7 +18,7 @@
 ../src/core/core_csr_unit/core_csr_unit_counter.v
 ../src/core/core_csr_unit/core_csr_unit_timer.v
 ../src/core/core.v
-../src/top.v
+../src/top_CoreMem.v
 ../tb/testbench.sv
 
 // Tests

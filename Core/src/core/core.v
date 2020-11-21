@@ -11,10 +11,10 @@ module core
         data_rdata_i,
         data_rvalid_i,
         data_wdata_o,
+        data_be_o,
         data_wr_o,
         instruction_addr_o,
         instruction_rdata_i,
-        data_write_transfer_o,
         flush_inst_o
         );
 
@@ -26,10 +26,10 @@ module core
  input wire  [`DATA_WIDTH-1:0]         data_rdata_i;
  input wire                            data_rvalid_i;
  output wire [`DATA_WIDTH-1:0]         data_wdata_o;
+ output wire [`MEM_TRANSFER_WIDTH-1:0] data_be_o;
  output wire                           data_wr_o;
  output wire [`MEM_ADDR_WIDTH-1:0]     instruction_addr_o;
  input wire  [`DATA_WIDTH-1:0]         instruction_rdata_i;
- output wire [`MEM_TRANSFER_WIDTH-1:0] data_write_transfer_o;
  output wire                           flush_inst_o;
 
  wire [`DATA_WIDTH-1 : 0]              d_instruction_t;
@@ -50,8 +50,8 @@ module core
  wire                                  e_data_rd_t;
  wire                                  e_regfile_wr_t;
  wire                                  m_regfile_wr_t;
- wire [`MEM_TRANSFER_WIDTH-1:0]        e_data_write_transfer_t;
- wire [`MEM_TRANSFER_WIDTH-1:0]        m_data_write_transfer_t;
+ wire [`MEM_TRANSFER_WIDTH-1:0]        e_data_be_t;
+ wire [`MEM_TRANSFER_WIDTH-1:0]        m_data_be_t;
  wire [`REG_ADDR_WIDTH-1:0]            e_regfile_waddr_t;
  wire [`DATA_WIDTH-1:0]                e_imm_val_t;	
  wire [`DATA_WIDTH-1:0]                m_regfile_rd_t;
@@ -111,7 +111,7 @@ module core
         .e_regfile_raddr_rs1_o         (e_regfile_raddr_rs1_t),
         .e_regfile_raddr_rs2_o         (e_regfile_raddr_rs2_t),
         .e_imm_val_o                   (e_imm_val_t),  //execution unit imm val rs1
-        .e_data_write_transfer_o       (e_data_write_transfer_t),
+        .e_data_be_o       (e_data_be_t),
         .w_regfile_wr_i                (w_regfile_wr_t),
         .w_regfile_waddr_i             (w_regfile_waddr_t),
         .w_regfile_rd_i                (reg_file_rd_t),
@@ -160,8 +160,8 @@ module core
         .m_data_wr_o                   (m_data_wr_t),
         .e_data_rd_i                   (e_data_rd_t),
         .m_data_rd_o                   (m_data_rd_t),
-        .e_data_write_transfer_i       (e_data_write_transfer_t),
-        .m_data_write_transfer_o       (m_data_write_transfer_t),
+        .e_data_be_i       (e_data_be_t),
+        .m_data_be_o       (m_data_be_t),
         .e_data_target_i               (e_data_target_t),
         .d_alu_busy_o                  (d_alu_busy_t),
         .alu_o                         (alu_t),
@@ -178,7 +178,7 @@ core_mem_stage core_mem_stage_inst
         .m_data_addr_i                 (m_data_addr_t),
         .m_data_wr_i                   (m_data_wr_t),
         .m_data_rd_i                   (m_data_rd_t),
-        .m_data_write_transfer_i       (m_data_write_transfer_t),
+        .m_data_be_i       (m_data_be_t),
         .w_regfile_waddr_o             (w_regfile_waddr_t),
         .w_regfile_rd_o                (w_regfile_rd_t),
         .w_regfile_wr_o                (w_regfile_wr_t),
@@ -187,7 +187,7 @@ core_mem_stage core_mem_stage_inst
         .data_addr_o                   (data_addr_o),
         .data_rdata_i                  (data_rdata_i),
         .data_wdata_o                  (data_wdata_o),
-        .data_write_transfer_o         (data_write_transfer_o),
+        .data_be_o         (data_be_o),
         .data_req_o                    (data_req_o),
         .data_gnt_i                    (data_gnt_i),
         .data_rvalid_i                 (data_rvalid_i),
