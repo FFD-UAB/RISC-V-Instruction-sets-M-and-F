@@ -1,0 +1,187 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dE:/Uni/TFM/VerilogCode/MULDIV/sim
+vaddsub_block
+Z1 !s110 1606035444
+!i10b 1
+!s100 =iOaP4kK]7E=?JV<KZ1HQ1
+IcfUn?A2Tl0daCj;F>5ZoA1
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+Z3 w1382633591
+8E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/addsub_block.v
+FE:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/addsub_block.v
+Z4 L0 14
+Z5 OP;L;10.4a;61
+r1
+!s85 0
+31
+Z6 !s108 1606035444.000000
+!s107 E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/addsub_block.v|
+!s90 -##implicit##push_minusfile_path##|E:/Uni/TFM/VerilogCode/MULDIV/sim/vlog.opt|+incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-y|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-##implicit##pop_minusfile_path##|-reportprogress|300|-work|LPM|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/addsub_block.v|
+!s101 -O0
+!i113 1
+Z7 o-work LPM -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+Z8 !s92 +incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog -y E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog -work LPM -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+vdff_bus
+R1
+!i10b 1
+!s100 e[R1QaH5^eaizfFVLJh9F0
+IEjV=M2F4j3jX3VNm<Z5D13
+R2
+R0
+R3
+Z9 8E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/pipeline_internal_fv.v
+Z10 FE:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/pipeline_internal_fv.v
+L0 69
+R5
+r1
+!s85 0
+31
+R6
+Z11 !s107 E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/pipeline_internal_fv.v|
+Z12 !s90 -##implicit##push_minusfile_path##|E:/Uni/TFM/VerilogCode/MULDIV/sim/vlog.opt|+incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-y|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-##implicit##pop_minusfile_path##|-reportprogress|300|-work|LPM|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/pipeline_internal_fv.v|
+!s101 -O0
+!i113 1
+R7
+R8
+Plpm_components
+Z13 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z14 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z15 w1382633696
+R0
+Z16 8E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/vhdl/lpms/lpm_components.vhd
+Z17 FE:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/vhdl/lpms/lpm_components.vhd
+l0
+L37
+VUO7O;[TzY>FaHhaR=DkDN0
+!s100 RLI6lkAFABhag<ZKnnl@63
+Z18 OP;C;10.4a;61
+32
+b1
+Z19 !s110 1606035443
+!i10b 1
+Z20 !s108 1606035443.000000
+Z21 !s90 -reportprogress|300|-work|LPM|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/vhdl/lpms/lpm_components.vhd|
+Z22 !s107 E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/vhdl/lpms/lpm_components.vhd|
+!i113 1
+Z23 o-work LPM -O0
+Z24 tExplicit 1 NoCoverage 1
+Bbody
+DPx4 work 14 lpm_components 0 22 UO7O;[TzY>FaHhaR=DkDN0
+R13
+R14
+l0
+L597
+V1D5W1`7BeU0f59:FolR3]0
+!s100 8^G`Onmi3B<BlGACkZF`C3
+R18
+32
+R19
+!i10b 1
+R20
+R21
+R22
+!i113 1
+R23
+R24
+nbody
+vlpm_mult
+R19
+!i10b 1
+!s100 cFe1;LnKczSH2Eg>5k_1@1
+IUjizL6EojRRc5ka=3MNXV0
+R2
+R0
+w1382633594
+8E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/lpm_mult.v
+FE:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/lpm_mult.v
+L0 18
+R5
+r1
+!s85 0
+31
+R20
+!s107 E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/lpm_mult.v|
+!s90 -##implicit##push_minusfile_path##|E:/Uni/TFM/VerilogCode/MULDIV/sim/vlog.opt|+incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-y|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-##implicit##pop_minusfile_path##|-reportprogress|300|-work|LPM|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/lpm_mult.v|
+!s101 -O0
+!i113 1
+R7
+R8
+vLPM_MULT32
+DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
+R1
+!i10b 1
+!s100 24G`ogdUl>Un<7Wm9]T560
+IU54ND9bWIg`nCPO7G7PJn1
+R2
+!s105 LPM_MULT32_v_unit
+S1
+R0
+w1604727900
+8../lib/LPM_MULT32.v
+F../lib/LPM_MULT32.v
+L0 39
+R5
+r1
+!s85 0
+31
+R6
+!s107 ../lib/LPM_MULT32.v|
+!s90 -##implicit##push_minusfile_path##|E:/Uni/TFM/VerilogCode/MULDIV/sim/vlog.opt|+incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-y|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-##implicit##pop_minusfile_path##|-reportprogress|300|-work|LPM|-sv|-f|sv_libfiles|
+!s101 -O0
+!i113 1
+o-work LPM -sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+!s92 +incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog -y E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog -work LPM -sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+n@l@p@m_@m@u@l@t32
+vmult_block
+R19
+!i10b 1
+!s100 oGVVY=VDfWC?1ZD@MeUhU2
+IF4:^kfBHk3nGi_Hn23HEF2
+R2
+R0
+R3
+8E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/mult_block.v
+FE:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/mult_block.v
+R4
+R5
+r1
+!s85 0
+31
+R20
+!s107 E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/mult_block.v|
+!s90 -##implicit##push_minusfile_path##|E:/Uni/TFM/VerilogCode/MULDIV/sim/vlog.opt|+incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-y|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-##implicit##pop_minusfile_path##|-reportprogress|300|-work|LPM|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog/mult_block.v|
+!s101 -O0
+!i113 1
+R7
+R8
+vpipeline_internal_fv
+R1
+!i10b 1
+!s100 ell;[_3`jcDcS@WFbfflf2
+IJKY7Q<^^GF70D:WHS<[aN2
+R2
+R0
+R3
+R9
+R10
+L0 20
+R5
+r1
+!s85 0
+31
+R6
+R11
+R12
+!s101 -O0
+!i113 1
+R7
+R8

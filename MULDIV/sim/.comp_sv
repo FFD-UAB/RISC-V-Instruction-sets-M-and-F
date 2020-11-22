@@ -1,0 +1,24 @@
+set QuartusPath E:/Programas/Quartus/altera_lite/13.1/quartus
+
+# Load the project library
+vlib work
+vmap work work
+vlog -sv -f sv_files
+
+# Load IP Multifunction Libraries (change "QuartusPath" to your Quartus directory)
+# Library created for compiling files required by LPM_MULT and LPM_MUX
+vlib LPM
+vmap LPM LPM 
+vcom -work LPM $QuartusPath/eda/fv_lib/vhdl/lpms/lpm_components.vhd 
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/lpm_mult.v 
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/mult_block.v
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/addsub_block.v
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/pipeline_internal_fv.v
+
+#vlog -work work $QuartusPath/eda/fv_lib/verilog/altmult_accum.v
+#vlog -work work $QuartusPath/eda/fv_lib/verilog/altmult_add.v
+
+# Load the branched IP Multifunction Libraries
+vlog -work LPM -sv -f sv_libfiles
+
+# vsim -L LPM work.testMULDIV

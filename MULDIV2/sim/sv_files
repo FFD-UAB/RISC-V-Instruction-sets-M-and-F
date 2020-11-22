@@ -1,0 +1,24 @@
+// Required:
+../src/Signed2Unsigned.v
+../src/MULDIVgold.v   // Just used for tests
+../src/MULDIV2.v  // Performs MUL ops with ALTMULT_ADD lib (higher max freq)
+
+// Select one divisor module and changed it in the MULDIV2.v file selected above:
+../src/dseDIVrest32u.v
+../src/seDIVrest32u.v
+../src/dDIVrest32u.v
+../src/deqsDIVrest32u.v
+../src/eqsDIVrest32u.v
+../src/qsDIVrest32u.v
+../src/bDIVrest32u.v
+../src/tDIVrest32u.v
+
+// Addons required by some divisor options:
+../src/HighestLeftBit32u.v
+../src/Normal32u.v
+
+// Tests
+../tb/testMULDIV.v
+
+
+

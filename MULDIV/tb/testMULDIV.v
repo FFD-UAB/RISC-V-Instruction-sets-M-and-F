@@ -10,8 +10,10 @@ reg clk;	// Clock signal.
 reg rstLow;	// Reset signal at low.
 reg  [2:0] funct3; // Signal to command specific type MULDIV operation.
 reg start;	// Start operation flag (load input operands).
-integer i;	// Loop variable used to limit the number of test values.
-integer j;
+integer i, j;	// Loop variable used to limit the number of test values.
+integer k;      // Loop variable used to apply different divisor widths in the random test.
+integer seed;   // Random starting seed.
+integer totalClockCycles; // How many cycles has taken the random test.
 
 wire [31:0] Cg;	// Result of the reference model.
 wire [31:0] C;	// Result of the synthesizable model.
@@ -29,14 +31,14 @@ parameter  MUL = 3'h0, // SxS 32LSB
 
 
 // Load HW synthesizable model.
-MULDIV MULDIV(.rs1(A),
-	.rs2(B),
-	.funct3(funct3),
-	.start(start),
+MULDIV MULDIV(.rs1_i(A),
+	.rs2_i(B),
+	.funct3_i(funct3),
+	.start_i(start),
 	.clk(clk),
 	.rstLow(rstLow),
-	.c_out(C),
-	.busy(busy));
+	.c_o(C),
+	.busy_o(busy));
 
 // Load reference model.
 MULDIVgold MULDIVref(.a(A), 
@@ -70,8 +72,8 @@ B <= 32'h0;
 // ** Specific value test **
 // *************************
 //
-A = 32'd7;	// Specific dividend value.
-B = -32'd2;	// Specific divisor value.
+A = 32'h8a46c5f4;	// Specific dividend value.
+B = 32'h71000004;	// Specific divisor value.
 //B <=  32'h0;		// Uncomment to perform DIV by 0 test.
 //A <=  32'h80000000;	// Uncomment to perform DIV overflow test.
 //B <=  32'h00000001;	// Uncomment to perform DIV overflow test.
@@ -96,7 +98,7 @@ begin
 
 end
 
-#200 $stop;	// Finish specific value testbench simulation.
+#200 $stop;   // Finish specific value testbench simulation.
 
 
 
@@ -104,34 +106,41 @@ end
 // ** Random value test **
 // ***********************
 //
+for(k = 31; k != 0; k = k-1)
+begin
+totalClockCycles = 0;
+seed = 11037;
 @(posedge clk) ;
 
-for(i = 0; i < 2000; i = i+1) // Change to perform many more random tests.
+
+for(i = 0; i < 10; i = i+1) // Change to perform many more random tests.
 begin
-// A <= ($random(11037+i))%2147483648;
-// B <= ($random(11037-i))%2147483648;
+ A <= ($random(seed))%2**31; // This command outputs a signed value below the %value in abs.
+ B <= ($random(seed))%2**k;
 
- A <= ($random)%2147483648;
- B <= ($random)%2147483648;
 
- for(j = 4; j < 8; j = j + 1) // (j = 0; j < 8; j = j + 1) to test every funct3 type.
+ for(j = 0; j < 8; j = j + 1) // (j = 0; j < 8; j = j + 1) to test every funct3 type.
  begin
   #25 funct3 <= j;
 //  #25 funct3 <= 4+2*j;      // Comment line above and uncomment this one to test oneCycleRemainder system. Also, adjust j in the for to j<2.
   start <= 1'b1;
-  @(posedge clk) ;
+  @(posedge clk);
   #25 start <= 1'b0;
-
-// CheckMessage(C, Cg, clk, busy);
-// Check if synthesizable and reference model differ results.
-  @(posedge clk) if(busy) 	// If the operation is a division, the busy flag will go high, so wait to finish.
-	begin 			// If is not a division (or it is but is a special case), busy shouldn't rise.
-	 @(negedge busy); 
-	 @(posedge clk); 	// Always leave a clock cycle to check the results.
-	end
   #25;
+
+  // Count one more even if the division operation was a "dividend < divisor" case (no busy flag).
+  if(busy) while(busy) @(posedge clk) totalClockCycles = totalClockCycles + 1;
+  else totalClockCycles = totalClockCycles + 1;
+
+  @(posedge clk); // Always leave a clock cycle to check the results.
+  #25;
+  // Check if synthesizable and reference model differ results.
   if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B = %h at %0t ns", Cg, C, A, B, $realtime);
  end
+end
+
+//$display("FINISH: This model has taken %d clock cycles to finish the %d divisor width random test", totalClockCycles, k+1);
+$display("%d     %d", totalClockCycles, k+1);
 end
 
 #200 $stop;	// Finish testbench simulation.

@@ -2,7 +2,8 @@
 // MULDIV HW block implementing instruction set M.
 // Is expected that the core does polling on the busy flag to know if
 // the operation is done. This version uses a single clock cycle 
-// unsigned multiplier module and mutli-cycle unsigned divider module.
+// unsigned multiplier module implemented by the multifunction IP LPM_MULT32
+// module and mutli-cycle unsigned divider module.
 
 `include "../src/defines.vh"
 
@@ -37,11 +38,14 @@ wire                     signedInputSharedFlag;
 	   DIV = 3'b100, // S/S quotient
 	  DIVU = 3'b101, // U/U quotient
 	   REM = 3'b110, // S/S remainder
-	  REMU = 3'b111; // U/U remainder*/
+	  REMU = 3'b111; // U/U remainder */
 
-// Module selection for the operations. Select only one divider and one multiplier.
-    // Unsigned 32bit divider 
-dseDIVrest32u DIVmod(.a_in(a), // Options available are t, b, qs, eqs, d, deqsDIVrest32u.
+/////////////////////////////////////////////////////////////////////////////////////
+// Module selection for the operations. Select only one divider and one multiplier //
+/////////////////////////////////////////////////////////////////////////////////////
+
+  // Unsigned 32bit divider 
+dseDIVrest32u DIVmod(.a_in(a), // Options available are t, b, qs, eqs, se, d, deqs, dseDIVrest32u.
 	.b_in(b),
 	.start_in(startDIV),
 	.clk(clk),
@@ -50,19 +54,15 @@ dseDIVrest32u DIVmod(.a_in(a), // Options available are t, b, qs, eqs, d, deqsDI
 	.r_out(r),
 	.busy(busy_t));
 
-  // Unsigned 32bit multiplier without using IP megafunction.
-MULgold MULmod(.a_in(a),
-	.b_in(b),
-	.c_out(c_mul));
 
-/*
- // LPM_MULT module. Works only with unsigned inputs/outputs.
+ // LPM_MULT module. Works only with unsigned inputs/outputs (less resource usage)
 LPM_MULT32 MULmod(
         .dataa  (a),
         .datab  (b),
         .result (c_mul)
         );
-*/
+
+
 
 Signed2Unsigned S2U1(.a_signed(rs1_i), .a_unsigned(a_unsigned));
 

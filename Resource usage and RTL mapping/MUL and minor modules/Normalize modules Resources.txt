@@ -1,0 +1,2 @@
+HighestLeftBit32u - 32 LC Combinationals
+Normal32u - 126 LC Combinationals

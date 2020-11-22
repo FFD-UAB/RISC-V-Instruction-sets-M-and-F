@@ -1,0 +1,374 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dE:/Uni/TFM/VerilogCode/MULDIV2/sim
+vbDIVrest32u
+Z1 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
+Z2 !s110 1606036677
+!i10b 1
+!s100 DOhPV7b3Q51fX1=N3^;N<3
+I<Uf9o5HmGF4lnf<5EMXg?1
+Z3 VDg1SIo80bB@j0V0VzS_@n1
+!s105 bDIVrest32u_v_unit
+S1
+R0
+w1603448543
+8../src/bDIVrest32u.v
+F../src/bDIVrest32u.v
+L0 5
+Z4 OP;L;10.4a;61
+r1
+!s85 0
+31
+Z5 !s108 1606036677.000000
+Z6 !s107 ../src/defines.vh|../tb/testMULDIV.v|../src/Normal32u.v|../src/HighestLeftBit32u.v|../src/tDIVrest32u.v|../src/bDIVrest32u.v|../src/qsDIVrest32u.v|../src/eqsDIVrest32u.v|../src/deqsDIVrest32u.v|../src/dDIVrest32u.v|../src/seDIVrest32u.v|../src/dseDIVrest32u.v|../src/MULDIV2.v|../src/MULDIVgold.v|../src/Signed2Unsigned.v|
+Z7 !s90 -##implicit##push_minusfile_path##|E:/Uni/TFM/VerilogCode/MULDIV/sim/vlog.opt|+incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-y|E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog|-##implicit##pop_minusfile_path##|-reportprogress|300|-sv|-f|sv_files|
+!s101 -O0
+!i113 1
+Z8 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+Z9 !s92 +incdir+E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog -y E:/Programas/Quartus/altera_lite/13.1/quartus/eda/fv_lib/verilog -sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+nb@d@i@vrest32u
+vdDIVrest32u
+R1
+R2
+!i10b 1
+!s100 9<7]F3H>kKZ8R0i`T?9dL0
+I@4R:O@jQP8:9G=08Y26O00
+R3
+!s105 dDIVrest32u_v_unit
+S1
+R0
+w1604843410
+8../src/dDIVrest32u.v
+F../src/dDIVrest32u.v
+Z10 L0 10
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+nd@d@i@vrest32u
+vdeqsDIVrest32u
+R1
+R2
+!i10b 1
+!s100 nKd^[G4c`P94jJo@2:>RA3
+IVNf]_6F:oVQI4[>1QjD_Y2
+R3
+!s105 deqsDIVrest32u_v_unit
+S1
+R0
+w1604842798
+8../src/deqsDIVrest32u.v
+F../src/deqsDIVrest32u.v
+R10
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+ndeqs@d@i@vrest32u
+vdseDIVrest32u
+R1
+R2
+!i10b 1
+!s100 HSJ<WbV2nJ_^jXdGML5Y41
+IYkX5Fbn`fcLV]Wfz`a16H2
+R3
+!s105 dseDIVrest32u_v_unit
+S1
+R0
+w1605047191
+8../src/dseDIVrest32u.v
+F../src/dseDIVrest32u.v
+L0 9
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+ndse@d@i@vrest32u
+veqsDIVrest32u
+R1
+R2
+!i10b 1
+!s100 ndnGWc[ZoWllV6zhYAio82
+IZ`K`1YP`QMjdYjNNeZXPE2
+R3
+!s105 eqsDIVrest32u_v_unit
+S1
+R0
+w1604815375
+8../src/eqsDIVrest32u.v
+F../src/eqsDIVrest32u.v
+L0 7
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+neqs@d@i@vrest32u
+vHighestLeftBit32u
+R1
+R2
+!i10b 1
+!s100 X6bkHLLa8IoDUbA=Gzj2P2
+IJA4RUbP5e]G:=3OY2NXgQ1
+R3
+!s105 HighestLeftBit32u_v_unit
+S1
+R0
+w1603477580
+8../src/HighestLeftBit32u.v
+F../src/HighestLeftBit32u.v
+L0 5
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+n@highest@left@bit32u
+vMULDIV2
+R1
+R2
+!i10b 1
+!s100 A`h4MU@UobUlLWGNQP7<h2
+IKA5?IE1EIK4SHRzc1X<OX3
+R3
+!s105 MULDIV2_v_unit
+S1
+R0
+w1606034550
+8../src/MULDIV2.v
+F../src/MULDIV2.v
+L0 12
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+n@m@u@l@d@i@v2
+vMULDIVgold
+R1
+R2
+!i10b 1
+!s100 VfP02jjjgmRnNU^BWhbmH1
+IT;6I674WSgXa2C14ZT10d3
+R3
+!s105 MULDIVgold_v_unit
+S1
+R0
+w1603100762
+8../src/MULDIVgold.v
+F../src/MULDIVgold.v
+L0 4
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+n@m@u@l@d@i@vgold
+vNormalize32u
+R1
+R2
+!i10b 1
+!s100 B>h<AZN?XI`;]RbQHHem?0
+IQ>5JJfAD>52id]^7540KI0
+R3
+!s105 Normal32u_v_unit
+S1
+R0
+w1603477316
+8../src/Normal32u.v
+F../src/Normal32u.v
+L0 6
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+n@normalize32u
+vqsDIVrest32u
+R1
+R2
+!i10b 1
+!s100 DKdi]KPXao7a0WG3Y?P^[3
+IjkVlPa8B[e66`fH?9^H823
+R3
+!s105 qsDIVrest32u_v_unit
+S1
+R0
+w1604767767
+8../src/qsDIVrest32u.v
+F../src/qsDIVrest32u.v
+R10
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+nqs@d@i@vrest32u
+vseDIVrest32u
+R1
+R2
+!i10b 1
+!s100 3WU[HIA4UM16nZjWkDJ8l1
+I2LPhKil?g;FW7U91<[4C]0
+R3
+!s105 seDIVrest32u_v_unit
+S1
+R0
+w1605037982
+8../src/seDIVrest32u.v
+F../src/seDIVrest32u.v
+L0 11
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+nse@d@i@vrest32u
+vSigned2Unsigned
+R1
+R2
+!i10b 1
+!s100 m;<ol4TcORR?Flc>DoC`H1
+Ilh^nYlVTQ0g@eLojY=SC80
+R3
+!s105 Signed2Unsigned_v_unit
+S1
+R0
+w1603442270
+8../src/Signed2Unsigned.v
+F../src/Signed2Unsigned.v
+L0 8
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+n@signed2@unsigned
+vtDIVrest32u
+R1
+R2
+!i10b 1
+!s100 RCmdHW042T5Z>H4;l5@9e1
+IjhbnBK7;EHQY97JOE5DE<3
+R3
+!s105 tDIVrest32u_v_unit
+S1
+R0
+w1603453689
+8../src/tDIVrest32u.v
+F../src/tDIVrest32u.v
+L0 5
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+nt@d@i@vrest32u
+vtestMULDIV
+R1
+R2
+!i10b 1
+!s100 YL=9k6TG1T_La`_OlWT3K0
+I767m@eLjI;?>`]oU_0@`F2
+R3
+!s105 testMULDIV_v_unit
+S1
+R0
+w1606036114
+8../tb/testMULDIV.v
+F../tb/testMULDIV.v
+L0 6
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!s101 -O0
+!i113 1
+R8
+R9
+ntest@m@u@l@d@i@v

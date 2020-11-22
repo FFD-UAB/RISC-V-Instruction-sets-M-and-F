@@ -1,0 +1,8 @@
+# Load Cyclone III IP Multifunction Library (change the path to your Quartus directory)
+vlib cycloneiii_ver
+vmap cycloneiii_ver cycloneiii_ver
+vlog -work cycloneiii_ver E:/Programas/Quartus/altera_lite/13.1/quartus/eda/sim_lib/cycloneiii_atoms.v
+
+# Load the project library
+vlib work
+vlog -sv -f sv_files

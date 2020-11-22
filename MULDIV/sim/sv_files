@@ -1,0 +1,24 @@
+// Required:
+../src/Signed2Unsigned.v
+../src/MULDIVgold.v   // Just used for tests
+../src/MULDIV.v       // Performs MUL ops with LPM_MULT32 lib
+
+// Select one divisor module and changed it in the MULDIV.v file selected above:
+../src/dseDIVrest32u.v
+../src/seDIVrest32u.v
+../src/dDIVrest32u.v
+../src/deqsDIVrest32u.v
+../src/eqsDIVrest32u.v
+../src/qsDIVrest32u.v
+../src/bDIVrest32u.v
+../src/tDIVrest32u.v
+
+// Addons required by some divisor options:
+../src/HighestLeftBit32u.v
+../src/Normal32u.v
+
+// Tests
+../tb/testMULDIV.v
+
+
+

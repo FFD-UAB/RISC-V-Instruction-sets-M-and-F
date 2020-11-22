@@ -1,0 +1,252 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dE:/Uni/TFM/VerilogCode/MULDIV/sim
+vbDIVrest32u
+Z1 !s110 1603481769
+!i10b 1
+!s100 6W=<<X713;]4@`b=jP[1a2
+I1h[@12b@diJB:PM8;iHoS0
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1603452143
+8E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v
+L0 5
+Z3 OP;L;10.4a;61
+r1
+!s85 0
+31
+Z4 !s108 1603481769.000000
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v|
+!s101 -O0
+!i113 1
+Z5 o-work MULDIV -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+nb@d@i@vrest32u
+veqsDIVrest32u
+Z6 !s110 1603481770
+!i10b 1
+!s100 L:zJ>??nbHIa]8ek1^?ao1
+IdoEQ78g9V1;<kNVeP[fki0
+R2
+R0
+w1603481522
+8E:/Uni/TFM/VerilogCode/MULDIV/src/eqsDIVrest32u.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/eqsDIVrest32u.v
+L0 7
+R3
+r1
+!s85 0
+31
+Z7 !s108 1603481770.000000
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/eqsDIVrest32u.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/eqsDIVrest32u.v|
+!s101 -O0
+!i113 1
+R5
+neqs@d@i@vrest32u
+vHighestLeftBit32u
+R6
+!i10b 1
+!s100 H0F3]d_T[E]]^65TcomE[3
+I]S:AeYCY9@OG5`eAdiJQ02
+R2
+R0
+w1603481180
+8E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v
+L0 5
+R3
+r1
+!s85 0
+31
+R7
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v|
+!s101 -O0
+!i113 1
+R5
+n@highest@left@bit32u
+vMULDIV
+R1
+!i10b 1
+!s100 :5kd>I5f:GFaQZjCfd6TN3
+I^A[b7X^:zFc?47m0U_hVC1
+R2
+R0
+w1603479692
+8E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIV.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/MULDIV.v
+L0 6
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIV.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIV.v|
+!s101 -O0
+!i113 1
+R5
+n@m@u@l@d@i@v
+vMULDIVgold
+R1
+!i10b 1
+!s100 CY8cOIbZkzV3;lleH04R91
+IKUGSo6V3Ull<anbMK`fz82
+R2
+R0
+w1603104362
+8E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v
+L0 4
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v|
+!s101 -O0
+!i113 1
+R5
+n@m@u@l@d@i@vgold
+vMULgold
+R1
+!i10b 1
+!s100 j5<H0YG8BzjK7i:iazB9:2
+I9jXNTXcKc@^@6<6E_@nk50
+R2
+R0
+w1602928557
+8E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v
+L0 4
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v|
+!s101 -O0
+!i113 1
+R5
+n@m@u@lgold
+vNormalize32u
+R1
+!i10b 1
+!s100 l5cbAoZz`dcbAY>gZWjNz3
+I2Fg^C^L4W62JCiIJhl2gR3
+R2
+R0
+w1603480916
+8E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v
+L0 6
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v|
+!s101 -O0
+!i113 1
+R5
+n@normalize32u
+vqsDIVrest32u
+R1
+!i10b 1
+!s100 Z0Anz9^6C5MTQ4CJO2kTh1
+IV^DLA4Xo1U<MzTT7CRD_^2
+R2
+R0
+w1603473804
+8E:/Uni/TFM/VerilogCode/MULDIV/src/qsDIVrest32u.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/qsDIVrest32u.v
+L0 10
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/qsDIVrest32u.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/qsDIVrest32u.v|
+!s101 -O0
+!i113 1
+R5
+nqs@d@i@vrest32u
+vSigned2Unsigned
+R1
+!i10b 1
+!s100 UJY9nj3=:3Yf5=?9LN=mm2
+InCAFj=BAggKQ`NTZ<j7_a0
+R2
+R0
+w1603445870
+8E:/Uni/TFM/VerilogCode/MULDIV/src/Signed2Unsigned.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/Signed2Unsigned.v
+L0 8
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/Signed2Unsigned.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/Signed2Unsigned.v|
+!s101 -O0
+!i113 1
+R5
+n@signed2@unsigned
+vtDIVrest32u
+R6
+!i10b 1
+!s100 2z:_lB]M]YKjLagJo24m<3
+IM3XR:424nB^UB6;XOAzY_2
+R2
+R0
+w1603457289
+8E:/Uni/TFM/VerilogCode/MULDIV/src/tDIVrest32u.v
+FE:/Uni/TFM/VerilogCode/MULDIV/src/tDIVrest32u.v
+L0 5
+R3
+r1
+!s85 0
+31
+R7
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/src/tDIVrest32u.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/src/tDIVrest32u.v|
+!s101 -O0
+!i113 1
+R5
+nt@d@i@vrest32u
+vtestMULDIV
+R6
+!i10b 1
+!s100 BUnVR1EanIbWG4hbbZEKb3
+I8RgCaBk<[@0ih^T6S8VlU1
+R2
+R0
+w1603479268
+8E:/Uni/TFM/VerilogCode/MULDIV/tb/testMULDIV.v
+FE:/Uni/TFM/VerilogCode/MULDIV/tb/testMULDIV.v
+L0 6
+R3
+r1
+!s85 0
+31
+R7
+!s107 E:/Uni/TFM/VerilogCode/MULDIV/tb/testMULDIV.v|
+!s90 -reportprogress|300|-work|MULDIV|-stats=none|E:/Uni/TFM/VerilogCode/MULDIV/tb/testMULDIV.v|
+!s101 -O0
+!i113 1
+R5
+ntest@m@u@l@d@i@v
