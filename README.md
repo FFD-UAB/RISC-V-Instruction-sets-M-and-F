@@ -5,7 +5,7 @@ This open source project is part of Francis Fuentes' Master in Telecommunication
 The objective of this project is to carry out the required modifications to a 5-stages RISC-V 32-bit core, develope and implement the modules capables of expanding the core with the instruction sets M and F of the ISA standard (RV32M and RV32F).
 
 Authors of previous project used as starting point of this project are:
- - Pau Casacoverta Orta for implementing a base core RV32I compliant with the base instruction set fixed by the ISA standard.
+ - Pau Casacoverta Orta for implementing a base core RV32I compliant with the base instruction set fixed by the ISA standard (https://github.com/4a1c0/RV32i-Verilog).
  - Raimon Casanova Mohr for tutoring and adding pipeline structure to the core, facilitating the addition of expansions and increasing the data througput.
  - The open source PULPino's HW infraestructure authors (https://github.com/pulp-platform/pulpino), as this project uses their platform (excluding their core) at the synthesis phase on FPGA board to use the various I/O interfaces like SPI, UART, GPIO, between others.
 
