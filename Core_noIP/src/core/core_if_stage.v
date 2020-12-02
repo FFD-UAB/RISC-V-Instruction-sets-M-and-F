@@ -36,7 +36,8 @@ module if_stage
     reg  [`DATA_WIDTH-1:0]             pc;
     reg  [`DATA_WIDTH-1:0]             dd_instruction;
     wire                               stall_any;
-    reg                                stall_reg;
+    reg                                stall_reg;   
+    reg                                brj_reg;                    
 
     
     assign instruction_addr_o = pc[`MEM_ADDR_WIDTH-1:0];
@@ -47,11 +48,10 @@ module if_stage
 
     assign stall_any = stall_i | stall_general_i;
     
-    always@(posedge clk or negedge rst_n)
+    always @(posedge clk or negedge rst_n)
      if (!rst_n) pc <= {`DATA_WIDTH{1'b0}};
      else if (!stall_any) begin
-                 if (brj_i === 1'b1) pc <= brj_pc_i;
-                 else pc <= pc4;
+                 pc <= brj_i ? brj_pc_i : pc4;
               end
               
     //Registered instruction and PC for pipeline
@@ -60,11 +60,13 @@ module if_stage
                   d_pc_o <= {`DATA_WIDTH{1'b0}};
                   d_pc4_o <= {`DATA_WIDTH{1'b0}};
                   stall_reg <= 1'b0;
+                  brj_reg <= 1'b0;
                  end
      else begin
             d_pc_o <= pc;
             d_pc4_o <= pc4;
             stall_reg <= stall_any;
+            brj_reg <= brj_i;
           end
            
     //The output of the program memory is registered!
@@ -76,7 +78,7 @@ module if_stage
             dd_instruction <= instruction_rdata_i;
            end 
 
-     assign d_instruction_o = brj_i ? {25'b0, 7'b0010011} : // NOOP
-                                                stall_reg ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
+     assign d_instruction_o = brj_reg ? {25'b0, 7'b0010011}
+                                    : stall_reg ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
 
 endmodule 

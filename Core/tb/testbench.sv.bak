@@ -302,7 +302,7 @@ task test_beq;
     pc = 32'b0;
     rstinstrMem();
     encodeAddi(5'h0, 5'h3, 12'hFFF);
-    encodeAddi(5'h0, 5'h4, 12'hFFF);
+    encodeAddi(5'h0, 5'h4, 12'hFF);
     encodeBeq(5'h3, 5'h4, 13'h00F4);
     rst_n = 1'b1;
     waitNclockCycles(4);

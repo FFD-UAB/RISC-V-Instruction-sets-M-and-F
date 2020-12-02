@@ -7,7 +7,7 @@ module top_CoreMem
         rst_n,
 
         // AXI to instr mem
-        axi_instr_req, // Uncomment to use pulpine
+        //axi_instr_req, // Uncomment to use pulpine
         axi_instr_addr,
         axi_instr_we,
         axi_instr_be,
@@ -18,7 +18,7 @@ module top_CoreMem
         axi_instr_rdata,
 
         // AXI to data mem
-        axi_data_req, // Uncomment to use pulpine
+        //axi_data_req, // Uncomment to use pulpine
         axi_data_addr,
         axi_data_we,
         axi_data_be,
@@ -42,7 +42,7 @@ module top_CoreMem
         core_instr_addr,  // PC
         core_instr_rdata, // instruction at core's input
         core_data_addr,   // address that is pointing in the data memory
-        core_data_wdata,  // what is the core writing in the data memory
+        core_data_wdata,  // what is the core writing in the data memory 
         core_data_we      // flag that is writting into the data memory
     );
 
@@ -61,7 +61,7 @@ module top_CoreMem
     input 	wire rst_n;
 
   // signals AXI to/from instr mem
-  input  wire                        axi_instr_req; // Uncomment to use pulpine
+  //input  wire                        axi_instr_req; // Uncomment to use pulpine
   input  wire [INSTR_ADDR_WIDTH-1:0] axi_instr_addr;
   input  wire                        axi_instr_we;
   input  wire [AXI_DATA_WIDTH/8-1:0] axi_instr_be;
@@ -72,7 +72,7 @@ module top_CoreMem
   output wire [AXI_DATA_WIDTH-1:0]   axi_instr_rdata;
   
   // signals AXI to/from data mem
-  input  wire                        axi_data_req; // Uncomment to use pulpine
+  //input  wire                        axi_data_req; // Uncomment to use pulpine
   input  wire [DATA_ADDR_WIDTH-1:0]  axi_data_addr;
   input  wire                        axi_data_we;
   input  wire [AXI_DATA_WIDTH/8-1:0] axi_data_be;
@@ -165,11 +165,11 @@ core core_inst(
  assign core_instr_be = {(AXI_DATA_WIDTH/8){1'b0}}; // Mask to write in instr mem. 0=Don't write anything.
  assign core_instr_wdata = {AXI_DATA_WIDTH{1'b0}};
 
-/* wire axi_instr_req;
+ wire axi_instr_req;
  wire axi_data_req;
  assign axi_instr_req = 1'b0; // Comment to use pulpine
  assign axi_data_req = 1'b0;  // Comment to use pulpine
-*/
+
 
   //----------------------------------------------------------------------------//
   // Instruction RAM                                                            //
@@ -236,7 +236,7 @@ instr_ram_wrap
   //----------------------------------------------------------------------------//
   // Data RAM                                                                   //
   //----------------------------------------------------------------------------//
-  sp_ram_wrap
+  sp_ram_wrap_data
   #(
     .RAM_SIZE   ( DATA_RAM_SIZE  ),
     .DATA_WIDTH ( AXI_DATA_WIDTH )

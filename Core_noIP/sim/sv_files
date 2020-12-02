@@ -3,8 +3,10 @@
 ../src/mem/instr_ram_wrap.sv
 ../src/mem/boot_code.sv
 ../src/mem/boot_rom_wrap.sv
-../src/mem/sp_ram_wrap.sv
-../src/mem/sp_ram.sv
+../src/mem/sp_ram_wrap_data.sv
+../src/mem/sp_ram_wrap_instr.sv
+../src/mem/sp_ram_data.sv
+../src/mem/sp_ram_instr.sv
 ../src/core/core_execution_unit/core_branchig_unit.v
 ../src/core/core_execution_unit/core_execution_unit_alu.v
 ../src/core/core_control_unit.v
@@ -24,7 +26,7 @@
 // Tests
 ../tb/load_store.v
 ../tb/arithmeticologicM.v
-//../tb/branch.v
+../tb/branch.v
 
 
 // Instruction expansion set RV32M modules

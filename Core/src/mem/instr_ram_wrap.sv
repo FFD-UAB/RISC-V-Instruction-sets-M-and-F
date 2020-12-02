@@ -38,12 +38,12 @@ module instr_ram_wrap
   assign is_boot = (addr_i[ADDR_WIDTH-1] == 1'b1);
 
 
-  sp_ram_wrap
+  sp_ram_wrap_instr
   #(
     .RAM_SIZE   ( RAM_SIZE   ),
     .DATA_WIDTH ( DATA_WIDTH )
   )
-  sp_ram_wrap_i
+  sp_ram_wrap_instr_i
   (
     .clk         ( clk                        ),
     .rstn_i      ( rst_n                      ),

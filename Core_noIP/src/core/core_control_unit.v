@@ -179,9 +179,9 @@ module control_unit
  // Type B
  //reg is_conditional_o;
  wire [11:0]                           imm12b;
- wire [19:0]                           imm20j;
  // Type J
  reg                                   jump;
+ wire [19:0]                           imm20j;
  // Decode
  reg [`ALU_OP_WIDTH-1:0]               ALU_op;
  reg [`BR_OP_WIDTH-1:0]                BR_op_o;
@@ -203,7 +203,7 @@ module control_unit
  assign csr_raddr_o = imm12;  
  assign csr_imm_o = instruction[19:15];
  
-    always@(*) 
+    always @(*) 
      begin
         data_wr = 1'b0;
         data_be_o = {`MEM_TRANSFER_WIDTH{1'b0}};
@@ -228,37 +228,37 @@ module control_unit
         csr_wr_o = 1'b0;
         case(opcode)
             OPCODE_U_LUI: begin  // Set and sign extend the 20-bit immediate (shited 12 bits left) and zero the bottom 12 bits into rd
-                           data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value, in dis case 0
+                           data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value, in this case 0
                            data_target_o = 2'b11;
                            imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
                            regfile_wr = 1'b1;  // Write the resut in RD
                            ALU_op = `ALU_OP_ADD;  // Sum with 0
                           end
-            OPCODE_U_AUIPC: begin  // Place the PC plus the 20-bit signed immediate (shited 12 bits left) into rd (used before JALR)
-                             data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
-                             data_target_o = 2'b11;
-                             imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
-                             jump = 1'b1;
-                             regfile_wr = 1'b1;  // Write the resut in RD
-                             ALU_op = `ALU_OP_ADD;  // Add the values
-                            end
+            OPCODE_U_AUIPC: begin  // Place the PC plus the 20-bit signed immediate (shifted 12 bits left) into rd (used before JALR)
+                           data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
+                           data_target_o = 2'b11;
+                           imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
+                           jump = 1'b1;
+                           regfile_wr = 1'b1;  // Write the resut in RD
+                           ALU_op = `ALU_OP_ADD;  // Add the values
+                          end
             OPCODE_J_JAL: begin  // Jump to the PC plus 20-bit signed immediate while saving PC+4 into rd
-                           data_target_o = 2'b11;                
+                           data_target_o = 2'b11;
                            jump = 1'b1;
                            data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
-                           imm_val_o = {{`DATA_WIDTH - 21 {imm20j[19]}},  imm20j[19:0], 1'b0  }; // TODO last bit is used? or is always 0
+                           imm_val_o = {{`DATA_WIDTH - 21 {imm20j[19]}},  imm20j[19:0], 1'b0  }; // TODO last bit is used? or is always 0 
                            regfile_wr = 1'b1; // Write the resut in RD                
                            ALU_op = `ALU_OP_ADD;  // to add the immideate value to the PC
                           end
             OPCODE_I_JALR: begin  // jalr       "Jump to rs1 plus the 12-bit signed immediate while saving PC+4 into rd"
-                            data_target_o = 2'b11;
-                            jump = 1'b1;
-                            jalr_o = 1'b1;
-                            data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and mantain RS1 the value
-                            ALU_op = `ALU_OP_ADD;  
-                            imm_val_o = {{`DATA_WIDTH - 12 {imm12[11]}},  imm12[11:0] }; // no ^2
-                            regfile_wr = 1'b1;  // Write the resut in RD
-                           end
+                           data_target_o = 2'b11;
+                           jump = 1'b1;
+                           jalr_o = 1'b1;
+                           data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and mantain RS1 the value
+                           ALU_op = `ALU_OP_ADD;  
+                           imm_val_o = {{`DATA_WIDTH - 12 {imm12[11]}},  imm12[11:0] }; // no ^2
+                           regfile_wr = 1'b1;  // Write the resut in RD
+                          end
             OPCODE_B_BRANCH: begin
                               data_origin_o = `REGS;  // Mantain RS2 value and RS1 value // DefaultValue
                               imm_val_o = {{(`DATA_WIDTH - 13) {imm12b[11]}},  imm12b[11:0], 1'b0  }; // TODO last bit is used? or is always 0

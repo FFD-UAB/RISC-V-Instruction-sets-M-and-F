@@ -300,7 +300,6 @@ SEG7_LUT	SEG3(
 `endif
 
    
-    wire                    rst_n;
     wire                    axi_instr_we;
     wire [15 : 0]           axi_instr_addr;
     wire [DATA_WIDTH-1 : 0] axi_instr_wdata;
@@ -315,7 +314,7 @@ SEG7_LUT	SEG3(
 
 top_CoreMem CoreMem_inst(
         .clk              ( clock_to_core ),
-        .rst_n            ( rst_n         ),
+        .rst_n            ( reset_n       ),
 
         // AXI to instr mem
         .axi_instr_req    ( axi_instr_req   ),
@@ -357,38 +356,6 @@ top_CoreMem CoreMem_inst(
         .core_data_we     ( core_data_we     )
     );
 
-/////////////////////////////////////////
-//   Load instruction into memory      //
-/////////////////////////////////////////
-
-wire finishLDinstr;         // Flag indicating that all instructions have been loaded into instrMem
-reg  [31:0] instrMem_count; // Number of instruction to load
-reg  [31:0] instr_data [19:0];
-wire [31:0] instr_data_inline;
-
-assign instr_data_inline = instr_data[instrMem_count];
-assign axi_instr_wdata = instr_data_inline == {DATA_WIDTH{1'b0}} ? {{DATA_WIDTH-7{1'b0}}, 7'b0010011} : instr_data_inline;
-assign axi_instr_addr = instrMem_count*4;
-assign axi_instr_req = !finishLDinstr;
-assign axi_instr_we = !finishLDinstr;
-assign finishLDinstr = axi_instr_wdata == {{DATA_WIDTH-7{1'b0}}, 7'b0010011};
-assign rst_n = finishLDinstr; // & reset_n; // Uncomment to use the button 0 as rst
-
-
-initial 
-begin
- instrMem_count <= 32'h0; 
- clock_to_core <= 1'b0;     // Used to simulate
- while(1) #50 clock_to_core <= !clock_to_core;
-end
-
-always @(posedge clock_to_core)
- if(!finishLDinstr) instrMem_count = instrMem_count + 2'b1;
-
-always @(posedge clock_to_core)
- $readmemh("../data/programMem_h.mem", instr_data);
-
-
 /////////////////////////////////////////////
 //   Physical DE0 board interactivity      //
 /////////////////////////////////////////////
@@ -404,7 +371,7 @@ assign HEX0_DP = !clock_to_core;
 //assign HEX1_DP = (core_data_addr == 9'h014 && we_mem_data)? 1'b0:1'b1;
 //assign HEX2_DP = !we_mem_data;
 //assign HEX3_DP = !write_transfer[0];
-//assign clock_to_core = SW[0] ?  (SW[1])? out_10hz:PLL_1MHzclock :virtual_clk;  // SW[0] ? CLOCK_50:PLL_1MHzclock;  //
+assign clock_to_core = SW[0] ?  (SW[1])? out_10hz:PLL_1MHzclock :virtual_clk;  // SW[0] ? CLOCK_50:PLL_1MHzclock;  //
 //assign LEDG[0] = ((core_data_addr == 9'h014))? 1:0;
 
 

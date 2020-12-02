@@ -1,17 +1,12 @@
-// Load files to compile DE0 FPGA platform:
-../src/top_DE0.v
-../src/DE0/button_debouncer.v
-../src/DE0/PLL.v
-../src/DE0/SEG7_LUT.v
-
-// Load files to compile core, data and instruction memories:
 ../src/mem/config.sv
 ../src/mem/ram_mux.sv
 ../src/mem/instr_ram_wrap.sv
 ../src/mem/boot_code.sv
 ../src/mem/boot_rom_wrap.sv
-../src/mem/sp_ram_wrap.sv
-../src/mem/sp_ram.sv
+../src/mem/sp_ram_wrap_data.sv
+../src/mem/sp_ram_wrap_instr.sv
+../src/mem/sp_ram_data.sv
+../src/mem/sp_ram_instr.sv
 ../src/core/core_execution_unit/core_branchig_unit.v
 ../src/core/core_execution_unit/core_execution_unit_alu.v
 ../src/core/core_control_unit.v
@@ -26,12 +21,17 @@
 ../src/core/core_csr_unit/core_csr_unit_timer.v
 ../src/core/core.v
 ../src/top_CoreMem.v
+../tb/testbench.sv
+
+// Tests
+../tb/load_store.v
+../tb/arithmeticologicM.v
+//../tb/branch.v
+
 
 // Instruction expansion set RV32M modules
 ../src/core/core_execution_unit/core_execution_unit_alu_m.v
-../src/core/core_execution_unit/MULDIV/dDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
 ../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
+../src/core/core_execution_unit/MULDIV/MULgold.v
 ../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v
-
-
-

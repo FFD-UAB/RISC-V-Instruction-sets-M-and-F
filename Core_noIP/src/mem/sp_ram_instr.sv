@@ -8,7 +8,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
-module sp_ram
+module sp_ram_instr
   #(
     parameter ADDR_WIDTH = 8,
     parameter DATA_WIDTH = 32,
@@ -60,10 +60,11 @@ module sp_ram
     end
   endgenerate
 
-  initial // Used at simulation. Gives problems at Quartus II 13.1
+  initial
   begin
-  for (i = 0; i < words; i++)
-  mem[i] = 32'b0;
+  for (i = 0; i < words; i++) // Used at simulation. Gives problems at Quartus II 13.1
+  mem[i] = {{DATA_WIDTH-7{1'b0}}, 7'b0010011};
+  $readmemh("../data/programMem_h.mem", mem); // This is synthesable by Intel support
   end
 
 endmodule

@@ -6,6 +6,7 @@ set QuartusPath E:/Programas/Quartus/altera_lite/13.1/quartus
 # the LPM libraries during the simulation. A command line example is:
 # vsim -L LPM work.load_store_test
 # vsim -L LPM work.arithmeticologic_test
+# vsim -L LPM work.branch_test
 
 # Load the project library
 vlib work

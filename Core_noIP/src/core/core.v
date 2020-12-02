@@ -77,6 +77,7 @@ module core
  wire [`DATA_WIDTH-1:0]                alu_t;
  wire [`DATA_WIDTH-1:0]                brj_pc_t;
  wire                                  brj_t;
+
                     
  if_stage if_stage_inst(
         .clk                           (clk),
@@ -111,7 +112,7 @@ module core
         .e_regfile_raddr_rs1_o         (e_regfile_raddr_rs1_t),
         .e_regfile_raddr_rs2_o         (e_regfile_raddr_rs2_t),
         .e_imm_val_o                   (e_imm_val_t),  //execution unit imm val rs1
-        .e_data_be_o       (e_data_be_t),
+        .e_data_be_o                   (e_data_be_t),
         .w_regfile_wr_i                (w_regfile_wr_t),
         .w_regfile_waddr_i             (w_regfile_waddr_t),
         .w_regfile_rd_i                (reg_file_rd_t),
@@ -160,8 +161,8 @@ module core
         .m_data_wr_o                   (m_data_wr_t),
         .e_data_rd_i                   (e_data_rd_t),
         .m_data_rd_o                   (m_data_rd_t),
-        .e_data_be_i       (e_data_be_t),
-        .m_data_be_o       (m_data_be_t),
+        .e_data_be_i                   (e_data_be_t),
+        .m_data_be_o                   (m_data_be_t),
         .e_data_target_i               (e_data_target_t),
         .d_alu_busy_o                  (d_alu_busy_t),
         .alu_o                         (alu_t),

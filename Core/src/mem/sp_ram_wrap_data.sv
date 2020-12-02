@@ -10,7 +10,7 @@
 
 `include "config.sv"
 
-module sp_ram_wrap
+module sp_ram_wrap_data
   #(
     parameter RAM_SIZE   = 32768,              // in bytes
     parameter ADDR_WIDTH = $clog2(RAM_SIZE),
@@ -69,13 +69,13 @@ module sp_ram_wrap
    );
 
 `else
-  sp_ram
+  sp_ram_data
   #(
     .ADDR_WIDTH ( ADDR_WIDTH ),
     .DATA_WIDTH ( DATA_WIDTH ),
     .NUM_WORDS  ( RAM_SIZE   )
   )
-  sp_ram_i
+  sp_ram_data_i
   (
     .clk     ( clk       ),
     .rstn_i  ( rstn_i    ),

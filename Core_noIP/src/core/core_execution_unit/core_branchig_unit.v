@@ -39,7 +39,7 @@ module 	br
  //comparator regfile_rs1_i == regfile_rs2_i, signed operands
  assign regfile_rs1_iEqualtoRs2 = ($signed(regfile_rs1_i) == $signed(regfile_rs2_i));
  
- always @* 
+ always @(*)
   case (BR_op_i)
    `BR_EQ:  branch_o = (regfile_rs1_iEqualtoRs2); //($signed(regfile_rs1_i) == $signed(regfile_rs2_ib));     
    `BR_NE:  branch_o = (!regfile_rs1_iEqualtoRs2); //($signed(regfile_rs1_i) != $signed(regfile_rs2_ib));

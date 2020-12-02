@@ -85,7 +85,7 @@ module id_stage
  input  wire [4:0]                     m_regfile_waddr_i;
  input  wire                           m_regfile_wr_i;
  output wire [`DATA_WIDTH-1:0]         brj_pc_o;
- output wire                           brj_o;
+ output reg                            brj_o;
  input  wire                           d_busy_alu_i; // Flag of multi-cycle operation ongoing when high.
  output wire                           stall_general_o; // which enables the general stall of the core.
  
@@ -109,7 +109,6 @@ module id_stage
  wire                                  csr_cntr_t;
  wire                                  branch_t;
  wire                                  jalr_t;
- wire                                  brj_t;
  reg [`DATA_WIDTH-1:0]                 e_regfile_rs1_t;
  reg [`DATA_WIDTH-1:0]                 e_regfile_rs1_tt;
  reg [`DATA_WIDTH-1:0]                 e_regfile_rs2_t;
@@ -141,7 +140,7 @@ module id_stage
         .data_wr                       (data_wr_t          ),  // LoadStore indicator output
         .data_be_o                     (data_be_t          ),
         .branch_i                      (branch_t           ),  // Branch indicator output
-        .brj_o                         (brj_t              ),
+        .brj_o                         (brj_o              ),
         .is_load_store                 (is_load_store_t    ),  // execution_unit 
         .regfile_raddr_rs1_i           (regfile_raddr_rs1_t),  // RS1 addr
         .regfile_raddr_rs2_i           (regfile_raddr_rs2_t),  // RS2 addr
@@ -277,6 +276,5 @@ module id_stage
     e_brj_pc_o <= brj_pc_o;
    end
      
- assign brj_o = brj_t;
 
 endmodule
