@@ -4,7 +4,7 @@
 
 //`include"testbench.v"
 
-module csr_test();
+module tb_csr();
 
 	tb TB();
 	

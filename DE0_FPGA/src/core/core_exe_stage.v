@@ -1,6 +1,8 @@
 //`default_nettype none
 `timescale 1ns/1ps
 `include "../defines.vh"
+`include "../core/core_execution_unit/core_execution_unit_alu.v"
+`include "../core/core_execution_unit/core_execution_unit_alu_m.v"
 
 module exe_stage
        (
@@ -84,7 +86,7 @@ module exe_stage
  assign op1_ALU = e_regfile_rs1_i;
  assign op2_ALU = (e_data_origin_i[0] ? e_imm_val_i : e_regfile_rs2_i);
 
- always @*
+ always @(*)
   case (e_data_target_i)
    2'd0: reg_file_rd = alu_o;
    2'd1: reg_file_rd = data_wdata;
@@ -106,7 +108,7 @@ module exe_stage
  assign alu_o   = (e_ALU_op_i[4] ? alu_M : alu_I);
 
   // ALU Module that implements the ALU operations of the 32I Base Instruction Set
-  alu ALU (
+  alu ALU_inst (
          .ALU_op_i                     (e_ALU_op_i[3:0]    ),
          .s1_i                         (op1_ALU            ),
          .s2_i                         (op2_ALU            ),
@@ -115,7 +117,7 @@ module exe_stage
           );
 
   // ALU Module that implements the ALU operations of the 32M Standard Extension Instruction Set
-  MULDIV2 ALU_M (
+  MULDIV2 ALU_M_inst (
          .rs1_i                        (op1_ALU            ),
          .rs2_i                        (op2_ALU            ),
          .funct3_i                     (e_ALU_op_i[2:0]    ),

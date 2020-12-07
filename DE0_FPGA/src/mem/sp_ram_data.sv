@@ -27,13 +27,11 @@ module sp_ram_data
 
   localparam words = NUM_WORDS/(DATA_WIDTH/8);
 
-  logic [DATA_WIDTH/8-1:0][7:0] mem[words];
+  logic [DATA_WIDTH/8-1:0][7:0] mem_data[words];
   logic [DATA_WIDTH/8-1:0][7:0] wdata;
   logic [ADDR_WIDTH-1-$clog2(DATA_WIDTH/8):0] addr;
 
   integer i;
-
-
   assign addr = addr_i[ADDR_WIDTH-1:$clog2(DATA_WIDTH/8)];
 
 
@@ -41,17 +39,17 @@ module sp_ram_data
     begin
      if (en_i && we_i)
      begin
-      for (i = 0; i < DATA_WIDTH/8; i++) begin
-        if (be_i[i])
-          mem[addr][i] = wdata[i];
-      end
+//      for (i = 0; i < DATA_WIDTH/8; i++) begin  // Commented because fitter tool is incapable
+//        if (be_i[i])                            // of using M9K modules in this way. The following
+//          mem_data[addr][i] = wdata[i];              // part does the same but is not parametrizable and
+//      end                                       // is capable of using M9K Cyclone III modules.
+      if(be_i[0]) mem_data[addr][0] <= wdata[0];
+      if(be_i[1]) mem_data[addr][1] <= wdata[1];
+      if(be_i[2]) mem_data[addr][2] <= wdata[2];
+      if(be_i[3]) mem_data[addr][3] <= wdata[3];
      end
+     rdata_o <= mem_data[addr];
     end
-
-  always @(posedge clk or negedge rstn_i)
-    if (!rstn_i) rdata_o <= 32'b0;
-    else rdata_o <= mem[addr];
-
 
   genvar w;
   generate for(w = 0; w < DATA_WIDTH/8; w++)
@@ -60,10 +58,11 @@ module sp_ram_data
     end
   endgenerate
 
-  initial // Used at simulation. Gives problems at Quartus II 13.1
+  initial
   begin
-  for (i = 0; i < words; i++)
-  mem[i] = 32'b0;
+//  for (i = 0; i < words; i++)
+//  mem_data[i] = {DATA_WIDTH{1'b0}};
+   //$readmemh("../../data/dataMem_h.mem", mem_data); // This is synthesable by Intel support
   end
 
 endmodule

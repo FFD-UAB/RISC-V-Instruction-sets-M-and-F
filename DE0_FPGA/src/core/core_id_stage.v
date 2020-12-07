@@ -1,10 +1,13 @@
 `timescale 1ns/1ps
 
 `include "../defines.vh"
+`include "../core/core_instrDecode_unit/core_control_unit.v"
+`include "../core/core_instrDecode_unit/core_reg_file.v"
+`include "../core/core_instrDecode_unit/core_branching_unit.v"
+`include "../core/core_csr_unit/core_csr_unit.v"
 
 // Module Declaration
-module id_stage 
-       (
+module id_stage(
         clk,
         rst_n,
         d_instruction_i,
@@ -241,7 +244,7 @@ module id_stage
     e_regfile_raddr_rs2_o <= 5'h0;
     e_regfile_rs1_o <= {`DATA_WIDTH{1'b0}};
     e_regfile_rs2_o <= {`DATA_WIDTH{1'b0}};
-    e_ALU_op_o <= {`ALU_OP_WIDTH{1'b0}};;
+    e_ALU_op_o <= {`ALU_OP_WIDTH{1'b0}};
     e_STORE_op_o <= 2'h0;
     e_LOAD_op_o <= 3'h0;
     e_data_origin_o <= {`DATA_ORIGIN_WIDTH{1'b0}};

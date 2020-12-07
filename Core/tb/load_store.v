@@ -4,7 +4,7 @@
 
 //`include"testbench.v"
 
-module load_store_test();
+module tb_load_store();
 
 	tb TB();
 	

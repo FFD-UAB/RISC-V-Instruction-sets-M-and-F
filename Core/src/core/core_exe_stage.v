@@ -115,7 +115,7 @@ module exe_stage
           );
 
   // ALU Module that implements the ALU operations of the 32M Standard Extension Instruction Set
-  MULDIV ALU_M (
+  MULDIV2 ALU_M (
          .rs1_i                        (op1_ALU            ),
          .rs2_i                        (op2_ALU            ),
          .funct3_i                     (e_ALU_op_i[2:0]    ),

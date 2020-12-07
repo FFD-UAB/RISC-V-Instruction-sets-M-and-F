@@ -14,10 +14,13 @@ reg [31:0] expectedResult;
 
 top_CoreMem top_CoreMem_inst(
             .clk            (clk),
-            .rst_n          (rst_n)
+            .rst_n          (rst_n),
+            .axi_instr_req  (1'b0),
+            .axi_data_req   (1'b0)
             );
 
 always #50 clk = !clk;
+
 
 //*********************************
 //** Instruction set RV32I Tests **
@@ -599,10 +602,10 @@ task encodeLui;
   begin
     instruction = {immediate[19:0], rd, `OPCODE_U_LUI};
     // top_CoreMem_inst.mem_instr_inst.mem[pc >> 2] = instruction;
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     // $display("mem[%d] = %b", pc, top_CoreMem_inst.mem_instr_inst.mem[pc]);
     pc = pc + 32'd4;
   end
@@ -613,10 +616,10 @@ task encodeAuipc;
   input [19:0] immediate;
   begin
     instruction = {immediate[19:0], rd, `OPCODE_U_AUIPC};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -626,10 +629,10 @@ task encodeJal;
   input [20:0] immediate;
   begin
     instruction = {immediate[20], immediate[10:1], immediate[11], immediate[19:12], rd, `OPCODE_J_JAL};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -640,10 +643,10 @@ task encodeJalr;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b0, rd, `OPCODE_I_JALR};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -654,10 +657,10 @@ task encodeBeq;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b0, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -668,10 +671,10 @@ task encodeBne;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b1, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -682,10 +685,10 @@ task encodeBlt;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b100, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -696,10 +699,10 @@ task encodeBge;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b101, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -710,10 +713,10 @@ task encodeBltu;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b110, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -724,10 +727,10 @@ task encodeBgeu;
   input [12:0] immediate;
   begin
     instruction = {immediate[12], immediate[10:5], rs2, rs1, 3'b11, immediate[4:1], immediate[11], `OPCODE_B_BRANCH};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -738,10 +741,10 @@ task encodeLB;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LB, rd, `OPCODE_I_LOAD};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -752,10 +755,10 @@ task encodeLH;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LH, rd, `OPCODE_I_LOAD};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -766,10 +769,10 @@ task encodeLW;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LW, rd, `OPCODE_I_LOAD};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -780,10 +783,10 @@ task encodeLBU;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LBU, rd, `OPCODE_I_LOAD};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -794,10 +797,10 @@ task encodeLHU;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, `FUNCT3_LHU, rd, `OPCODE_I_LOAD};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -808,10 +811,10 @@ task encodeSB;
   input [11:0] offset;
   begin
     instruction = {offset[11:5], rs2, rs1, `FUNCT3_SB, offset[4:0], `OPCODE_S_STORE};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -822,10 +825,10 @@ task encodeSH;
   input [11:0] offset;
   begin
     instruction = {offset[11:5], rs2, rs1, `FUNCT3_SH, offset[4:0], `OPCODE_S_STORE};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
  endtask
@@ -836,10 +839,10 @@ task encodeSW;
   input [11:0] offset;
   begin
     instruction = {offset[11:5], rs2, rs1, `FUNCT3_SW, offset[4:0], `OPCODE_S_STORE};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -850,10 +853,10 @@ task encodeAddi;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b000, rd, `OPCODE_I_IMM};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -864,10 +867,10 @@ task encodeSlti;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b010, rd, `OPCODE_I_IMM};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -878,10 +881,10 @@ task encodeSltiu;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b011, rd, `OPCODE_I_IMM};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
    end
 endtask
@@ -896,10 +899,10 @@ task encodeAndi;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b111, rd, `OPCODE_I_IMM};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -910,10 +913,10 @@ task encodeSlli;
   input [4:0] immediate;
   begin
     instruction = {7'h0, immediate, rs1, `FUNCT3_SLLI, rd, `OPCODE_I_IMM}; // 3'b001
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -928,10 +931,10 @@ task encodeAdd;
   input [4:0] rd;
   begin
     instruction = {7'b0, rs2, rs1, 3'b000, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -942,10 +945,10 @@ task encodeSub; // Added encodeSub because I didn't find it.
   input [4:0] rd;
   begin
     instruction = {7'h20, rs2, rs1, 3'b000, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -956,10 +959,10 @@ task encodeSll;
   input [4:0] immediate;
   begin
     instruction = {7'h0, immediate, rs1, 3'b001, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -970,10 +973,10 @@ task encodeSlt;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b010, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -984,10 +987,10 @@ task encodeSltu;
   input [11:0] immediate;
   begin
     instruction = {immediate, rs1, 3'b011, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1006,10 +1009,10 @@ task encodeAnd;
   input [4:0] rd;
   begin
     instruction = {7'b0, rs2, rs1, 3'b111, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1023,10 +1026,10 @@ endtask
 task encodeNOOP;
   begin
     instruction = {12'b0, 5'h0, 3'h0, 5'h0, `OPCODE_I_IMM};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1038,10 +1041,10 @@ task encodeCsr;
   input [4:0] rd;
   begin
     instruction = {addr, rs1, FUNCT3_OP, rd, `OPCODE_I_SYSTEM};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1051,10 +1054,10 @@ task iniinstrMem;
   begin
     for (addr = 0; addr < 1024; addr = addr + 1)
     begin
-      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[addr][0] = 8'h0;
-      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[addr][1] = 8'h0;
-      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[addr][2] = 8'h0;
-      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[addr][3] = 8'h0;		
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[addr][0] = 8'h0;
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[addr][1] = 8'h0;
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[addr][2] = 8'h0;
+      top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[addr][3] = 8'h0;		
     end
   end
 endtask
@@ -1084,10 +1087,10 @@ task encodeMUL;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b000, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1098,10 +1101,10 @@ task encodeMULH;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b001, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1112,10 +1115,10 @@ task encodeMULHSU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b010, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1126,10 +1129,10 @@ task encodeMULHU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b011, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1140,10 +1143,10 @@ task encodeDIV;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b100, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1154,10 +1157,10 @@ task encodeDIVU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b101, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1168,10 +1171,10 @@ task encodeREM;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b110, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1182,10 +1185,10 @@ task encodeREMU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b111, rd, `OPCODE_R_ALU};
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][0] = instruction[7:0];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][1] = instruction[15:8];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][2] = instruction[23:16];
-    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[pc >> 2][3] = instruction[31:24];		
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
     pc = pc + 32'd4;
   end
 endtask
@@ -1195,10 +1198,10 @@ task rstinstrMem;
   begin
     instruction = {{`DATA_WIDTH-7{1'b0}}, `OPCODE_I_IMM};
     for (i=0; i<1024; i=i+1) begin
-     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[i][0] = instruction[7:0];
-     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[i][1] = instruction[15:8];
-     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[i][2] = instruction[23:16];
-     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem[i][3] = instruction[31:24];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[i][0] = instruction[7:0];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[i][1] = instruction[15:8];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[i][2] = instruction[23:16];
+     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[i][3] = instruction[31:24];
     end
   end
 endtask

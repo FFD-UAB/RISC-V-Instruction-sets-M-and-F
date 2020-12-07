@@ -169,8 +169,7 @@ module core
         .stall_general_i               (stall_general_t)
         );
 
-core_mem_stage core_mem_stage_inst
-       (
+core_mem_stage mem_stage_inst(
         .clk                           (clk),
         .rst_n                         (rst_n),
         .m_regfile_waddr_i             (m_regfile_waddr_t),
@@ -179,7 +178,7 @@ core_mem_stage core_mem_stage_inst
         .m_data_addr_i                 (m_data_addr_t),
         .m_data_wr_i                   (m_data_wr_t),
         .m_data_rd_i                   (m_data_rd_t),
-        .m_data_be_i       (m_data_be_t),
+        .m_data_be_i                   (m_data_be_t),
         .w_regfile_waddr_o             (w_regfile_waddr_t),
         .w_regfile_rd_o                (w_regfile_rd_t),
         .w_regfile_wr_o                (w_regfile_wr_t),
@@ -188,7 +187,7 @@ core_mem_stage core_mem_stage_inst
         .data_addr_o                   (data_addr_o),
         .data_rdata_i                  (data_rdata_i),
         .data_wdata_o                  (data_wdata_o),
-        .data_be_o         (data_be_o),
+        .data_be_o                     (data_be_o),
         .data_req_o                    (data_req_o),
         .data_gnt_i                    (data_gnt_i),
         .data_rvalid_i                 (data_rvalid_i),
@@ -199,8 +198,7 @@ core_mem_stage core_mem_stage_inst
         .stall_general_i               (stall_general_t)
         );
 
-core_wb_stage core_wb_stageinst
-        (
+core_wb_stage wb_stage_inst(
         .w_is_load_store_i             (w_is_load_store_t),
         .w_regfile_rd_i                (w_regfile_rd_t),
         .w_data_rdata_i                (w_data_rdata_t),

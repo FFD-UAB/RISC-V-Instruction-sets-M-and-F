@@ -1,8 +1,12 @@
 `timescale 1ns/1ps
 `include "../defines.vh"
+`include "../core/core_if_stage.v"
+`include "../core/core_id_stage.v"
+`include "../core/core_exe_stage.v"
+`include "../core/core_mem_stage.v"
+`include "../core/core_wb_stage.v"
 
-module core
-       (
+module core(
         clk,
         rst_n,
         data_addr_o,
@@ -111,7 +115,7 @@ module core
         .e_regfile_raddr_rs1_o         (e_regfile_raddr_rs1_t),
         .e_regfile_raddr_rs2_o         (e_regfile_raddr_rs2_t),
         .e_imm_val_o                   (e_imm_val_t),  //execution unit imm val rs1
-        .e_data_be_o       (e_data_be_t),
+        .e_data_be_o                   (e_data_be_t),
         .w_regfile_wr_i                (w_regfile_wr_t),
         .w_regfile_waddr_i             (w_regfile_waddr_t),
         .w_regfile_rd_i                (reg_file_rd_t),
@@ -133,7 +137,7 @@ module core
         .stall_general_o               (stall_general_t)
         );
     
-  exe_stage exe_stage_inst(
+ exe_stage exe_stage_inst(
         .clk                           (clk),
         .rst_n                         (rst_n),
         .e_ALU_op_i                    (e_ALU_op_t),
@@ -160,16 +164,15 @@ module core
         .m_data_wr_o                   (m_data_wr_t),
         .e_data_rd_i                   (e_data_rd_t),
         .m_data_rd_o                   (m_data_rd_t),
-        .e_data_be_i       (e_data_be_t),
-        .m_data_be_o       (m_data_be_t),
+        .e_data_be_i                   (e_data_be_t),
+        .m_data_be_o                   (m_data_be_t),
         .e_data_target_i               (e_data_target_t),
         .d_alu_busy_o                  (d_alu_busy_t),
         .alu_o                         (alu_t),
         .stall_general_i               (stall_general_t)
         );
 
-core_mem_stage core_mem_stage_inst
-       (
+core_mem_stage mem_stage_inst(
         .clk                           (clk),
         .rst_n                         (rst_n),
         .m_regfile_waddr_i             (m_regfile_waddr_t),
@@ -178,7 +181,7 @@ core_mem_stage core_mem_stage_inst
         .m_data_addr_i                 (m_data_addr_t),
         .m_data_wr_i                   (m_data_wr_t),
         .m_data_rd_i                   (m_data_rd_t),
-        .m_data_be_i       (m_data_be_t),
+        .m_data_be_i                   (m_data_be_t),
         .w_regfile_waddr_o             (w_regfile_waddr_t),
         .w_regfile_rd_o                (w_regfile_rd_t),
         .w_regfile_wr_o                (w_regfile_wr_t),
@@ -187,7 +190,7 @@ core_mem_stage core_mem_stage_inst
         .data_addr_o                   (data_addr_o),
         .data_rdata_i                  (data_rdata_i),
         .data_wdata_o                  (data_wdata_o),
-        .data_be_o         (data_be_o),
+        .data_be_o                     (data_be_o),
         .data_req_o                    (data_req_o),
         .data_gnt_i                    (data_gnt_i),
         .data_rvalid_i                 (data_rvalid_i),
@@ -198,8 +201,7 @@ core_mem_stage core_mem_stage_inst
         .stall_general_i               (stall_general_t)
         );
 
-core_wb_stage core_wb_stageinst
-        (
+core_wb_stage core_wb_stageinst(
         .w_is_load_store_i             (w_is_load_store_t),
         .w_regfile_rd_i                (w_regfile_rd_t),
         .w_data_rdata_i                (w_data_rdata_t),

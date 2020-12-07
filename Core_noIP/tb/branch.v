@@ -4,7 +4,7 @@
 
 //`include"../tb/testbench.v"
 
-module branch_test();
+module tb_branch();
 tb TB();
  initial begin 
 //$dumpfile("vcd/riscV.vcd");
@@ -13,10 +13,6 @@ tb TB();
   TB.pc = 32'b0;
 // Initialize registers
   TB.clk = 1'b0;
-  TB.rst_n = 1'b0; // Reset cycle to initialize the instrMem,
-  #100             // without this procedure, the core allways
-  TB.rst_n = 1'b1; // loads the first instruction from the previous
-  #100             // test and doesn't execute the first test.
   TB.rst_n = 1'b0;
   #100
 

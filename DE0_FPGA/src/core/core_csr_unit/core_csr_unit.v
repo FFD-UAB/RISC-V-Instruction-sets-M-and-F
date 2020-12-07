@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
 `include "../../defines.vh"
+`include "../core_csr_unit/core_csr_unit_counter.v"
+`include "../core_csr_unit/core_csr_unit_timer.v"
 
 module crs_unit
        (

@@ -1,4 +1,4 @@
-fe010113          	// addi	sp,sp,-32
+fe010113          	// addi	sp,sp,-32  (sp=s2)
 00812e23          	// sw	s0,28(sp)
 02010413          	// addi	s0,sp,32
 fe042623          	// sw	zero,-20(s0)
@@ -11,4 +11,3 @@ fec42783          	// lw	a5,-20(s0)
 00178793          	// addi	a5,a5,1
 fef42623          	// sw	a5,-20(s0)
 fe9ff06f          	// j	18 <main+0x18>
-00000000            // Used to stop loading instructions

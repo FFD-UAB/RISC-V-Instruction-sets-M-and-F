@@ -37,15 +37,13 @@ module if_stage
     reg  [`DATA_WIDTH-1:0]             dd_instruction;
     wire                               stall_any;
     reg                                stall_reg;   
-    reg                                brj_reg;                    
-
+    reg                                brj_reg;    
+    reg                                core_init; // High during the first clock cycle after rst
+                                                  // to avoid loading a wrong first instruction.
     
     assign instruction_addr_o = pc[`MEM_ADDR_WIDTH-1:0];
-
     assign pc4  = pc + {{`DATA_WIDTH-3{1'b0}}, 3'd4};
-
     assign flush_inst_o = !brj_i;
-
     assign stall_any = stall_i | stall_general_i;
     
     always @(posedge clk or negedge rst_n)
@@ -61,12 +59,14 @@ module if_stage
                   d_pc4_o <= {`DATA_WIDTH{1'b0}};
                   stall_reg <= 1'b0;
                   brj_reg <= 1'b0;
+                  core_init <= 1'b1;
                  end
      else begin
             d_pc_o <= pc;
             d_pc4_o <= pc4;
             stall_reg <= stall_any;
             brj_reg <= brj_i;
+            core_init <= 1'b0;
           end
            
     //The output of the program memory is registered!
@@ -78,7 +78,7 @@ module if_stage
             dd_instruction <= instruction_rdata_i;
            end 
 
-     assign d_instruction_o = brj_reg ? {25'b0, 7'b0010011}
-                                    : stall_reg ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
+     assign d_instruction_o = brj_reg | core_init ? {25'b0, 7'b0010011}
+                                                  : stall_reg ? dd_instruction : instruction_rdata_i;//flush_inst ? {25'b0, 7'b0010011} : instruction_rdata_i;
 
 endmodule 

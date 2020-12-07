@@ -7,15 +7,15 @@
 ../src/mem/sp_ram_wrap_instr.sv
 ../src/mem/sp_ram_data.sv
 ../src/mem/sp_ram_instr.sv
-../src/core/core_execution_unit/core_branchig_unit.v
 ../src/core/core_execution_unit/core_execution_unit_alu.v
-../src/core/core_control_unit.v
+../src/core/core_instrDecode_unit/core_control_unit.v
+../src/core/core_instrDecode_unit/core_branching_unit.v
+../src/core/core_instrDecode_unit/core_reg_file.v
 ../src/core/core_id_stage.v
 ../src/core/core_if_stage.v
 ../src/core/core_exe_stage.v
 ../src/core/core_mem_stage.v
 ../src/core/core_wb_stage.v
-../src/core/core_reg_file.v
 ../src/core/core_csr_unit/core_csr_unit.v
 ../src/core/core_csr_unit/core_csr_unit_counter.v
 ../src/core/core_csr_unit/core_csr_unit_timer.v
@@ -23,15 +23,31 @@
 ../src/top_CoreMem.v
 ../tb/testbench.sv
 
+/////////////////////////////////////////////
+// Instruction expansion set RV32M modules //
+/////////////////////////////////////////////
+../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v
+../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
+../src/core/core_execution_unit/MULDIV/Normal32u.v
+
+// Select which MUL module is being used:
+//../src/core/core_execution_unit/core_execution_unit_alu_m.v  // LPM_MULT MULDIV
+../src/core/core_execution_unit/core_execution_unit_alu_m2.v  // ALTMULT_ADD MULDIV2
+//../src/core/core_execution_unit/MULDIV/MULgold.v           // No IP Multifunction
+
+// Select which DIV module is being used:
+//../src/core/core_execution_unit/MULDIV/bDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/qsDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/seDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/dDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/deqsDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
+
+
 // Tests
 ../tb/load_store.v
 ../tb/arithmeticologicM.v
+../tb/arithmeticologic.v
 ../tb/branch.v
-
-
-// Instruction expansion set RV32M modules
-../src/core/core_execution_unit/core_execution_unit_alu_m.v
-../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
-../src/core/core_execution_unit/MULDIV/MULgold.v
-../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v
+../tb/mem_test.v
