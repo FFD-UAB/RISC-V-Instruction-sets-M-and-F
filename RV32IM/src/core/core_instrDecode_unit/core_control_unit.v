@@ -231,7 +231,7 @@ module control_unit
                            data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value, in dis case 0
                            data_target_o = 2'b11;
                            imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
-                           regfile_wr = 1'b1;  // Write the resut in RD
+                           regfile_wr = regfile_waddr != 5'b0;  // Write the resut in RD
                            ALU_op = `ALU_OP_ADD;  // Sum with 0
                           end
             OPCODE_U_AUIPC: begin  // Place the PC plus the 20-bit signed immediate (shited 12 bits left) into rd (used before JALR)
@@ -239,7 +239,7 @@ module control_unit
                              data_target_o = 2'b11;
                              imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
                              jump = 1'b1;
-                             regfile_wr = 1'b1;  // Write the resut in RD
+                             regfile_wr = regfile_waddr != 5'b0;  // Write the resut in RD
                              ALU_op = `ALU_OP_ADD;  // Add the values
                             end
             OPCODE_J_JAL: begin  // Jump to the PC plus 20-bit signed immediate while saving PC+4 into rd
@@ -247,7 +247,7 @@ module control_unit
                            jump = 1'b1;
                            data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
                            imm_val_o = {{`DATA_WIDTH - 21 {imm20j[19]}},  imm20j[19:0], 1'b0  }; // TODO last bit is used? or is always 0
-                           regfile_wr = 1'b1; // Write the resut in RD                
+                           regfile_wr = regfile_waddr != 5'b0; // Write the resut in RD                
                            ALU_op = `ALU_OP_ADD;  // to add the immideate value to the PC
                           end
             OPCODE_I_JALR: begin  // jalr       "Jump to rs1 plus the 12-bit signed immediate while saving PC+4 into rd"
@@ -257,7 +257,7 @@ module control_unit
                             data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and mantain RS1 the value
                             ALU_op = `ALU_OP_ADD;  
                             imm_val_o = {{`DATA_WIDTH - 12 {imm12[11]}},  imm12[11:0] }; // no ^2
-                            regfile_wr = 1'b1;  // Write the resut in RD
+                            regfile_wr = regfile_waddr != 5'b0;  // Write the resut in RD
                            end
             OPCODE_B_BRANCH: begin
                               data_origin_o = `REGS;  // Mantain RS2 value and RS1 value // DefaultValue
@@ -274,7 +274,7 @@ module control_unit
                              end
             OPCODE_I_LOAD: begin  // Loads
                             is_load_store = 1'b1;
-                            regfile_wr = 1'b1;            
+                            regfile_wr = regfile_waddr != 5'b0;            
                             ALU_op = `ALU_OP_ADD;  // to add the immideate value to the addr
                             data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
                             imm_val_o = {{`DATA_WIDTH - 12 {imm12[11]}},  imm12[11:0]  };
@@ -318,7 +318,7 @@ module control_unit
             OPCODE_I_IMM: begin
                            data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
                            imm_val_o = { {`DATA_WIDTH - 12 {imm12[11]}}, imm12[11:0] };
-                           regfile_wr = 1'b1;
+                           regfile_wr = regfile_waddr != 5'b0;
                            i_r1_o = 1'b1;
                            i_r2_o = 1'b0;
                            case(funct3)
@@ -335,7 +335,7 @@ module control_unit
                           end
 
             OPCODE_R_ALU: begin
-                           regfile_wr = 1'b1;
+                           regfile_wr = regfile_waddr != 5'b0;
                            i_r1_o = 1'b1;
                            i_r2_o = 1'b1;
                            ALU_op = {funct7[0], funct7[5], funct3};
@@ -370,7 +370,7 @@ module control_unit
                             end
 
             OPCODE_I_SYSTEM: begin  // SYSTEM + CSR  // TODO Add control signals to enable CSR unit
-                regfile_wr = 1'b1;
+                regfile_wr = regfile_waddr != 5'b0;
                 csr_op_rs2_o = 2'b01;
                 csr_wr_o = 1'b1;
                 case(funct3)

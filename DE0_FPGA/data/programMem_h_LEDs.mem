@@ -1,0 +1,4 @@
+00018013  // encodeAddi(5'h0, 5'h3, 12'h0);  // Load imm 0 -> s3
+00118193  // encodeAddi(5'h3, 5'h3, 12'h1);  // s3 = s3+1
+00302423  // encodeSW(5'h0, 5'h3, 12'd8);    // Store data Data[8+s0] <- s3
+ff9ff06f  // encodeJal(5'h0, -21'd8);        // PC <- PC-8, return to second ADDI
