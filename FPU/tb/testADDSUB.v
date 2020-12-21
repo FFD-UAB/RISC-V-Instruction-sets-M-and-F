@@ -78,7 +78,7 @@ Cg = 32'h0;
  @(posedge clk) ;
  #25 start <= 1'b0;
 
-// Subnormal ADD operation test (input exponents = 0)
+// Subnormal operation test (input exponents = 0)
 
 if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B = %h at %0t ns", Cg, C, A, B, $realtime);
 #100;
@@ -144,6 +144,14 @@ if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B
 A = 32'h12345678;
 B = 32'h87654321;
 Cg = 32'h12345674;
+@(posedge clk) #50;
+
+if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B = %h at %0t ns", Cg, C, A, B, $realtime);
+#100;
+
+A = 32'h08010000;
+B = 32'h88000000;
+Cg = 32'h04800000;
 @(posedge clk) #50;
 
 if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B = %h at %0t ns", Cg, C, A, B, $realtime);

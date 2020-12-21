@@ -85,15 +85,6 @@ wire [27:0] b_m; // a >= b between rs1 and rs2 mantissas
 wire        rs1mGErs2m; //rs1 mantissa greater than or equal to rs2 mantissa
 wire        add1Exponent; // Increment exponent once if is overflow or [1.] depending on exponent.
 
-// DEBUG
-wire [22:0] A;
-wire [22:0] B;
-wire [22:0] res;
-assign res = res_m[25:3];
-assign A = a_m[25:3];
-assign B = b_m[25:3];
-//
-
 assign rs1mGTrs2m = rs1_m >= rs2_m;
 assign a_m = {1'b0,  rs1mGTrs2m ? rs1_m : rs2_m};
 assign b_m = {1'b0, !rs1mGTrs2m ? rs1_m : rs2_m};
@@ -123,7 +114,7 @@ wire        zeroMantissa; // Flag of 0 mantissa.
 assign zeroMantissa = res_m == 28'b0;
 assign shifts = add1Exponent | res_e == 8'b0 ? 9'b0
                                              : MSBOneBitPosition - 9'd25;
-assign PostAllign_e = zeroMantissa ? 9'b0 : res_e - shifts;
+assign PostAllign_e = zeroMantissa ? 9'b0 : res_e + shifts;
 assign PostAllign_s = res_s;
 
 // In the case where the exponent = 0, the hidden [1.] is not existent, so if the addition
@@ -137,19 +128,11 @@ wire [24:0] PostAllign_m;    // 23 mantissa + 2 rounding bits
 assign PostAllign_m = (add1Exponent & !(rs1_e == 8'b0) ? prePostAllign_m[25:1] 
                                     : prePostAllign_m) << shifts;
 
-// DEBUG
-wire [22:0] k;
-wire [22:0] k2;
-assign k2 = PostAllign_m[24:2];
-assign k = prePostAllign_m[24:2];
-//
-
-
 
 // Step 4: Rounding
 // Because of the rounding modes and the absolute magnitude mantissa, there's always two possible 
 // outcomes. For ease, let's first compute both of them, that includes the possibility of overflowing 
-// the mantissa (adding 1 to the exponent).
+// the mantissa (adding 1 to the exponent) because of the rounding.
 
 wire [22:0] Round_m0;  // 23 mantissa bits   Normal output
 wire [22:0] Round_m1;  // 23 mantissa bits   Output +1
