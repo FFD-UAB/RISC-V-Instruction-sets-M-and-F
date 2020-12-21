@@ -1,17 +1,13 @@
 // Telecommunications Master Dissertation - Francis Fuentes 16-10-2020
-// MULDIV2 HW block implementing instruction set M.
-// In comparison with the original MULDIV design, this module uses 
-// the ALTMULT_ADD multifunction IP to perform unsigned/signed 
-// multiplications, requiring less logic in the multiplication path and 
-// thus, has a higher maximum frequency of operation.
+// MULDIV HW block implementing instruction set M.
 // Is expected that the core does polling on the busy flag to know if
-// the operation is done.
+// the operation is done. This version uses a single clock cycle 
+// unsigned multiplier module implemented by the multifunction IP LPM_MULT32
+// module and mutli-cycle unsigned divider module.
 
-`include "../../defines.vh"
-`include "MULDIV/dDIVrest32u.v"
-//`include "../core_execution_unit/MULDIV/ALTMULT_ADD32.v" // Already done in the .qip file at lib folder
+`include "../src/defines.vh"
 
-module MULDIV2(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
+module MULDIV(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
 input [`DATA_WIDTH-1:0] rs1_i;    	// Multiplicand or dividend.
 input [`DATA_WIDTH-1:0] rs2_i;    	// Multiplier or divisor.
 input             [2:0] funct3_i;       // DIVMUL type funct3 selector.
@@ -32,8 +28,7 @@ wire   [`DATA_WIDTH-1:0] b_unsigned; // Unsigned multiplier/divisor output of th
 wire   [`DATA_WIDTH-1:0] q;          // Quotient result from DIV module.
 wire   [`DATA_WIDTH-1:0] r;          // Remainder result from DIV module.
 wire [2*`DATA_WIDTH-1:0] c_mul;      // Multiplication result from MUL module.
-wire                     signedInputSharedFlag; // Flags to indicate rs2 signed 
-wire                     a_signedInputFlag;     // and rs1 signed inputs.
+wire                     signedInputSharedFlag;
 
 // MULDIV type of operation.
 /*     MUL = 3'b000, // SxS 32LSB
@@ -43,28 +38,28 @@ wire                     a_signedInputFlag;     // and rs1 signed inputs.
 	   DIV = 3'b100, // S/S quotient
 	  DIVU = 3'b101, // U/U quotient
 	   REM = 3'b110, // S/S remainder
-	  REMU = 3'b111; // U/U remainder*/
+	  REMU = 3'b111; // U/U remainder */
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Module selection for the operations. Select only one divider and one multiplier //
+/////////////////////////////////////////////////////////////////////////////////////
+
+  // Unsigned 32bit divider 
+dseDIVrest32u DIVmod(.a_in(a), // Options available are t, b, qs, eqs, se, d, deqs, dseDIVrest32u.
+	.b_in(b),
+	.start_in(startDIV),
+	.clk(clk),
+	.rstLow(rstLow),
+	.q_out(q),
+	.r_out(r),
+	.busy(busy_t));
 
 
-dDIVrest32u DIVmod_inst(  // Various options are t, b, qs, eqs, se, d, deqs, dseDIVrest32u.
-    .a_in    ( a        ),
-	.b_in    ( b        ),
-	.start_in( startDIV ),
-	.clk     ( clk      ),
-	.rstLow  ( rstLow   ),
-	.q_out   ( q        ),
-	.r_out   ( r        ),
-	.busy    ( busy_t   )
-    );
-
- // ALTMULT_ADD module. 
-ALTMULT_ADD32 MULmod_inst(
-        .clock0  ( clk                   ),
-        .dataa_0 ( rs1_i                 ),
-        .datab_0 ( rs2_i                 ),
-        .signa   ( a_signedInputFlag     ),  // signed at high
-        .signb   ( signedInputSharedFlag ),
-        .result  ( c_mul                 )
+ // LPM_MULT module. Works only with unsigned inputs/outputs (less resource usage)
+LPM_MULT32 MULmod(
+        .dataa  (a),
+        .datab  (b),
+        .result (c_mul)
         );
 
 
@@ -92,6 +87,16 @@ assign divOF = (rs1_i == {1'b1, {(`DATA_WIDTH-1){1'b0}}}) & (rs2_i == {`DATA_WID
 // Special cases flag for multiplication sign solution.
 wire   differentInpSign; // High when both inputs have differnt sign.
 assign differentInpSign =  rs1_i[`DATA_WIDTH-1] ^ rs2_i[`DATA_WIDTH-1];
+
+
+// All possible signed MUL solutions.
+wire [2*`DATA_WIDTH-1:0] sign_c_mul;      // MUL output, but negative 2'complement.
+wire [2*`DATA_WIDTH-1:0] result_S_c_mul;  // Signed multiplication solution.
+wire [2*`DATA_WIDTH-1:0] result_SU_c_mul; // Signed RS1 x Unsigned RS2 = Signed SU_c_mul
+
+assign sign_c_mul = 2'b1 + ~c_mul; // 2'complement is bit-by-bit negative +1.
+assign result_S_c_mul  = (differentInpSign     ? sign_c_mul : c_mul);
+assign result_SU_c_mul = (rs1_i[`DATA_WIDTH-1] ? sign_c_mul : c_mul);
 
 
 // All possible signed DIV solutions.
@@ -123,9 +128,9 @@ assign r_output = (div0 ? rs1_i // Divisor == 0 -> r = dividend.
 //*********************************************
 // If previous division asks quotient, the remainder is also generated, so if the operands have not 
 // changed and maintains the same type signed/unsigned, deliver the remainder in one-cycle.
+// Also works for two divisions with the same operands (aka, DIV/DIVU with same absolute inputs).
 reg [`DATA_WIDTH-1:0] A_prev;
 reg [`DATA_WIDTH-1:0] B_prev;
-reg             [2:0] funct3_prev;
 wire oneCycleRemainder;
 
 // Load previous operands and function type.
@@ -135,19 +140,13 @@ always @(posedge clk or negedge rstLow)
    B_prev <= {`DATA_WIDTH{1'b0}};
  end
  else if(startDIV) begin
-   A_prev <= rs1_i;
-   B_prev <= rs2_i;
+   A_prev <= a;
+   B_prev <= b;
  end
 
-always @(posedge clk or negedge rstLow)
- if (!rstLow) funct3_prev <= 3'b0; // Only remember function if there isn't a remainder
- else if (!oneCycleRemainder) funct3_prev <= funct3_i; // to load after.
-
 // Flag only high when asking remainder of a division operation previously done for the quotient.
-// First check if appropiated funct3 types. (DIV with REM and DIVU with REMU, but not between them)
-assign oneCycleRemainder = (
- ((funct3_i == `FUNCT3_REMU) & (funct3_prev == `FUNCT3_DIVU)) | ((funct3_i == `FUNCT3_REM) & (funct3_prev == `FUNCT3_DIV)) 
-                           ) & (A_prev == rs1_i) & (B_prev == rs2_i); // Second, check if operands haven't changed.
+// Because the DIV module only works with unsigned, no matter if the funct3 is unsigned or signed that the operands will be
+assign oneCycleRemainder = (A_prev == a) & (B_prev == b); // translated to unsigned, so if they're the same operation, skip it.
 
 
 // Start the DIV module only if is a division operation that doesn't fall in a special case
@@ -173,10 +172,10 @@ assign signedInputSharedFlag = |{(funct3_i == `FUNCT3_MUL),
                                  (funct3_i == `FUNCT3_MULH),
                                  (funct3_i == `FUNCT3_DIV), 
                                  (funct3_i == `FUNCT3_REM)};
-assign a_signedInputFlag = signedInputSharedFlag | (funct3_i == `FUNCT3_MULHSU);
 
 // RS1 signed when 000, 001, 010, 100, 110, aka, MUL, MULH, MULHSU, DIV, REM.
-assign a = (a_signedInputFlag     ? a_unsigned
+assign a = (signedInputSharedFlag | (funct3_i == `FUNCT3_MULHSU)
+                                  ? a_unsigned
                                   : rs1_i);
 
 // RS2 signed when 000, 001, 100, 110, aka, MUL, MULH, DIV, REM.
@@ -193,9 +192,9 @@ assign b = (signedInputSharedFlag ? b_unsigned
 always @(*)
  case (funct3_i)
 	// MUL outputs.
-	`FUNCT3_MUL:    c_o <= c_mul[`DATA_WIDTH-1:0];
-	`FUNCT3_MULH:   c_o <= c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; 
-	`FUNCT3_MULHSU: c_o <= c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; // RS1 signed, SxU=S
+	`FUNCT3_MUL:    c_o <= result_S_c_mul[`DATA_WIDTH-1:0];
+	`FUNCT3_MULH:   c_o <= result_S_c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; 
+	`FUNCT3_MULHSU: c_o <= result_SU_c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; // RS1 signed, SxU=S
 	`FUNCT3_MULHU:  c_o <= c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH];
 
 	// DIV outputs.

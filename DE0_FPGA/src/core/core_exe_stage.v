@@ -1,8 +1,6 @@
 //`default_nettype none
 `timescale 1ns/1ps
 `include "../defines.vh"
-`include "../core/core_execution_unit/core_execution_unit_alu.v"
-`include "../core/core_execution_unit/core_execution_unit_alu_m.v"
 
 module exe_stage
        (

@@ -40,10 +40,6 @@
 // --------------------------------------------------------------------
 
 //`timescale 1ns/1ps
-`include "../src/top_CoreMem.v"
-`include "../src/DE0/button_debouncer.v"
-//`include "../src/DE0/PLL.v"
-`include "../src/DE0/SEG7_LUT.v"
 
 module top_DE0
     (

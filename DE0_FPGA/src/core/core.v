@@ -1,10 +1,5 @@
 `timescale 1ns/1ps
 `include "../defines.vh"
-`include "../core/core_if_stage.v"
-`include "../core/core_id_stage.v"
-`include "../core/core_exe_stage.v"
-`include "../core/core_mem_stage.v"
-`include "../core/core_wb_stage.v"
 
 module core(
         clk,

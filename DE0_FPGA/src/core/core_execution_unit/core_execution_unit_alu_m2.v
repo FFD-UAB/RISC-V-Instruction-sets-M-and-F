@@ -8,8 +8,6 @@
 // the operation is done.
 
 `include "../../defines.vh"
-`include "MULDIV/dDIVrest32u.v"
-//`include "../core_execution_unit/MULDIV/ALTMULT_ADD32.v" // Already done in the .qip file at lib folder
 
 module MULDIV2(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
 input [`DATA_WIDTH-1:0] rs1_i;    	// Multiplicand or dividend.

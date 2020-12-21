@@ -1,0 +1,3 @@
+# Load the project library
+vlib work
+vlog -sv -f sv_files

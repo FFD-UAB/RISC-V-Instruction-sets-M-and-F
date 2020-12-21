@@ -1,14 +1,5 @@
 //`timescale 1ns/1ps
 `include "../src/defines.vh"
-/*`include "../src/mem/ram_mux.sv"    // SVerilog and Verilog files doesn't mix
-`include "../src/mem/sp_ram_data.sv"  // well in Quartus 13.1
-`include "../src/mem/sp_ram_instr.sv"
-`include "../src/mem/sp_ram_wrap_data.sv"
-`include "../src/mem/sp_ram_wrap_instr.sv"
-`include "../src/mem/instr_ram_wrap.sv"
-`include "../src/mem/boot_code.sv"
-`include "../src/mem/boot_rom_wrap.sv"*/
-`include "../src/core/core.v"
 
 module top_CoreMem
 	(

@@ -1,10 +1,6 @@
 `timescale 1ns/1ps
 
 `include "../defines.vh"
-`include "../core/core_instrDecode_unit/core_control_unit.v"
-`include "../core/core_instrDecode_unit/core_reg_file.v"
-`include "../core/core_instrDecode_unit/core_branching_unit.v"
-`include "../core/core_csr_unit/core_csr_unit.v"
 
 // Module Declaration
 module id_stage(
