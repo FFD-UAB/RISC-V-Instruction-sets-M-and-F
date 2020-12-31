@@ -72,7 +72,7 @@ infact = $MODEL_TECH/../infact
 
 
 vhdlopt_lib = $MODEL_TECH/../vhdlopt_lib
-work = MULDIV
+work = work
 [DefineOptionset]
 ; Define optionset entries for the various compilers, vmake, and vsim.
 ; These option sets can be used with the "-optionset <optionsetname>" syntax.

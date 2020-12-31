@@ -3,6 +3,8 @@
 
 `timescale 1ns/1ns
 
+`include "../src/config_core.vh"
+
 module testMULDIV();
 reg [31:0] A;	// Dividend. A = B*q + r
 reg [31:0] B;	// Divisor.
@@ -31,6 +33,16 @@ parameter  MUL = 3'h0, // SxS 32LSB
 
 
 // Load HW synthesizable model.
+`ifdef RV32IM_MULDIV2
+MULDIV2 MULDIV(.rs1_i(A),
+	.rs2_i(B),
+	.funct3_i(funct3),
+	.start_i(start),
+	.clk(clk),
+	.rstLow(rstLow),
+	.c_o(C),
+	.busy_o(busy));
+`else
 MULDIV MULDIV(.rs1_i(A),
 	.rs2_i(B),
 	.funct3_i(funct3),
@@ -39,6 +51,7 @@ MULDIV MULDIV(.rs1_i(A),
 	.rstLow(rstLow),
 	.c_o(C),
 	.busy_o(busy));
+`endif
 
 // Load reference model.
 MULDIVgold MULDIVref(.a(A), 
@@ -72,14 +85,20 @@ B <= 32'h0;
 // ** Specific value test **
 // *************************
 //
-A = 32'h8a46c5f4;	// Specific dividend value.
-B = 32'h71000004;	// Specific divisor value.
+A = 32'h0C001801;	// Specific dividend value.
+B = 32'h00008001;	// Specific divisor value.
+//A = 32'h51d78a4e;	// Specific dividend value.
+//B = 32'h00000003;	// Specific divisor value.
+//A = 32'h0b86a118;	// Specific dividend value.
+//B = 32'h00000001;	// Specific divisor value.
+//A = 32'h06ca770d;	// Specific dividend value.
+//B = 32'h0538bf5a;	// Specific divisor value.
 //B <=  32'h0;		// Uncomment to perform DIV by 0 test.
 //A <=  32'h80000000;	// Uncomment to perform DIV overflow test.
 //B <=  32'h00000001;	// Uncomment to perform DIV overflow test.
 @(posedge clk) ;
 
-for(i = 0; i < 8; i = i+1)
+for(i = 4; i < 6; i = i+1)
 begin
  #25 funct3 <= i; 	// Comment to test one-cycle remainder.
 // #25 funct3 <= 1+2*i; // Uncomment to test one-cycle remainder.
@@ -113,13 +132,13 @@ seed = 11037;
 @(posedge clk) ;
 
 
-for(i = 0; i < 10; i = i+1) // Change to perform many more random tests.
+for(i = 0; i < 10000; i = i+1) // Change to perform many more random tests.
 begin
  A <= ($random(seed))%2**31; // This command outputs a signed value below the %value in abs.
  B <= ($random(seed))%2**k;
 
-
- for(j = 0; j < 8; j = j + 1) // (j = 0; j < 8; j = j + 1) to test every funct3 type.
+// (j = 0; j < 8; j = j + 1) to test every funct3 type. (j = 5; j < 6; j = j + 1) for unsigned, (j = 4; j < 5; j = j + 1) for signed.
+ for(j = 4; j < 5; j = j + 1)
  begin
   #25 funct3 <= j;
 //  #25 funct3 <= 4+2*j;      // Comment line above and uncomment this one to test oneCycleRemainder system. Also, adjust j in the for to j<2.

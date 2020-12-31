@@ -1,23 +1,16 @@
-E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v
-Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
--- Compiling module MULgold
-
-Top level modules:
-	MULgold
-
-} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v
+E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/HighestLeftBit32u.v
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
 -- Compiling module HighestLeftBit32u
 
 Top level modules:
 	HighestLeftBit32u
 
-} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v
+} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/MULgold.v
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
--- Compiling module bDIVrest32u
+-- Compiling module MULgold
 
 Top level modules:
-	bDIVrest32u
+	MULgold
 
 } {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/Signed2Unsigned.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/Signed2Unsigned.v
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
@@ -26,12 +19,19 @@ Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 
 Top level modules:
 	Signed2Unsigned
 
-} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v
+} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/bDIVrest32u.v
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
--- Compiling module MULDIVgold
+-- Compiling module bDIVrest32u
 
 Top level modules:
-	MULDIVgold
+	bDIVrest32u
+
+} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module Normalize32u
+
+Top level modules:
+	Normalize32u
 
 } {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/tDIVrest32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/tDIVrest32u.v
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
@@ -40,11 +40,11 @@ Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 
 Top level modules:
 	tDIVrest32u
 
-} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/Normal32u.v
+} {} {}} E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v {1 {vlog -work MULDIV -stats=none E:/Uni/TFM/VerilogCode/MULDIV/src/MULDIVgold.v
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
--- Compiling module Normalize32u
+-- Compiling module MULDIVgold
 
 Top level modules:
-	Normalize32u
+	MULDIVgold
 
 } {} {}}

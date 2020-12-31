@@ -34,7 +34,7 @@ assign 	q_out = (DividendLowerDivisor ? 32'b0 : reg_q);
 assign 	r_out = (DividendLowerDivisor ? a_in  : reg_r);
 
 // Intern control signals.
-reg     [3:0] count; // Iteration counter.
+reg     [4:0] count; // Iteration counter.
 reg           init;  // Initialize control signal (counter, registers, etc).
 
 // Intern results signals.
@@ -74,7 +74,7 @@ always @(posedge clk or negedge rstLow)
 		State = Loop;
 
 	Loop:	// Change to Finish when count = 31 or to Prep if is rst.
-		State = (count == 4'd15 ? Finish : Loop);
+		State = (count == 5'd30 ? Finish : Loop);
 
 	Finish, Free: //Finish: // Maintain results until rst or next start.
 		State = (start ? Prep : Finish);
@@ -106,9 +106,9 @@ always @(State)
 // **********************
 
 always @(posedge clk or negedge rstLow)
- if (!rstLow) count <= 4'b0;
- else if (init) count <= 4'b0;
-      else if (busy) count <= count + 2'b1;
+ if (!rstLow) count <= 5'b0;
+ else if (init) count <= 5'b0;
+      else if (busy) count <= count + 3'd2;
 
  // Because the dividend shifts two positions each cycle, the last cycle can overflow
  // the counter (do an extra shift). To avoid that, the control signal oneShiftLeft is used.

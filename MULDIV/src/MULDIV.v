@@ -6,10 +6,11 @@
 // module and mutli-cycle unsigned divider module.
 
 `include "../src/defines.vh"
+`include "../src/config_core.vh"
 
 module MULDIV(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
-input [`DATA_WIDTH-1:0] rs1_i;    	// Multiplicand or dividend.
-input [`DATA_WIDTH-1:0] rs2_i;    	// Multiplier or divisor.
+input [`DATA_WIDTH-1:0] rs1_i;        // Multiplicand or dividend.
+input [`DATA_WIDTH-1:0] rs2_i;        // Multiplier or divisor.
 input             [2:0] funct3_i;       // DIVMUL type funct3 selector.
 input                   start_i;        // Start flag for possible multiple-cycle execution.
 input                   clk;            // Clock signal.
@@ -32,35 +33,124 @@ wire                     signedInputSharedFlag;
 
 // MULDIV type of operation.
 /*     MUL = 3'b000, // SxS 32LSB
-	  MULH = 3'b001, // SxS 32MSB
-	MULHSU = 3'b010, // SxU (rs1 x rs2) 32MSB
-	 MULHU = 3'b011, // UxU 32MSB
-	   DIV = 3'b100, // S/S quotient
-	  DIVU = 3'b101, // U/U quotient
-	   REM = 3'b110, // S/S remainder
-	  REMU = 3'b111; // U/U remainder */
+      MULH = 3'b001, // SxS 32MSB
+    MULHSU = 3'b010, // SxU (rs1 x rs2) 32MSB
+     MULHU = 3'b011, // UxU 32MSB
+       DIV = 3'b100, // S/S quotient
+      DIVU = 3'b101, // U/U quotient
+       REM = 3'b110, // S/S remainder
+      REMU = 3'b111; // U/U remainder */
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Module selection for the operations. Select only one divider and one multiplier //
 /////////////////////////////////////////////////////////////////////////////////////
 
   // Unsigned 32bit divider 
-dseDIVrest32u DIVmod(.a_in(a), // Options available are t, b, qs, eqs, se, d, deqs, dseDIVrest32u.
-	.b_in(b),
-	.start_in(startDIV),
-	.clk(clk),
-	.rstLow(rstLow),
-	.q_out(q),
-	.r_out(r),
-	.busy(busy_t));
+`ifdef  RV32IM_dseDIVrest32
+dseDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`elsif RV32IM_deqsDIVrest32
+deqsDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`elsif RV32IM_dDIVrest32
+dDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`elsif RV32IM_seDIVrest32
+seDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`elsif RV32IM_eqsDIVrest32
+eqsDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`elsif RV32IM_qsDIVrest32
+qsDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`elsif RV32IM_bDIVrest32
+bDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`else
+tDIVrest32u DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
+`endif
 
 
  // LPM_MULT module. Works only with unsigned inputs/outputs (less resource usage)
+`ifdef RV32IM_noIP
+MULgold MULmod(
+    .a_in  ( a     ),
+	.b_in  ( b     ),
+	.c_out ( c_mul )
+    );
+`else
 LPM_MULT32 MULmod(
-        .dataa  (a),
-        .datab  (b),
-        .result (c_mul)
-        );
+    .dataa  ( a     ),
+    .datab  ( b     ),
+    .result ( c_mul )
+    );
+`endif
 
 
 
@@ -79,8 +169,8 @@ wire div0;  // Flag of division by 0.
 wire divOF; // Flag of division overflow only at signed operation.
 
 assign div0 = rs2_i == {`DATA_WIDTH{1'b0}}; // div0 high when Divisor == 0.
-	// divOF high when DIV overflow (dividend = -2^31 and divisor = -1,
-	// because quotient would be 2^31, overflow value in 32bit signed).
+    // divOF high when DIV overflow (dividend = -2^31 and divisor = -1,
+    // because quotient would be 2^31, overflow value in 32bit signed).
 assign divOF = (rs1_i == {1'b1, {(`DATA_WIDTH-1){1'b0}}}) & (rs2_i == {`DATA_WIDTH{1'b1}});
 
 
@@ -191,17 +281,17 @@ assign b = (signedInputSharedFlag ? b_unsigned
 // Reset signal takes priority to output 0.
 always @(*)
  case (funct3_i)
-	// MUL outputs.
-	`FUNCT3_MUL:    c_o <= result_S_c_mul[`DATA_WIDTH-1:0];
-	`FUNCT3_MULH:   c_o <= result_S_c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; 
-	`FUNCT3_MULHSU: c_o <= result_SU_c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; // RS1 signed, SxU=S
-	`FUNCT3_MULHU:  c_o <= c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH];
+    // MUL outputs.
+    `FUNCT3_MUL:    c_o <= result_S_c_mul[`DATA_WIDTH-1:0];
+    `FUNCT3_MULH:   c_o <= result_S_c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; 
+    `FUNCT3_MULHSU: c_o <= result_SU_c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH]; // RS1 signed, SxU=S
+    `FUNCT3_MULHU:  c_o <= c_mul[2*`DATA_WIDTH-1:`DATA_WIDTH];
 
-	// DIV outputs.
-	`FUNCT3_DIV:    c_o <= q_output;
-	`FUNCT3_DIVU:   c_o <= q_output;
-	`FUNCT3_REM:    c_o <= r_output;
-	`FUNCT3_REMU:   c_o <= r_output;
+    // DIV outputs.
+    `FUNCT3_DIV:    c_o <= q_output;
+    `FUNCT3_DIVU:   c_o <= q_output;
+    `FUNCT3_REM:    c_o <= r_output;
+    `FUNCT3_REMU:   c_o <= r_output;
  endcase
 
 endmodule
