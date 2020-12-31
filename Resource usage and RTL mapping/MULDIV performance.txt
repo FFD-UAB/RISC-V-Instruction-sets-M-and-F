@@ -141,8 +141,8 @@ frequency of operation at each design in MHz, provided by Quartus II
 EP3C16D484C6 from the Cyclone III family.
 
 _____________|__tDIV_|__bDIV_|_qsDIV_|_eqsDIV_|_seDIV_|__dDIV_|_deqsDIV_|_dseDIV_|
-Max freq 0C  | 259.0 | 253.3 | 154.6 |  104.8 |  57.2 | 174.6 |   106.2 |   51.6 |
-Max freq 85C | 224.5 | 222.8 | 139.3 |   93.8 |  51.1 | 154.9 |    95.5 |   46.4 |
+Max freq 85C | 131.0 | 106.8 | 102.5 |   92.5 |  49.8 | 106.2 |    97.1 |   46.7 |
+Max freq 0C  | 137.6 | 115.3 | 110.8 |  103.1 |  55.5 | 114.6 |   107.8 |   52.0 |
 
 In order to obtain the maximum frequency of operation possible at 
 Quartus, it has been stablished a frequency clock of 200MHz (period 
@@ -154,16 +154,15 @@ higher than the clock, is possible that there's still room for a higher
 operation frequency, but it doesn't make sense to search a higher 
 frequency if the I/O ports cannot handle it and if the design uses 
 only one clock signal. Also, is important to note that in order to 
-estimate the maximum frequency correctly, it has been added a register 
-at the end of the operation, as if there isn't, there wouldn't be 
-a logic element able to perform the frequency estimation.
+estimate the maximum frequency correctly, it has been used an .sdc
+configuration file to constrain the I/O with 0 delay.
 
 The same can be done to the Multifunction IP's modules used for the 
 multiplication operation. 
 
 _____________|_LPM_MULT32_|_ALTMULT_ADD32_|
-Max freq 0C  |    128.1   |       128.3   |
-Max freq 85C |    113.1   |       114.0   |
+Max freq 85C |     68.0   |        67.9   |
+Max freq 0C  |     74.8   |        74.4   |
 
 The maximum operation frequency between them aren't that different 
 because this estimation doesn't take into account that the LPM_MULT32 
@@ -182,15 +181,15 @@ force that the critical path is at the multiplication operation path
 and not in the division operation path.
 
 _____________|_MULDIV_|_MULDIV2_|
-Max freq 0C  |   75.8 |   104.5 |
-Max freq 85C |   67.1 |    92.7 |
+Max freq 85C |   47.4 |   61.3  |
+Max freq 0C  |   52.2 |   67.0  |
 
 Now this table compares at the same level both designs, as now both 
 can perform signed and unsigned operations. As expected, the MULDIV 
-design that uses the LPM_MULT32 module has lowered near 50MHz its 
+design that uses the LPM_MULT32 module has lowered near 20MHz its 
 maximum operating frequency compared to the previous table, and that's 
 because the added logic to make it perform signed operations. The 
-MULDIV2 design has lowered near 25MHz of maximum operating frequency 
+MULDIV2 design has lowered near 7MHz of maximum operating frequency 
 than the ALTMULT_ADD module because there's the addition of logic to 
 select the output between the division and multiplication operation 
 paths.
@@ -201,36 +200,38 @@ path, which would make the combination of maximum frequency of
 operation and performance possible with this modules.
 
 
-MULDIV_______|__tDIV_|__bDIV_|_qsDIV_|_eqsDIV_|_seDIV_|__dDIV_|_deqsDIV_|_dseDIV_|
-Max freq 0C  |  75.8 |  71.3 |  74.2 |   72.0 |  63.2 |   |    76.0 |    |
-Max freq 85C |  67.1 |  63.0 |  65.8 |   63.7 |  56.9 |   |    67.6 |    |
+MULDIV_______|__tDIV_|__bDIV_|_qsDIV_|_eqsDIV_|_seDIV_|_dDIV_|_deqsDIV_|_dseDIV_|
+Max freq 85C |  47.4 |  46.2 |  46.7 |   45.9 |  45.7 | 45.8 |    45.3 |   43.7 |
+Max freq 0C  |  52.2 |  51.2 |  51.6 |   50.8 |  51.1 | 50.7 |    50.1 |   48.9 |
 
 
-MULDIV2______|__tDIV_|__bDIV_|_qsDIV_|_eqsDIV_|_seDIV_|__dDIV_|_deqsDIV_|_dseDIV_|
-Max freq 0C  | 104.5 | 102.0 |  98.2 |   82.0 |  63.4 |  |    77.6 |    |
-Max freq 85C |  92.7 |  91.2 |  87.8 |   73.4 |  56.8 |  |    69.8 |    |
+MULDIV2______|__tDIV_|__bDIV_|_qsDIV_|_eqsDIV_|_seDIV_|_dDIV_|_deqsDIV_|_dseDIV_|
+Max freq 85C |  61.3 |  59.7 |  58.7 |   60.6 |  46.8 | 58.7 |    59.1 |   43.6 |
+Max freq 0C  |  67.0 |  65.3 |  64.4 |   66.6 |  52.0 | 64.5 |    64.4 |   48.7 |
 
 
 Is a reasonable idea to think that when the division operation path 
 is the critical path at both MULDIV designs, the maximum operating 
 frequencies should match when using the same divisor design, but it's 
 important to take into account that both designs have little 
-differences in the logic they apply, and the synthesitation tool 
-Quartus tries to fit all the logic using the same logic elements, so 
-routing is a important aspect of the synthesization, forcing to differ 
+differences in the logic they apply, and the synthesiS tool Quartus
+tries to fit all the logic using the same logic elements, so routing
+is an important aspect of the synthesization, forcing to differ 
 the maximum frequency possible between both designs even if the 
 division path is the critical path and they're using the same divisor 
 module. That's why the MULDIV and MULDIV2 have near the same maximum 
-operating frequencies only when using the seDIVrest32 divisor module,
-is just a coincidence.
+operating frequencies only when using the seDIVrest32 or dseDIVrest32 
+divisor module, it's because at that synthesis, the divisor modules have
+the critical path.
 
 In summary, my recommendation depends on what is the clock frequency 
-that is being implemented. In the case of 85MHz clock, implement a 
-MULDIV2 with the dDIVrest32u module. In the case of 45MHz clock, 
-implement a MULDIV with the dseDIVrest32u module. This 
-recommendations doesn't take into account the resource usage of 
-each design or that this are estimations based on just one FPGA
-platform (DE0 Cyclone III).
+that is being implemented. In the case of 60MHz clock, implement a 
+MULDIV2 with the tDIVrest32u module. In the case of 55MHz clock, 
+implement a MULDIV2 with the deqsDIVrest32u module. 40MHz clock? Use
+the MULDIV2 with the dseDIVrest32u that is the best performance at clock
+latency. This recommendations doesn't take into account the resource usage 
+of each design or that this are estimations based on just one FPGA platform 
+(DE0 EP3C16F484C6N Cyclone III).
 
 
 

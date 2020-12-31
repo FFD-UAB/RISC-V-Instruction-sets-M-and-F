@@ -38,13 +38,9 @@ The files distribution in each folder may contain:
  - tb: Testbench Verilog files used to simulate the HW models.
  - sim: All output simulation files end here, including scripts used for developing and testing. For example, on the "Core/sim" folder there's the "sv_files" which contains the dynamic directory of all the files of that project. Just execute "do .comp_sv" while in that directory to compile all the project files (you might have to flush the "work" folder and re-create it before the compilation). The file "wave.do" in the same directory is used to add many wave signals during the "load_store_test" simulation to debug that particular execution. Other scripts might be added, so check the .txt in the same directory in the future when it'll have many more scripts.
  - lib: Contains the branched multifunction IP modules. 
+ - syn: Files used at the synthesis tool, like .sdc (TimeQuest Analizer) or .qsf (pin assignment for the DE0 board).
  
 TODO:
-- Synthesize and reconfigure the modifications performed on the core to make it be low on resource usage and low latency as much as possible.
-- Design the module that implements the instruction set F expansion.
-- Write the testbench of the instruction set F module.
-- Debug the instruction set F module.
-- Synthesize and reconfigure the floating-point module to make it to be low resource usage and low latency as much as possible.
 - Adequate the core for the instruction set F expansion.
 - Write the testbenchs of the instruction set F for the whole core, including the autoformat instruction.
 - Debug the instruction set F on the core.
