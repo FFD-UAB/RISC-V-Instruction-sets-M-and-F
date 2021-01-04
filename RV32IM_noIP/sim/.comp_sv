@@ -1,7 +1,0 @@
-# Load the project library
-vlib work
-vmap work work
-vlog -sv -f sv_files
-
-
-

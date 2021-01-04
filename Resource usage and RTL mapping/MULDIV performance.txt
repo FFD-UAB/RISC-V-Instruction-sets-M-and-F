@@ -214,7 +214,7 @@ Is a reasonable idea to think that when the division operation path
 is the critical path at both MULDIV designs, the maximum operating 
 frequencies should match when using the same divisor design, but it's 
 important to take into account that both designs have little 
-differences in the logic they apply, and the synthesiS tool Quartus
+differences in the logic they apply, and the synthesis tool Quartus
 tries to fit all the logic using the same logic elements, so routing
 is an important aspect of the synthesization, forcing to differ 
 the maximum frequency possible between both designs even if the 

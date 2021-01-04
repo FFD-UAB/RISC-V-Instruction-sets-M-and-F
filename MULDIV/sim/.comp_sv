@@ -1,3 +1,5 @@
+# Change "E:/Programas/Quartus/altera_lite/13.1/quartus" by your equivalent Quartus 
+# directory path:
 set QuartusPath E:/Programas/Quartus/altera_lite/13.1/quartus
 
 # Load the project library
@@ -6,7 +8,7 @@ vmap work work
 vlog -sv -f sv_files
 
 # Depending on your decision to use the MULDIV (LPM_MULT or no IP MUL) or MULDIV2 
-# (ALTMULT_ADD), is recommended to comment the lines which is not being used to lower
+# (ALTMULT_ADD), is recommended to comment the lines which are not being used to lower
 # compilation time. In order to be able to simulate, use the next syntax command:
 # vsim -L LPM -L ALTMULT work.testMULDIV
 

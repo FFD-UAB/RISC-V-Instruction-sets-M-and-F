@@ -7,8 +7,8 @@
 // Is expected that the core does polling on the busy flag to know if
 // the operation is done.
 
-`include "../src/defines.vh"
-`include "../src/config_core.vh"
+`include "defines.vh"
+`include "config_core.vh"
 
 module MULDIV2(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
 input [`DATA_WIDTH-1:0] rs1_i;    	// Multiplicand or dividend.
@@ -48,95 +48,26 @@ wire                     a_signedInputFlag;     // and rs1 signed inputs.
 // Module selection for the operations. Select only one divider and one multiplier //
 /////////////////////////////////////////////////////////////////////////////////////
 
-`ifdef  RV32IM_dseDIVrest32
-dseDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_deqsDIVrest32
-deqsDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_dDIVrest32
-dDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_seDIVrest32
-seDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_eqsDIVrest32
-eqsDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_qsDIVrest32
-qsDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_bDIVrest32
-bDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`else
-tDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
+  // Unsigned 32bit divider 
+`ifdef RV32IM_dseDIVrest32  dseDIVrest32u
+`elsif RV32IM_deqsDIVrest32 deqsDIVrest32u
+`elsif RV32IM_dDIVrest32    dDIVrest32u
+`elsif RV32IM_seDIVrest32   seDIVrest32u
+`elsif RV32IM_eqsDIVrest32  eqsDIVrest32u
+`elsif RV32IM_qsDIVrest32   qsDIVrest32u
+`elsif RV32IM_bDIVrest32    bDIVrest32u
+`else  tDIVrest32u
 `endif
+ DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
 
  // ALTMULT_ADD module. 
 ALTMULT_ADD32 MULmod(
@@ -148,10 +79,7 @@ ALTMULT_ADD32 MULmod(
         .result  ( c_mul                 )
         );
 
-
-
 Signed2Unsigned S2U1(.a_signed(rs1_i), .a_unsigned(a_unsigned));
-
 Signed2Unsigned S2U2(.a_signed(rs2_i), .a_unsigned(b_unsigned));
 
 //***********************

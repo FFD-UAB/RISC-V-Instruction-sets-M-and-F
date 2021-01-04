@@ -5,8 +5,8 @@
 // unsigned multiplier module implemented by the multifunction IP LPM_MULT32
 // module and mutli-cycle unsigned divider module.
 
-`include "../src/defines.vh"
-`include "../src/config_core.vh"
+`include "defines.vh"
+`include "config_core.vh"
 
 module MULDIV(rs1_i, rs2_i, funct3_i, start_i, clk, rstLow, c_o, busy_o);
 input [`DATA_WIDTH-1:0] rs1_i;        // Multiplicand or dividend.
@@ -46,116 +46,42 @@ wire                     signedInputSharedFlag;
 /////////////////////////////////////////////////////////////////////////////////////
 
   // Unsigned 32bit divider 
-`ifdef  RV32IM_dseDIVrest32
-dseDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_deqsDIVrest32
-deqsDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_dDIVrest32
-dDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_seDIVrest32
-seDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_eqsDIVrest32
-eqsDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_qsDIVrest32
-qsDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`elsif RV32IM_bDIVrest32
-bDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
-`else
-tDIVrest32u DIVmod(
-    .a_in     ( a        ),
-    .b_in     ( b        ),
-    .start_in ( startDIV ),
-    .clk      ( clk      ),
-    .rstLow   ( rstLow   ),
-    .q_out    ( q        ),
-    .r_out    ( r        ),
-    .busy     ( busy_t   )
-    );
+`ifdef RV32IM_dseDIVrest32  dseDIVrest32u
+`elsif RV32IM_deqsDIVrest32 deqsDIVrest32u
+`elsif RV32IM_dDIVrest32    dDIVrest32u
+`elsif RV32IM_seDIVrest32   seDIVrest32u
+`elsif RV32IM_eqsDIVrest32  eqsDIVrest32u
+`elsif RV32IM_qsDIVrest32   qsDIVrest32u
+`elsif RV32IM_bDIVrest32    bDIVrest32u
+`else  tDIVrest32u
 `endif
-
+ DIVmod(
+    .a_in     ( a        ),
+    .b_in     ( b        ),
+    .start_in ( startDIV ),
+    .clk      ( clk      ),
+    .rstLow   ( rstLow   ),
+    .q_out    ( q        ),
+    .r_out    ( r        ),
+    .busy     ( busy_t   )
+    );
 
  // LPM_MULT module. Works only with unsigned inputs/outputs (less resource usage)
-`ifdef RV32IM_noIP
-MULgold MULmod(
-    .a_in  ( a     ),
-	.b_in  ( b     ),
-	.c_out ( c_mul )
-    );
-`else
+`ifdef RV32IM_MULDIV
 LPM_MULT32 MULmod(
     .dataa  ( a     ),
     .datab  ( b     ),
     .result ( c_mul )
     );
+`else
+MULgold MULmod(
+    .a_in  ( a     ),
+	.b_in  ( b     ),
+	.c_out ( c_mul )
+    );
 `endif
 
-
-
 Signed2Unsigned S2U1(.a_signed(rs1_i), .a_unsigned(a_unsigned));
-
 Signed2Unsigned S2U2(.a_signed(rs2_i), .a_unsigned(b_unsigned));
 
 //***********************

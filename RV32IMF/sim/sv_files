@@ -1,0 +1,72 @@
+///////////
+// RV32I //
+///////////
+../src/mem/config.sv
+../src/mem/ram_mux.sv
+../src/mem/instr_ram_wrap.sv
+../src/mem/boot_code.sv
+../src/mem/boot_rom_wrap.sv
+../src/mem/sp_ram_wrap_data.sv
+../src/mem/sp_ram_wrap_instr.sv
+../src/mem/sp_ram_data.sv
+../src/mem/sp_ram_instr.sv
+../src/core/core_execution_unit/core_execution_unit_alu.v
+../src/core/core_instrDecode_unit/core_control_unit.v
+../src/core/core_instrDecode_unit/core_branching_unit.v
+../src/core/core_instrDecode_unit/core_reg_file.v
+../src/core/core_id_stage.v
+../src/core/core_if_stage.v
+../src/core/core_exe_stage.v
+../src/core/core_mem_stage.v
+../src/core/core_wb_stage.v
+../src/core/core_csr_unit/core_csr_unit.v
+../src/core/core_csr_unit/core_csr_unit_counter.v
+../src/core/core_csr_unit/core_csr_unit_timer.v
+../src/core/core.v
+../src/top_CoreMem.v
+../tb/testbench.sv
+
+/////////////////////////////////////////////
+// Instruction expansion set RV32M modules //
+/////////////////////////////////////////////
+// MULDIV module
+../src/core/core_execution_unit/core_execution_unit_alu_m.v  // MULDIV, uses LPM_MULT or no IP MUL
+../src/core/core_execution_unit/core_execution_unit_alu_m2.v // MULDIV2, uses ALTMULT_ADD
+
+// No IP MUL (IP MUL are called at .comp_sv file)
+../src/core/core_execution_unit/MULDIV/MULgold.v             // No IP MUL, requires MULDIV
+
+// DIV modules
+../src/core/core_execution_unit/MULDIV/tDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/bDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/qsDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/seDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/dDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/deqsDIVrest32u.v
+../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
+
+// Addons used by some DIV modules
+../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v
+../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
+../src/core/core_execution_unit/MULDIV/Normal32u.v
+
+
+/////////////////////////////////////////////
+// Instruction expansion set RV32F modules //
+/////////////////////////////////////////////
+../src/core/core_instrDecode_unit/core_reg_file_f.v
+../src/core/core_execution_unit/core_execution_unit_alu_f.v
+../src/core/core_execution_unit/FPU/addsubFPs.v
+../src/core/core_execution_unit/FPU/allignFPs.v
+../src/core/core_execution_unit/FPU/HighestLeftBit28u.v
+
+
+///////////
+// Tests //
+///////////
+../tb/load_store.v
+../tb/arithmeticologicM.v
+../tb/arithmeticologic.v
+../tb/branch.v
+../tb/mem_test.v

@@ -5,12 +5,12 @@
 // is over infinity FP value or under 0 FP value (looking at the resulting 
 // exponent), and when the result is inaccurate, that may be because OF,
 // UF or rounding. The only time that a NaN is put at the output is when 
-// and NV flag is raised. Other NaN values must be managed at the outside 
-// of this module (like when a NaN is at the input). This is done because 
-// most of the logic is the same // for many arithmetic instructions (F.ADD, 
-// F.SUB, F.MUL, F.DIV, etc).
+// and NV flag is raised. Other special input cases (NaN, infinity) must be 
+// managed at the outside of this module (like when a NaN is at the input).
+// This is done because most of the logic is the same for many arithmetic 
+// instructions (F.ADD, F.SUB, F.MUL, F.DIV, etc).
 
-`include "../src/defines.vh"
+`include "defines.vh"
 
 module ADDSUB_FPs(rs1_i, rs2_i, SUBflag_i, frm_i, c_o, fflags_o);
 // Input operands and control signals;
@@ -121,8 +121,6 @@ assign PostAllign_s = res_s;
 // rises the exponent, an extra left-shift must be performed at the mantissa to implement 
 // the [1.] bit onwards. The contrary should occur if the exponent was 1 and now is 0 because
 // of a subtraction operation.
-//wire        ZexpLowers;
-//assign ZexpLowers = (res_e == 8'b1)&(PostAllign_e == 9'b0);
 
 wire [24:0] PostAllign_m;    // 23 mantissa + 2 rounding bits
 assign PostAllign_m = (add1Exponent & !(rs1_e == 8'b0) ? prePostAllign_m[25:1] 
@@ -134,6 +132,8 @@ assign PostAllign_m = (add1Exponent & !(rs1_e == 8'b0) ? prePostAllign_m[25:1]
 // outcomes. For ease, let's first compute both of them, that includes the possibility of overflowing 
 // the mantissa (adding 1 to the exponent) because of the rounding.
 
+wire        zero0;     // Zero value flags of both possible outcomes.
+wire        zero1;
 wire [22:0] Round_m0;  // 23 mantissa bits   Normal output
 wire [22:0] Round_m1;  // 23 mantissa bits   Output +1
 wire [23:0] Round_m1t; // 1 overflow mantissa + 23 mantissa bits
@@ -148,6 +148,9 @@ assign Round_e1   = PostAllign_e + {1'b0, Round_m1t[23]};
 // Because when the hidden [1.] bit must be generated if the exponent is raised from 0 to 1 by the
 // rounding, an extra left-shift must be done at the mantissa if it's the case.
 assign Round_m1  = Round_m1tt << (Round_e0 == 9'b0)&(Round_e1 == 9'b1);
+assign zero0 = {Round_e0, Round_m0} == 31'b0;
+assign zero1 = {Round_e1, Round_m1} == 31'b0;
+
 
 // Extra assignment just for clearer code
 wire last;  // Last bit mantissa before rounding
@@ -169,54 +172,58 @@ begin
 
 case(frm_i)
  `FRM_RNE: begin // Round to Nearest, ties to Even
-    postRound_s = PostAllign_s;
     if(|{last & guard, guard & round})
     begin
+      postRound_s = zero1 ? 1'b0 : PostAllign_s;
       postRound_m = Round_m1;
       postRound_e = Round_e1;
     end else begin
+      postRound_s = zero0 ? 1'b0 : PostAllign_s;
       postRound_m = Round_m0;
       postRound_e = Round_e0;
     end
   end
 
   `FRM_RTZ: begin // Round Towards Zero
-    postRound_s = PostAllign_s;
+    postRound_s = zero0 ? 1'b0 : PostAllign_s;
     postRound_m = Round_m0;
     postRound_e = Round_e0;
   end
 
   `FRM_RDN: begin // Round DowN (towards neg infinity)
-    postRound_s = PostAllign_s;
     if(PostAllign_s & (guard | round))
     begin
+      postRound_s = PostAllign_s;
       postRound_m = Round_m1;
       postRound_e = Round_e1;
     end else begin
+      postRound_s = zero0 ? 1'b1 : PostAllign_s;
       postRound_m = Round_m0;
       postRound_e = Round_e0;
     end
   end
       
   `FRM_RUP: begin // Round UP (towards pos infinity)
-    postRound_s = PostAllign_s;
     if(!PostAllign_s & (guard | round))
     begin
+      postRound_s = PostAllign_s;
       postRound_m = Round_m1;
       postRound_e = Round_e1;
     end else begin
+      postRound_s = zero0 ? 1'b0 : PostAllign_s;
       postRound_m = Round_m0;
       postRound_e = Round_e0;
     end
   end
 
  `FRM_RMM: begin // Round to Nearest, ties to Max Magnitude
-    postRound_s = PostAllign_s;
     if(guard)
     begin
+      postRound_s = zero1 ? 1'b0 : PostAllign_s;
       postRound_m = Round_m1;
       postRound_e = Round_e1;
     end else begin
+      postRound_s = zero0 ? 1'b0 : PostAllign_s;
       postRound_m = Round_m0;
       postRound_e = Round_e0;
     end
@@ -229,9 +236,9 @@ end
 // FFLAGS management
 assign NV = frm_i == 3'b101 | frm_i == 3'b110 | frm_i == 3'b111;
 assign DZ = 1'b0;
-assign OF = postRound_e[8:7] == 2'b10 | postRound_e[7:0] == 8'hF;
-assign UF = postRound_e[8:7] == 2'b11;
-assign NX = Round_m0 != Round_m1 | OF | UF;
+assign OF = postRound_e == 9'h0FF | postRound_e == 9'h100;
+assign UF = postRound_e == 9'h1FF;
+assign NX = guard | round | OF | UF;
 
 
 // Output management
@@ -239,11 +246,11 @@ always @(*)
 begin
   if(NV) begin // Quiet NaN when invalid operation
     c_s = 1'b0;
-    c_e = 8'hF;
+    c_e = 8'hFF;
     c_m = 23'h400000;
   end else if(OF | UF) begin 
     c_s = postRound_s;
-    c_e = OF ? 8'hF : 8'b0;
+    c_e = OF ? 8'hFF : 8'b0;
     c_m = 23'b0;
   end else begin 
     c_s = postRound_s;
