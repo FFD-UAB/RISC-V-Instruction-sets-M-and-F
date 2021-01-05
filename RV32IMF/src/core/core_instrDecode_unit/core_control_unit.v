@@ -48,7 +48,13 @@ module control_unit
     localparam OPCODE_R_ALU    = 7'b0110011;  // PROV NAME
     localparam OPCODE_I_FENCE  = 7'b0001111;  //
     localparam OPCODE_I_SYSTEM = 7'b1110011;
-    localparam OPCODE_F_ALU    = 7'b10XXX11;  // 100 FP-OP, other FP fused operation
+    localparam OPCODE_R_FPU    = 7'b1010011;
+    localparam OPCODE_R4_FMADD = 7'b1000011;
+    localparam OPCODE_R4_FMSUB = 7'b1000111;
+    localparam OPCODE_R4_FNMSUB= 7'b1001011;
+    localparam OPCODE_R4_FNMADD= 7'b1001111;
+    localparam OPCODE_I_FLOAD  = 7'b0000111;
+    localparam OPCODE_S_FSTORE = 7'b0100111; 
 
     localparam REGS            = 0;
     localparam RS2IMM_RS1      = 1;
@@ -379,16 +385,43 @@ module control_unit
                            endcase*/
                           end
 
-            OPCODE_F_ALU: begin // All FP Single-precision operations.
-                           regfile_wr = regfile_waddr; // Not found anything about writting or not on freg0
-                           i_r1_o = 1'b1;
-                           i_r2_o = 1'b1;
+            OPCODE_R_FPU, OPCODE_R4_FMADD, OPCODE_R4_FMSUB, OPCODE_R4_FNMSUB, OPCODE_R4_FNMADD: begin // All FP Single-precision operations.
+                           regfile_wr = 1'b1; // Not found anything about writting or not on freg0
+                           i_r1_o = 1'b1; // No sure about what does this. Something about the
+                           i_r2_o = 1'b1; // forwarding after the MEM stage. No idea.
                            i_r3_o = 1'b1;
                            FP_OP_o = 1'b1;
                            ALU_op = opcode[4:2] == 3'b100 ? funct7[6:2]
                                                           : {2'b10, opcode[4:2]};
-                           frm_o = (&funct3 | !funct7[4]) ? frm_i : funct3;
+                           frm_o = (&funct3 & !funct7[4]) ? frm_i : funct3;
                           end
+
+            OPCODE_I_FLOAD: if(funct3 == 3'b010) // FLW instruction, LOAD FP
+                            begin  // Loads
+                             is_load_store = 1'b1;
+                             regfile_wr = 1'b1; // Not found anything about writting or not on freg0
+                             ALU_op = `ALU_OP_ADD;  // to add the immideate value to the addr
+                             data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
+                             imm_val_o = {{`DATA_WIDTH - 12 {imm12[11]}},  imm12[11:0]  };
+                             data_rd_o = 1'b1;
+                             FP_OP_o = 1'b1;
+                             LOAD_op = `LOAD_LW; // Read 32-bit word from data memory.
+                            end
+
+            OPCODE_S_FSTORE: if(funct3 == 3'b010) // FSW instruction, STORE FP
+                             begin  // Store
+                              is_load_store = 1'b1;
+                              ALU_op = `ALU_OP_ADD;  // to add the immideate value to the addr
+                              data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
+                              imm_val_o = {{`DATA_WIDTH - 12 {imm12s[11]}}, imm12s[11:0] };
+                              data_wr = 1'b1;  // Set the bit to write to memory
+                              data_target_o = 2'b1;
+                              i_r1_o = 1'b1;
+                              i_r2_o = 1'b1;
+                              FP_OP_o = 1'b1;
+                              STORE_op = `STORE_SW;
+                              data_be_o = 4'b1111;
+                             end
 
             OPCODE_I_FENCE: begin
             // fence      "Order device I/O and memory accesses viewed by other threads and devices"

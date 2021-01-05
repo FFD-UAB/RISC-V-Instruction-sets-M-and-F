@@ -1,0 +1,4 @@
+00000001		// 0 exp, 1 mantissa
+007fffff		// 0 exp, full mantissa
+7f7fffff		// inf - mantissa(1)
+7fc00001		// sNaN

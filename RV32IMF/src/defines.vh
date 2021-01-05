@@ -32,7 +32,14 @@
 `define OPCODE_R_ALU          7'b0110011  // PROV NAME
 `define OPCODE_I_FENCE        7'b0001111  //
 `define OPCODE_I_SYSTEM       7'b1110011
-`define OPCODE_F_ALU          7'b10XXX11  // 000 FMADD, 001 FMSUB, 010 FNMSUB, 011 FNMADD, 100 FP-OP
+`define OPCODE_R_FPU          7'b1010011
+`define OPCODE_R4_FMADD       7'b1000011
+`define OPCODE_R4_FMSUB       7'b1000111
+`define OPCODE_R4_FNMSUB      7'b1001011
+`define OPCODE_R4_FNMADD      7'b1001111
+`define OPCODE_I_FLOAD        7'b0000111
+`define OPCODE_S_FSTORE       7'b0100111
+
 
 
 // FUNCT3
@@ -227,5 +234,6 @@
 `define FRM_RDN 3'b010 // Rounds Down (towards -inf)
 `define FRM_RUP 3'b011 // Rounds Up (towards +inf)
 `define FRM_RMM 3'b100 // Round to Nearest, ties to Max Magnitude
+`define FRM_DYN 3'b111 // Use FCSR rounding mode
 
 `endif

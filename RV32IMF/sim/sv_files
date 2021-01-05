@@ -58,7 +58,7 @@
 ../src/core/core_instrDecode_unit/core_reg_file_f.v
 ../src/core/core_execution_unit/core_execution_unit_alu_f.v
 ../src/core/core_execution_unit/FPU/addsubFPs.v
-../src/core/core_execution_unit/FPU/allignFPs.v
+../src/core/core_execution_unit/FPU/alignFPs.v
 ../src/core/core_execution_unit/FPU/HighestLeftBit28u.v
 
 
@@ -70,3 +70,4 @@
 ../tb/arithmeticologic.v
 ../tb/branch.v
 ../tb/mem_test.v
+../tb/FP_test.v

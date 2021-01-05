@@ -85,9 +85,9 @@ module exe_stage
  wire [`DATA_WIDTH-1:0]                op3_ALU;
  reg  [`DATA_WIDTH-1:0]                reg_file_rd;
  reg  [`DATA_WIDTH-1:0]                data_wdata;
- wire [`DATA_WIDTH-1:0]                alu_I; // Different ALU outputs,
- wire [`DATA_WIDTH-1:0]                alu_M; // RV32I and RV32M.
- wire [`DATA_WIDTH-1:0]                alu_F;
+ wire [`DATA_WIDTH-1:0]                alu_I; // Different ALU outputs: RV32I
+ wire [`DATA_WIDTH-1:0]                alu_M; // RV32M
+ wire [`DATA_WIDTH-1:0]                alu_F; // RV32F
 
 
  //Logic for ALU operand selection   
@@ -103,6 +103,10 @@ module exe_stage
    2'd3: reg_file_rd = (e_data_origin_i[1] ? e_pc4_i : e_brj_pc_i);
   endcase    
 
+ // IM/F Selector module
+ wire F_ALU_OP; // Used to differentiate from an FLOAD/FSTORE instruction.
+ assign F_ALU_OP = e_FP_OP_i & !e_is_load_store_i;
+
  // Start signal controlled to avoid repeating the same multi-cycle operation.
  wire   ctrlStartM;
  wire   ctrlStartF;
@@ -115,12 +119,12 @@ module exe_stage
   else finish_mco <= d_alu_busy_o;
 
 // Start multi-cycle operation signal at the alu_M only if is not an FP operation
- assign ctrlStartM = e_ALU_op_i[4] & !e_FP_OP_i & !finish_mco;
- assign ctrlStartF = e_FP_OP_i & !finish_mco;
- assign d_alu_busy_o = e_FP_OP_i ? busy_f : busy_m;
+ assign ctrlStartM = e_ALU_op_i[4] & !F_ALU_OP & !finish_mco;
+ assign ctrlStartF = F_ALU_OP & !finish_mco;
+ assign d_alu_busy_o = F_ALU_OP ? busy_f : busy_m;
 
  // Output selection. Check if the operation is from the instruction set M.
- assign alu_o = e_FP_OP_i ? alu_F : (e_ALU_op_i[4] ? alu_M : alu_I);
+ assign alu_o = F_ALU_OP ? alu_F : (e_ALU_op_i[4] ? alu_M : alu_I);
 
   // ALU Module that implements the ALU operations of the 32I Base Instruction Set
   alu ALU (

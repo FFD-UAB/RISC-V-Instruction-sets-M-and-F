@@ -43,6 +43,7 @@ output wire  [4:0] fflags_o; // Exception flags.
 output wire        busy_o;   // Multi-cycle operation ongoing.
 reg                NV, DZ, OF, UF, NX; // iNValid operation, Divide by Zero, OverFlow,
 assign fflags_o = {NV, DZ, OF, UF, NX};// UnderFlow, iNeXact.
+assign busy_o = 1'b0; // For future multi-cycle operations support.
 
 wire [31:0] FAddSub_res;
 wire [31:0] FMUL_res;
@@ -122,7 +123,7 @@ always @(*) begin
 c_o <= 32'b0;
 {NV, DZ, OF, UF, NX} <= 5'b0;
 
-case({1'b1, funct5_i})
+case(funct5_i)
  `ALU_OP_FADD, `ALU_OP_FSUB:
  begin
   if(RS12NaN | RS12PNInf) begin
@@ -130,7 +131,7 @@ case({1'b1, funct5_i})
    NV  <= 1'b1;
   end else if(InfRS1 | InfRS2)
    c_o <= InfRS1 ? rs1_i : rs2_i; // In my opinion, the NX flag should be raised,
-  else begin                      // but the IEEE Std 754 doesn't specify it.
+  else begin                      // but the IEEE Std 754 doesn't specify as it is.
    c_o <= FAddSub_res;
    {NV, DZ, OF, UF, NX} <= FAddSub_fflags;
  end end
@@ -159,6 +160,8 @@ case({1'b1, funct5_i})
    c_o <= FDIV_res;
    {NV, DZ, OF, UF, NX} <= FDIV_fflags;
  end end
+ 
+ default: ; //default required by Quartus II 13.1
 
 endcase
 end

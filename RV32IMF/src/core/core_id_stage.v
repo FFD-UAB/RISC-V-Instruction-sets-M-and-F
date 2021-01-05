@@ -91,7 +91,7 @@ module id_stage
  input  wire [4:0]                     m_regfile_waddr_i;
  input  wire                           m_regfile_wr_i;
  output wire [`DATA_WIDTH-1:0]         brj_pc_o;
- output reg                            brj_o;
+ output wire                           brj_o;
  input  wire                           d_busy_alu_i; // Flag of multi-cycle operation ongoing when high.
  output wire                           stall_general_o; // which enables the general stall of the core.
  
@@ -112,6 +112,7 @@ module id_stage
  wire                                  data_rd_t;
  wire                                  i_r1_t;
  wire                                  i_r2_t;
+ wire                                  i_r3_t;
  wire                                  csr_cntr_t;
  wire                                  branch_t;
  wire                                  jalr_t;
@@ -240,7 +241,7 @@ module id_stage
   if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs1_t) & !e_is_load_store_o & (e_FP_OP_o == FP_OP_t)) e_regfile_rs1_t = alu_i;
   else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs1_t) & !m_is_load_store_i & (m_FP_OP_i == FP_OP_t)) e_regfile_rs1_t = m_regfile_rd_i;
        else if (w_regfile_wr_i & i_r1_t & (regfile_raddr_rs1_t == w_regfile_waddr_i) & (w_FP_OP_i == FP_OP_t)) e_regfile_rs1_t = w_regfile_rd_i;
-            else e_regfile_rs1_t = FP_OP_t ? reg_file_f_rs1_t : reg_file_rs1_t;
+            else e_regfile_rs1_t = (FP_OP_t & !is_load_store_t) ? reg_file_f_rs1_t : reg_file_rs1_t; // Only take from FREG if is a F instruction that isn't FLW or FSW at the decode.
 
   //Forwarding logic op2
  always @(*)
@@ -254,7 +255,7 @@ module id_stage
   if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs3_t) & !e_is_load_store_o & (e_FP_OP_o == FP_OP_t)) e_regfile_rs3_t = alu_i;
   else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs3_t) & !m_is_load_store_i & (m_FP_OP_i == FP_OP_t)) e_regfile_rs3_t = m_regfile_rd_i;
         else if (w_regfile_wr_i & i_r3_t & (regfile_raddr_rs3_t == w_regfile_waddr_i) & (w_FP_OP_i == FP_OP_t)) e_regfile_rs3_t = w_regfile_rd_i;
-             else e_regfile_rs3_t = FP_OP_t ? reg_file_f_rs3_t : 32'b0;
+             else e_regfile_rs3_t = FP_OP_t & i_r3_t ? reg_file_f_rs3_t : 32'b0;
    
  // The possible data hazards are reading or storing (COMPLETE...), which requires a single clock cycle stall, and a mutli-cycle operation, which stalls the whole core many clock cycles.
  //Hazard detection unit

@@ -5,5 +5,5 @@
 // Instruction set F modules
 //../src/alu_f.v
 ../src/addsubFPs.v
-../src/allignFPs.v
+../src/alignFPs.v
 ../src/HighestLeftBit28u.v

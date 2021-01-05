@@ -43,6 +43,7 @@ output wire  [4:0] fflags_o; // Exception flags.
 output wire        busy_o;   // Multi-cycle operation ongoing.
 reg                NV, DZ, OF, UF, NX; // iNValid operation, Divide by Zero, OverFlow,
 assign fflags_o = {NV, DZ, OF, UF, NX};// UnderFlow, iNeXact.
+assign busy_o = 1'b0; // For future multi-cycle operations support.
 
 wire [31:0] FAddSub_res;
 wire [31:0] FMUL_res;
