@@ -1,0 +1,7 @@
+In this .txt is specified for what every wave.do group of wave signals are used and for what test.
+
+- testM.do: For testing one-cycle multiplications. Used to debug problems at the exe_stage output selection because poor timing management. "arithmeticlogicM.v"
+- testDIV.do: Used to debug division operations. Use "testDIVtempo.do" if you're testing how it saves in regFile. "arithmeticlogicM.v"
+- testDIVtempo.do: For testing multi-cycle operation. Used to manage the instruction propagation through the core with the "busy_alu" flag and "stall" signals in "if_stage". "arithmeticlogicM.v"
+- testWrongInstruction.do: Used to make sure that the inputs in the MULDIV module and instruction operation are correct. "arithmeticlogicM.v"
+- wave.do: Used in the "load_store.v" test.

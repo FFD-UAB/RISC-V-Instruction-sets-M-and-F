@@ -1,0 +1,10 @@
+This is a stripped down version of the RV32I pipeline core with just 
+taking out the registers at all the stages, so it works like a single-
+cycle core. That's why it may not be a working version, because this 
+was done just to take some performance figures of what a single-cycle 
+core would have.
+
+Tried first to do the performance figures on Pau's core, that is a 
+single-cycle RV32I core, but I was unable to take a values that made 
+sense, so I did what I did to the RV32I pipeline core to obtain what 
+is in this folder.

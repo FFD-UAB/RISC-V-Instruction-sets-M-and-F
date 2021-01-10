@@ -1,0 +1,90 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2013 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+*/
+(header "symbol" (version "1.2"))
+(symbol
+	(rect 0 0 368 192)
+	(text "ALTMULT_ADD32" (rect 133 0 256 16)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 176 25 188)(font "Arial" ))
+	(port
+		(pt 0 72)
+		(input)
+		(text "dataa_0[31..0]" (rect 0 0 81 14)(font "Arial" (font_size 8)))
+		(text "dataa_0[31..0]" (rect 4 58 71 71)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 79 72)(line_width 3))
+	)
+	(port
+		(pt 0 104)
+		(input)
+		(text "datab_0[31..0]" (rect 0 0 81 14)(font "Arial" (font_size 8)))
+		(text "datab_0[31..0]" (rect 4 90 71 103)(font "Arial" (font_size 8)))
+		(line (pt 0 104)(pt 79 104)(line_width 3))
+	)
+	(port
+		(pt 0 160)
+		(input)
+		(text "signa" (rect 0 0 30 14)(font "Arial" (font_size 8)))
+		(text "signa" (rect 4 146 28 159)(font "Arial" (font_size 8)))
+		(line (pt 0 160)(pt 79 160))
+	)
+	(port
+		(pt 0 176)
+		(input)
+		(text "signb" (rect 0 0 30 14)(font "Arial" (font_size 8)))
+		(text "signb" (rect 4 162 28 175)(font "Arial" (font_size 8)))
+		(line (pt 0 176)(pt 79 176))
+	)
+	(port
+		(pt 368 88)
+		(output)
+		(text "result[63..0]" (rect 0 0 67 14)(font "Arial" (font_size 8)))
+		(text "result[63..0]" (rect 308 74 363 87)(font "Arial" (font_size 8)))
+		(line (pt 368 88)(pt 303 88)(line_width 3))
+	)
+	(drawing
+		(text "MULT0" (rect 198 49 427 111)(font "Arial" (font_size 8)))
+		(line (pt 156 130)(pt 156 160))
+		(line (pt 162 130)(pt 162 176))
+		(line (pt 0 0)(pt 370 0))
+		(line (pt 370 0)(pt 370 194))
+		(line (pt 0 194)(pt 370 194))
+		(line (pt 0 0)(pt 0 194))
+		(line (pt 159 88)(pt 165 94)(line_width 3))
+		(line (pt 159 88)(pt 165 82)(line_width 3))
+		(line (pt 159 88)(pt 153 94)(line_width 3))
+		(line (pt 159 88)(pt 153 82)(line_width 3))
+		(line (pt 79 72)(pt 143 72)(line_width 3))
+		(line (pt 143 72)(pt 147 76)(line_width 3))
+		(line (pt 79 104)(pt 143 104)(line_width 3))
+		(line (pt 143 104)(pt 147 100)(line_width 3))
+		(line (pt 175 88)(pt 231 88)(line_width 3))
+		(line (pt 156 103)(pt 156 130))
+		(line (pt 162 103)(pt 162 130))
+		(line (pt 79 48)(pt 232 48))
+		(line (pt 232 48)(pt 232 131))
+		(line (pt 79 131)(pt 232 131))
+		(line (pt 79 48)(pt 79 131))
+		(line (pt 231 88)(pt 247 88)(line_width 3))
+		(line (pt 246 88)(pt 302 88)(line_width 3))
+		(line (pt 79 160)(pt 156 160))
+		(line (pt 79 176)(pt 162 176))
+		(circle (rect 143 72 175 104))
+	)
+)

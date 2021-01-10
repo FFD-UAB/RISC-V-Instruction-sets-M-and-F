@@ -1,0 +1,41 @@
+# Change "E:/Programas/Quartus/altera_lite/13.1/quartus" by your equivalent Quartus 
+# directory path:
+set QuartusPath E:/Programas/Quartus/altera_lite/13.1/quartus
+
+# Load the project library
+vlib work
+vmap work work
+vlog -sv -f sv_files
+
+############################################
+##  INSTRUCTION SET M REQUIRED LIBRARIES  ##
+############################################
+
+# Depending on your decision to use the MULDIV (LPM_MULT or no IP MUL) or MULDIV2 
+# (ALTMULT_ADD), is recommended to comment the lines which are not being used to lower
+# compilation time. In order to be able to simulate, use the next syntax command:
+# vsim -L LPM -L ALTMULT work.tb_load_store
+# vsim -L LPM -L ALTMULT work.tb_arithmeticologic
+# vsim -L LPM -L ALTMULT work.tb_arithmeticologic_m
+# vsim -L LPM -L ALTMULT work.tb_branch
+# vsim -L LPM -L ALTMULT work.tb_instrMem
+
+# Load IP Multifunction Libraries (change "QuartusPath" to your Quartus directory)
+# Library created for compiling files required by LPM_MULT32 for MULDIV module
+vlib LPM
+vmap LPM LPM 
+vcom -work LPM $QuartusPath/eda/fv_lib/vhdl/lpms/lpm_components.vhd 
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/lpm_mult.v 
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/mult_block.v
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/addsub_block.v
+vlog -work LPM $QuartusPath/eda/fv_lib/verilog/pipeline_internal_fv.v
+vlog -work LPM ../lib/LPM_MULT32.v
+
+# Library created for compiling files required by ALTMULT_ADD32 for MULDIV2 module
+vlib ALTMULT
+vmap ALTMULT ALTMULT
+vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/altmult_add.v
+vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/addsub_block.v
+vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/dffep.v
+vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/mult_block.v
+vlog -work ALTMULT ../lib/ALTMULT_ADD32.v
