@@ -62,7 +62,7 @@ module sp_ram_instr
   begin
   //for (i = 0; i < words; i++) // Used at simulation. Gives problems at Quartus II 13.1
   //mem_instr[i] = {{DATA_WIDTH-7{1'b0}}, 7'b0010011};
-   $readmemh("../../data/programMem_h.mem", mem_instr); // This is synthesable by Intel support
+  //$readmemh("../../data/programMem_h.mem", mem_instr); // This is synthesable by Intel support
   end
 
 endmodule

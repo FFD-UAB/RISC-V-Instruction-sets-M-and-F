@@ -5,7 +5,7 @@
 // Parameters
 `define DATA_WIDTH 32
 `define REG_DATA_WIDTH 32   // Word Width
-`define REG_ADDR_WIDTH 5   // Address With
+`define REG_ADDR_WIDTH 6   // Address With (Regfile requires 5, but 6 with FPRF)
 `define REG_DEPTH 1 << `REG_ADDR_WIDTH  // Total number of positions (32)
 
 
@@ -127,49 +127,49 @@
 `define IMM_EBREAK         12'b000000000001
 
 // ALU_OPERATIONS
-`define ALU_OP_WIDTH      5
+`define ALU_OP_WIDTH      6
 
 // {funct7[0], funct7[5], funct3};
-`define ALU_OP_ADD        5'b00000        
-`define ALU_OP_SUB        5'b01000
-`define ALU_OP_SLL        5'b00001
-`define ALU_OP_SLT        5'b00010
-`define ALU_OP_SLTU       5'b00011
-`define ALU_OP_XOR        5'b00100
-`define ALU_OP_SRL        5'b00101
-`define ALU_OP_SRA        5'b01101
-`define ALU_OP_OR         5'b00110
-`define ALU_OP_AND        5'b00111
+`define ALU_OP_ADD        6'b000000        
+`define ALU_OP_SUB        6'b001000
+`define ALU_OP_SLL        6'b000001
+`define ALU_OP_SLT        6'b000010
+`define ALU_OP_SLTU       6'b000011
+`define ALU_OP_XOR        6'b000100
+`define ALU_OP_SRL        6'b000101
+`define ALU_OP_SRA        6'b001101
+`define ALU_OP_OR         6'b000110
+`define ALU_OP_AND        6'b000111
 
 // ALU_M {funct7[0], funct7[5], funct3};
-`define ALU_OP_MUL        5'b10000  // Instruction set M -> ALU_OP[4] = 1;
-`define ALU_OP_MULH       5'b10001  // Then, it can be used as start_M signal.
-`define ALU_OP_MULHSU     5'b10010
-`define ALU_OP_MULHU      5'b10011
-`define ALU_OP_DIV        5'b10100
-`define ALU_OP_DIVU       5'b10101
-`define ALU_OP_REM        5'b10110
-`define ALU_OP_REMU       5'b10111
+`define ALU_OP_MUL        6'b010000  // Instruction set M -> ALU_OP[4] = 1;
+`define ALU_OP_MULH       6'b010001  // Then, it can be used as start_M signal.
+`define ALU_OP_MULHSU     6'b010010
+`define ALU_OP_MULHU      6'b010011
+`define ALU_OP_DIV        6'b010100
+`define ALU_OP_DIVU       6'b010101
+`define ALU_OP_REM        6'b010110
+`define ALU_OP_REMU       6'b010111
 
 // ALU_F OP-FP {funct7[6:2]};
-`define ALU_OP_FADD       5'b00000
-`define ALU_OP_FSUB       5'b00001
-`define ALU_OP_FMUL       5'b00010
-`define ALU_OP_FDIV       5'b00011
-`define ALU_OP_FSQRT      5'b01011
-`define ALU_OP_FSGNJ      5'b00100 // FSGNJ, FSGNJN, FSGNJX use rm to differentiate
-`define ALU_OP_FMINMAX    5'b00101 // FMIN, FMAX use rm to differentiate
-`define ALU_OP_FCVT_W_F   5'b11000 // FCVT.W/WU.S/L/D/Q
-`define ALU_OP_FMV_X      5'b11100 // also FCLASS, which uses rm to differentiate
-`define ALU_OP_FEQ        5'b10100 // FEQ, FLT, FLE use rm to differentiate
-`define ALU_OP_FCVT_F_W   5'b11010 // FCVT.S/L/D/Q.W and FCVT.S/L/D/Q.WU uses rm to diff
-`define ALU_OP_FMV_W_X    5'b11110
+`define ALU_OP_FADD       6'b100000
+`define ALU_OP_FSUB       6'b100001
+`define ALU_OP_FMUL       6'b100010
+`define ALU_OP_FDIV       6'b100011
+`define ALU_OP_FSQRT      6'b101011
+`define ALU_OP_FSGNJ      6'b100100 // FSGNJ, FSGNJN, FSGNJX use rm to differentiate
+`define ALU_OP_FMINMAX    6'b100101 // FMIN, FMAX use rm to differentiate
+`define ALU_OP_FCVT_W_S   6'b111000 // FCVT.W/WU.S/L/D/Q
+`define ALU_OP_FMV_X_W    6'b111100 // also FCLASS, which uses rm to differentiate
+`define ALU_OP_FEQ        6'b110100 // FEQ, FLT, FLE use rm to differentiate
+`define ALU_OP_FCVT_F_W   6'b111010 // FCVT.S/L/D/Q.W and FCVT.S/L/D/Q.WU uses rm to diff
+`define ALU_OP_FMV_W_X    6'b111110
 
-// ALU_F Fused Operations {2'b10, opcode[4:2]}
-`define ALU_OP_FMADD      5'b10000
-`define ALU_OP_FMSUB      5'b10001
-`define ALU_OP_FNMSUB     5'b10010
-`define ALU_OP_FNMADD     5'b10011
+// ALU_F Fused Operations {3'b110, opcode[4:2]}
+`define ALU_OP_FMADD      6'b110000
+`define ALU_OP_FMSUB      6'b110001
+`define ALU_OP_FNMSUB     6'b110010
+`define ALU_OP_FNMADD     6'b110011
 
 
 // LOAD_OPERATIONS
@@ -227,6 +227,9 @@
 `define INSTRET_ADDR         12'hC02
 `define INSTRETH_ADDR        12'hC82
 `define USTATUS_ADDR         12'h0
+`define FFLAGS_ADDR          12'h001
+`define FRM_ADDR             12'h002
+`define FCSR_ADDR            12'h003
  
 // FCSR
 `define FRM_RNE 3'b000 // Round to Nearest, ties to Even

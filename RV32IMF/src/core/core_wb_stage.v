@@ -22,11 +22,11 @@ module core_wb_stage
  //LOAD logic
  always @ *
   case(w_LOAD_op_i)
-   `LOAD_LB:  int_data_rdata_t = { {`DATA_WIDTH - 8 {w_data_rdata_i[7]}}, w_data_rdata_i[7:0] };     // Load 8-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
-   `LOAD_LH:  int_data_rdata_t = { {`DATA_WIDTH - 16 {w_data_rdata_i[15]}}, w_data_rdata_i[15:0] };  // Load 16-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
+   `LOAD_LB:  int_data_rdata_t = { {(`DATA_WIDTH - 8) {w_data_rdata_i[7]}}, w_data_rdata_i[7:0] };     // Load 8-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
+   `LOAD_LH:  int_data_rdata_t = { {(`DATA_WIDTH - 16) {w_data_rdata_i[15]}}, w_data_rdata_i[15:0] };  // Load 16-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
    `LOAD_LW:  int_data_rdata_t = w_data_rdata_i;                                                    // Load 32-bit value from addr in rs1 plus the 12-bit signed immediate and place sign-extended result into rd
-   `LOAD_LBU: int_data_rdata_t = { {`DATA_WIDTH - 8 {1'b0}}, w_data_rdata_i[7:0] };                  // Load 8-bit value from addr in rs1 plus the 12-bit signed immediate and place zero-extended result into rd
-   `LOAD_LHU: int_data_rdata_t = { {`DATA_WIDTH - 16 {1'b0}}, w_data_rdata_i[15:0] };                // Load 16-bit value from addr in rs1 plus the 12-bit signed immediate and place zero-extended result into rd
+   `LOAD_LBU: int_data_rdata_t = { {(`DATA_WIDTH - 8) {1'b0}}, w_data_rdata_i[7:0] };                  // Load 8-bit value from addr in rs1 plus the 12-bit signed immediate and place zero-extended result into rd
+   `LOAD_LHU: int_data_rdata_t = { {(`DATA_WIDTH - 16) {1'b0}}, w_data_rdata_i[15:0] };                // Load 16-bit value from addr in rs1 plus the 12-bit signed immediate and place zero-extended result into rd
      default: int_data_rdata_t = {`DATA_WIDTH{1'b0}};
   endcase
 

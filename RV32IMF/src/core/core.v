@@ -77,9 +77,6 @@ module core
  wire [`DATA_WIDTH-1:0]                brj_pc_t;
  wire                                  brj_t;
 
- wire                                  e_FP_OP_t; // FP operation flag
- wire                                  m_FP_OP_t;
- wire                                  w_FP_OP_t;
  wire [4:0]                            d_fflags_t;
  wire [2:0]                            e_frm_t; // FP rounding mode
 
@@ -117,12 +114,10 @@ module core
         .e_regfile_rs3_o               (e_regfile_rs3_t),
         .e_imm_val_o                   (e_imm_val_t),  //execution unit imm val rs1
         .e_data_be_o                   (e_data_be_t),
-        .e_FP_OP_o                     (e_FP_OP_t),
         .e_frm_o                       (e_frm_t),
         .w_regfile_wr_i                (w_regfile_wr_t),
         .w_regfile_waddr_i             (w_regfile_waddr_t),
         .w_regfile_rd_i                (reg_file_rd_t),
-        .w_FP_OP_i                     (w_FP_OP_t),
         .d_pc_i                        (d_pc_t),
         .d_pc4_i                       (d_pc4_t),
         .e_pc4_o                       (e_pc4_t),
@@ -135,7 +130,6 @@ module core
         .m_regfile_waddr_i             (m_regfile_waddr_t),
         .m_is_load_store_i             (m_is_load_store_t),
         .m_regfile_wr_i                (m_regfile_wr_t),
-        .m_FP_OP_i                     (m_FP_OP_t),
         .brj_pc_o                      (brj_pc_t),
         .brj_o                         (brj_t),
         .d_busy_alu_i                  (d_alu_busy_t),
@@ -171,8 +165,6 @@ module core
         .m_data_rd_o                   (m_data_rd_t),
         .e_data_be_i                   (e_data_be_t),
         .m_data_be_o                   (m_data_be_t),
-        .e_FP_OP_i                     (e_FP_OP_t),
-        .m_FP_OP_o                     (m_FP_OP_t),
         .e_frm_i                       (e_frm_t),
         .e_data_target_i               (e_data_target_t),
         .d_alu_busy_o                  (d_alu_busy_t),
@@ -207,8 +199,6 @@ core_mem_stage mem_stage_inst(
         .w_is_load_store_o             (w_is_load_store_t),
         .m_LOAD_op_i                   (m_LOAD_op_t),
         .w_LOAD_op_o                   (w_LOAD_op_t),
-        .m_FP_OP_i                     (m_FP_OP_t),
-        .w_FP_OP_o                     (w_FP_OP_t),
         .stall_general_i               (stall_general_t)
         );
 

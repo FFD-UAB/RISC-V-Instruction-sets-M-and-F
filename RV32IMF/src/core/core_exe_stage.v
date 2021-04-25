@@ -1,6 +1,7 @@
 //`default_nettype none
 `timescale 1ns/1ps
 `include "../defines.vh"
+`include "../config_core.vh"
 
 module exe_stage
        (
@@ -33,8 +34,6 @@ module exe_stage
         m_data_be_o,
         e_data_target_i,
         e_frm_i,
-        e_FP_OP_i,
-        m_FP_OP_o,
         d_fflags_o,
         d_alu_busy_o,
         alu_o,
@@ -51,7 +50,7 @@ module exe_stage
  input  wire [`DATA_WIDTH-1:0]         e_regfile_rs2_i;
  input  wire [`DATA_WIDTH-1:0]         e_regfile_rs3_i;
  input  wire [`DATA_WIDTH-1:0]         e_imm_val_i;
- input  wire [4:0]                     e_regfile_waddr_i;
+ input  wire [`REG_ADDR_WIDTH-1:0]     e_regfile_waddr_i;
 
  input  wire [`DATA_WIDTH-1:0]         e_pc4_i;
  input  wire [`DATA_WIDTH-1:0]         e_brj_pc_i;
@@ -60,18 +59,16 @@ module exe_stage
  input  wire                           e_data_wr_i;
  input  wire                           e_data_rd_i;
  input  wire [`MEM_TRANSFER_WIDTH-1:0] e_data_be_i;
- input  wire                           e_FP_OP_i; // Flag of Floating-Point OPeration
  input  wire [2:0]                     e_frm_i;
  output reg                            m_regfile_wr_o;
  output reg                            m_is_load_store_o;
- output reg  [4:0]                     m_regfile_waddr_o;
+ output reg  [`REG_ADDR_WIDTH-1:0]     m_regfile_waddr_o;
  output reg  [`DATA_WIDTH-1:0]         m_regfile_rd_o;
  output reg  [`DATA_WIDTH-1:0]         m_data_addr_o;
  output reg                            m_data_wr_o;
  output reg                            m_data_rd_o;
  output reg  [`MEM_TRANSFER_WIDTH-1:0] m_data_be_o;
  output reg  [2:0]                     m_LOAD_op_o;
- output reg                            m_FP_OP_o; // Output Flag of Floating-Point OPeration
  input  wire [1:0]                     e_data_target_i;
  output wire [`DATA_WIDTH-1:0]         alu_o;
  output wire                           d_alu_busy_o;    // Not a reg because is a flag.
@@ -105,7 +102,7 @@ module exe_stage
 
  // IM/F Selector module
  wire F_ALU_OP; // Used to differentiate from an FLOAD/FSTORE instruction.
- assign F_ALU_OP = e_FP_OP_i & !e_is_load_store_i;
+ assign F_ALU_OP = e_ALU_op_i[5] & !e_is_load_store_i;
 
  // Start signal controlled to avoid repeating the same multi-cycle operation.
  wire   ctrlStartM;
@@ -136,7 +133,9 @@ module exe_stage
           );
 
   // ALU Module that implements the ALU operations of the 32M Standard Extension Instruction Set
-  MULDIV2 ALU_M (
+  `ifdef RV32IM_MULDIV2 MULDIV2 
+  `else  MULDIV
+  `endif ALU_M(
          .rs1_i                        (op1_ALU            ),
          .rs2_i                        (op2_ALU            ),
          .funct3_i                     (e_ALU_op_i[2:0]    ),
@@ -151,7 +150,7 @@ module exe_stage
          .rs1_i                        ( op1_ALU         ), 
          .rs2_i                        ( op2_ALU         ), 
          .rs3_i                        ( op3_ALU         ), 
-         .funct5_i                     ( e_ALU_op_i      ), 
+         .ALUop_i                      ( e_ALU_op_i[5:0] ), 
          .frm_i                        ( e_frm_i         ),
          .start_i                      ( ctrlStartF      ), 
          .clk                          ( clk             ), 
@@ -165,8 +164,8 @@ module exe_stage
  //STORE logic
  always @(e_regfile_rs2_i or e_STORE_op_i) 
   case(e_STORE_op_i)
-   `STORE_SB:  data_wdata = {{`DATA_WIDTH - 8 {1'b0}}, e_regfile_rs2_i[7:0] };    // sb "Store 8-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
-   `STORE_SH:  data_wdata = {{`DATA_WIDTH - 16 {1'b0}}, e_regfile_rs2_i[15:0] };  // sh "Store 16-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
+   `STORE_SB:  data_wdata = {{(`DATA_WIDTH - 8) {1'b0}}, e_regfile_rs2_i[7:0] };    // sb "Store 8-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
+   `STORE_SH:  data_wdata = {{(`DATA_WIDTH - 16) {1'b0}}, e_regfile_rs2_i[15:0] };  // sh "Store 16-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
    `STORE_SW:  data_wdata = e_regfile_rs2_i;                                      // sw "Store 32-bit value from the low bits of rs2 to addr in rs1 plus the 12-bit signed immediate"
      default:  data_wdata = {`DATA_WIDTH{1'b0}};
   endcase
@@ -184,7 +183,6 @@ module exe_stage
     m_data_be_o <= {`MEM_TRANSFER_WIDTH{1'b0}};
     m_is_load_store_o <= 1'b0;
     m_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
-    m_FP_OP_o <= 1'b0;
    end
   else if(!stall_general_i)
    begin
@@ -197,7 +195,6 @@ module exe_stage
     m_data_be_o <= e_data_be_i;
     m_is_load_store_o <= e_is_load_store_i;
     m_LOAD_op_o <= e_LOAD_op_i;
-    m_FP_OP_o <= e_FP_OP_i;
    end
     
 endmodule

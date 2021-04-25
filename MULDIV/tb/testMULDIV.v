@@ -1,19 +1,21 @@
 // Telecommunications Master Dissertation - Francis Fuentes 10-10-2020
 // Divider testbench between synthesizable HW model and Gold/reference model based on restoring design.
 
-`timescale 1ns/1ns
+`timescale 1ns/1ps
 
 `include "../src/config_core.vh"
 
 module testMULDIV();
 reg [31:0] A;	// Dividend. A = B*q + r
 reg [31:0] B;	// Divisor.
+reg [31:0] D;	// Divisor.
+reg [31:0] D2;	// Divisor.
 reg clk;	// Clock signal.
 reg rstLow;	// Reset signal at low.
 reg  [2:0] funct3; // Signal to command specific type MULDIV operation.
 reg start;	// Start operation flag (load input operands).
 integer i, j;	// Loop variable used to limit the number of test values.
-integer k;      // Loop variable used to apply different divisor widths in the random test.
+integer k, m;   // Loop variable used to apply different divisor widths in the random test.
 integer seed;   // Random starting seed.
 integer totalClockCycles; // How many cycles has taken the random test.
 
@@ -84,7 +86,7 @@ B <= 32'h0;
 // *************************
 // ** Specific value test **
 // *************************
-//
+/*
 A = 32'h0C001801;	// Specific dividend value.
 B = 32'h00008001;	// Specific divisor value.
 //A = 32'h51d78a4e;	// Specific dividend value.
@@ -118,14 +120,14 @@ begin
 end
 
 #200 $stop;   // Finish specific value testbench simulation.
-
+*/
 
 
 // ***********************
 // ** Random value test **
 // ***********************
 //
-for(k = 31; k != 0; k = k-1)
+for(k = 32; k != 0; k = k-1)
 begin
 totalClockCycles = 0;
 seed = 11037;
@@ -134,11 +136,16 @@ seed = 11037;
 
 for(i = 0; i < 10000; i = i+1) // Change to perform many more random tests.
 begin
- A <= ($random(seed))%2**31; // This command outputs a signed value below the %value in abs.
- B <= ($random(seed))%2**k;
+ A <= $unsigned($random(seed)); // This command outputs a signed value below the %value in abs.
+ B <= k == 32 ? $unsigned($random(seed)) : $unsigned($random(seed))%2**k;
+ #25;
+ while(B == 32'b0) begin  // Things to avoid 0 divisors in this test.
+  B <= k == 32 ? $unsigned($random(seed)) : $unsigned($random(seed))%2**k;
+  #25;
+ end
 
 // (j = 0; j < 8; j = j + 1) to test every funct3 type. (j = 5; j < 6; j = j + 1) for unsigned, (j = 4; j < 5; j = j + 1) for signed.
- for(j = 4; j < 5; j = j + 1)
+ for(j = 5; j < 6; j = j + 1)
  begin
   #25 funct3 <= j;
 //  #25 funct3 <= 4+2*j;      // Comment line above and uncomment this one to test oneCycleRemainder system. Also, adjust j in the for to j<2.
@@ -154,12 +161,13 @@ begin
   @(posedge clk); // Always leave a clock cycle to check the results.
   #25;
   // Check if synthesizable and reference model differ results.
-  if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B = %h at %0t ns", Cg, C, A, B, $realtime);
+  if (Cg != C) $display("Error Cg = %h and C = %h, initial values are A = %h and B = %h at %0t ps", Cg, C, A, B, $realtime);
  end
 end
 
 //$display("FINISH: This model has taken %d clock cycles to finish the %d divisor width random test", totalClockCycles, k+1);
-$display("%d     %d", totalClockCycles, k+1);
+$display("%d     %d ", totalClockCycles, k);
+#25 ;
 end
 
 #200 $stop;	// Finish testbench simulation.

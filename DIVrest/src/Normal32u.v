@@ -36,7 +36,7 @@ assign a1508 = a1512 | |a[11:8];
 
 
 // If "a" 16MSB has a one, temp[4] <= 0;
-assign temp[4] = a3124 | a2320 | a1918 |a[17:16];
+assign temp[4] = a3124 | a2320 | a1918 | |a[17:16];
 
 // If temp[4] == 0, search in the 8MSB, if not, search 8MSB at a[15:0]
 assign temp[3] = (temp[4] ? a3124

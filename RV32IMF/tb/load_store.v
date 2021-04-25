@@ -21,21 +21,21 @@ module tb_load_store();
 		// Load memory
 		//$readmemb("data/instrramMem_b.mem", TB.top_CoreMem_inst.mem_instr_inst.mem, 0, 3);
 		//$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
-		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem, 0, 3);
+		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
 		TB.test_load;
 		#100
 		TB.rst_n = 1'b0;
 		#100
 		//Load data from memory
 		//$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
-		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem, 0, 3);
+		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
 		TB.test_store;
         #100
         TB.rst_n = 1'b0;
         #100
 		//Load data from memory
 		//$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
-        $readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem, 0, 3);
+        $readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
         TB.test_store_stall;
 	    $stop;
     end

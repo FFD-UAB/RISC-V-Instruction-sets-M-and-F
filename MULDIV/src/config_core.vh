@@ -24,9 +24,9 @@
 //`define RV32IM_qsDIVrest32
 //`define RV32IM_eqsDIVrest32
 //`define RV32IM_seDIVrest32
-`define RV32IM_dDIVrest32
+//`define RV32IM_dDIVrest32
 //`define RV32IM_deqsDIVrest32
-//`define RV32IM_dseDIVrest32
+`define RV32IM_dseDIVrest32
 
  
 `endif

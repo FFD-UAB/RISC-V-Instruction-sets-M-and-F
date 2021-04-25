@@ -27,13 +27,11 @@ module id_stage
         
         e_imm_val_o,  //execution unit imm val rs1
         e_data_be_o,
-        e_FP_OP_o,
         e_frm_o,
         
         w_regfile_wr_i,
         w_regfile_waddr_i,
         w_regfile_rd_i,
-        w_FP_OP_i,
         d_pc_i,
         d_pc4_i,
         stall_o,
@@ -43,7 +41,6 @@ module id_stage
         m_is_load_store_i,
         m_regfile_waddr_i,
         m_regfile_wr_i,
-        m_FP_OP_i,
         brj_pc_o,
         brj_o,
         d_busy_alu_i, // Ongoing multi-cycle operation when high flag.
@@ -55,7 +52,7 @@ module id_stage
  input  wire                           rst_n;
  input  wire [`DATA_WIDTH-1:0]         d_instruction_i;
  input  wire                           w_regfile_wr_i;
- input  wire [4:0]                     w_regfile_waddr_i;
+ input  wire [`REG_ADDR_WIDTH-1:0]     w_regfile_waddr_i;
  input  wire [`DATA_WIDTH-1:0]         w_regfile_rd_i;
 
  output reg  [`ALU_OP_WIDTH-1:0]       e_ALU_op_o;
@@ -68,15 +65,12 @@ module id_stage
  output reg                            e_data_rd_o;
  output reg                            e_regfile_wr_o;
 
- output reg  [4:0]                     e_regfile_waddr_o;
+ output reg  [`REG_ADDR_WIDTH-1:0]     e_regfile_waddr_o;
  output reg  [`DATA_WIDTH-1:0]         e_regfile_rs1_o;
  output reg  [`DATA_WIDTH-1:0]         e_regfile_rs2_o;
  output reg  [`DATA_WIDTH-1:0]         e_regfile_rs3_o;
  output reg  [`MEM_TRANSFER_WIDTH-1:0] e_data_be_o;
- output reg                            e_FP_OP_o;
  output reg  [2:0]                     e_frm_o;
- input  wire                           m_FP_OP_i;
- input  wire                           w_FP_OP_i;
  input  wire [4:0]                     d_fflags_i;
  input  wire [`DATA_WIDTH-1:0]         d_pc_i;
  input  wire [`DATA_WIDTH-1:0]         d_pc4_i;
@@ -88,14 +82,14 @@ module id_stage
  input  wire [`DATA_WIDTH-1:0]         m_regfile_rd_i;
  input  wire                           m_data_rd_i;
  input  wire                           m_is_load_store_i;
- input  wire [4:0]                     m_regfile_waddr_i;
+ input  wire [`REG_ADDR_WIDTH-1:0]     m_regfile_waddr_i;
  input  wire                           m_regfile_wr_i;
  output wire [`DATA_WIDTH-1:0]         brj_pc_o;
  output wire                           brj_o;
  input  wire                           d_busy_alu_i; // Flag of multi-cycle operation ongoing when high.
  output wire                           stall_general_o; // which enables the general stall of the core.
  
- wire [4:0]                            regfile_waddr_t; 
+ wire [`REG_ADDR_WIDTH-1:0]            regfile_waddr_t; 
  wire [`DATA_WIDTH-1:0]                reg_file_rs1_t; // Integer Regfile data from RS1
  wire [`DATA_WIDTH-1:0]                reg_file_rs2_t; // and RS2.
  wire [`ALU_OP_WIDTH-1:0]              ALU_op_t;
@@ -116,8 +110,8 @@ module id_stage
  wire                                  csr_cntr_t;
  wire                                  branch_t;
  wire                                  jalr_t;
- wire [4:0]                            regfile_raddr_rs1_t; // Register address of RS1,
- wire [4:0]                            regfile_raddr_rs2_t; // RS2 and
+ wire [`REG_ADDR_WIDTH-1:0]            regfile_raddr_rs1_t; // Register address of RS1,
+ wire [`REG_ADDR_WIDTH-1:0]            regfile_raddr_rs2_t; // RS2 and
  wire [4:0]                            regfile_raddr_rs3_t; // RS3 to both I and FP Regfiles.
  reg  [`DATA_WIDTH-1:0]                e_regfile_rs1_t;
  reg  [`DATA_WIDTH-1:0]                e_regfile_rs1_tt;
@@ -135,7 +129,6 @@ module id_stage
  wire [`DATA_WIDTH-1:0]                reg_file_f_rs1_t; // FP Regfile data from RS1,
  wire [`DATA_WIDTH-1:0]                reg_file_f_rs2_t; // RS2
  wire [`DATA_WIDTH-1:0]                reg_file_f_rs3_t; // and RS3.
- wire                                  FP_OP_t;  // FP operation.
  wire [2:0]                            frm_t;    // FP rounding mode to use at EXE.
  wire [2:0]                            frm_fcsr; // FP rounding mode from the FCSR.
 
@@ -160,16 +153,15 @@ module id_stage
         .branch_i                      (branch_t           ),  // Branch indicator output
         .brj_o                         (brj_o              ),
         .is_load_store                 (is_load_store_t    ),  // execution_unit 
-        .regfile_raddr_rs1_i           (regfile_raddr_rs1_t),  // RS1 addr
-        .regfile_raddr_rs2_i           (regfile_raddr_rs2_t),  // RS2 addr
-        .regfile_raddr_rs3_i           (regfile_raddr_rs3_t),  // RS3 addr
+        .regfile_raddr_rs1_o           (regfile_raddr_rs1_t),  // RS1 addr
+        .regfile_raddr_rs2_o           (regfile_raddr_rs2_t),  // RS2 addr
+        .regfile_raddr_rs3_o           (regfile_raddr_rs3_t),  // RS3 addr
         .regfile_waddr                 (regfile_waddr_t    ),  // RD addr
-        .regfile_wr                    (reg_file_wr_t      ),  // RegFile write enable
+        .regfile_wr                    (reg_file_wr_t      ),  // RegFile or FPRF write enable
         .imm_val_o                     (imm_val_t          ),  // execution unit imm val
         .i_r1_o                        (i_r1_t             ),
         .i_r2_o                        (i_r2_t             ),
         .i_r3_o                        (i_r3_t             ),
-        .FP_OP_o                       (FP_OP_t            ),
         .frm_i                         (frm_fcsr           ),
         .frm_o                         (frm_t              ),
         .jalr_o                        (jalr_t             )
@@ -177,29 +169,29 @@ module id_stage
 
 
  reg_file reg_file_inst(
-        .rst_n                         (rst_n                       ),  // Reset Neg
-        .clk                           (clk                         ),  // Clock
-        .regfile_we_i                  (w_regfile_wr_i & !w_FP_OP_i ),  // Write Enable
-        .regfile_raddr_rs1_i           (regfile_raddr_rs1_t         ),  // Address of r1 Read
-        .regfile_raddr_rs2_i           (regfile_raddr_rs2_t         ),  // Address of r2 Read
-        .regfile_waddr_i               (w_regfile_waddr_i           ),  // Addres of Write Register
-        .regfile_data_i                (w_regfile_rd_i              ),  // Data to write
-        .regfile_rs1_o                 (reg_file_rs1_t              ),  // Output register 1
-        .regfile_rs2_o                 (reg_file_rs2_t              )   // Output register 2
+        .rst_n               (rst_n                                  ),  // Reset Neg
+        .clk                 (clk                                    ),  // Clock
+        .regfile_we_i        (w_regfile_wr_i & !w_regfile_waddr_i[5] ),  // Write Enable
+        .regfile_raddr_rs1_i (regfile_raddr_rs1_t[4:0]               ),  // Address of r1 Read
+        .regfile_raddr_rs2_i (regfile_raddr_rs2_t[4:0]               ),  // Address of r2 Read
+        .regfile_waddr_i     (w_regfile_waddr_i[4:0]                 ),  // Addres of Write Register
+        .regfile_data_i      (w_regfile_rd_i                         ),  // Data to write
+        .regfile_rs1_o       (reg_file_rs1_t                         ),  // Output register 1
+        .regfile_rs2_o       (reg_file_rs2_t                         )   // Output register 2
         );
 
  reg_file_f reg_file_f_inst(
-        .rst_n                         (rst_n                      ),  // Reset Neg
-        .clk                           (clk                        ),  // Clock
-        .regfile_we_i                  (w_regfile_wr_i & w_FP_OP_i ),  // Write Enable
-        .regfile_raddr_rs1_i           (regfile_raddr_rs1_t        ),  // Address of r1 Read
-        .regfile_raddr_rs2_i           (regfile_raddr_rs2_t        ),  // Address of r2 Read
-        .regfile_raddr_rs3_i           (regfile_raddr_rs3_t        ),  // Address of r3 Read
-        .regfile_waddr_i               (w_regfile_waddr_i          ),  // Addres of Write Register
-        .regfile_data_i                (w_regfile_rd_i             ),  // Data to write
-        .regfile_rs1_o                 (reg_file_f_rs1_t           ),  // Output register 1
-        .regfile_rs2_o                 (reg_file_f_rs2_t           ),  // Output register 2
-        .regfile_rs3_o                 (reg_file_f_rs3_t           )   // Output register 3
+        .rst_n               (rst_n                                  ),  // Reset Neg
+        .clk                 (clk                                    ),  // Clock
+        .regfile_we_i        (w_regfile_wr_i & w_regfile_waddr_i[5]  ),  // Write Enable
+        .regfile_raddr_rs1_i (regfile_raddr_rs1_t[4:0]               ),  // Address of r1 Read
+        .regfile_raddr_rs2_i (regfile_raddr_rs2_t[4:0]               ),  // Address of r2 Read
+        .regfile_raddr_rs3_i (regfile_raddr_rs3_t[4:0]               ),  // Address of r3 Read
+        .regfile_waddr_i     (w_regfile_waddr_i[4:0]                 ),  // Addres of Write Register
+        .regfile_data_i      (w_regfile_rd_i                         ),  // Data to write
+        .regfile_rs1_o       (reg_file_f_rs1_t                       ),  // Output register 1
+        .regfile_rs2_o       (reg_file_f_rs2_t                       ),  // Output register 2
+        .regfile_rs3_o       (reg_file_f_rs3_t                       )   // Output register 3
         );
 
 //???????????????????????????????
@@ -238,27 +230,27 @@ module id_stage
   // whatever result will continue its way to be recorded by the instruction assignment.
   //Forwarding logic op1   
  always @(*)
-  if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs1_t) & !e_is_load_store_o & (e_FP_OP_o == FP_OP_t)) e_regfile_rs1_t = alu_i;
-  else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs1_t) & !m_is_load_store_i & (m_FP_OP_i == FP_OP_t)) e_regfile_rs1_t = m_regfile_rd_i;
-       else if (w_regfile_wr_i & i_r1_t & (regfile_raddr_rs1_t == w_regfile_waddr_i) & (w_FP_OP_i == FP_OP_t)) e_regfile_rs1_t = w_regfile_rd_i;
-            else e_regfile_rs1_t = (FP_OP_t & !is_load_store_t) ? reg_file_f_rs1_t : reg_file_rs1_t; // Only take from FREG if is a F instruction that isn't FLW or FSW at the decode.
+  if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs1_t) & !e_is_load_store_o) e_regfile_rs1_t = alu_i;
+  else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs1_t) & !m_is_load_store_i) e_regfile_rs1_t = m_regfile_rd_i;
+       else if (w_regfile_wr_i & i_r1_t & (regfile_raddr_rs1_t == w_regfile_waddr_i)) e_regfile_rs1_t = w_regfile_rd_i;
+            else e_regfile_rs1_t = (regfile_raddr_rs1_t[5] & !is_load_store_t) ? reg_file_f_rs1_t : reg_file_rs1_t; // Only take from FREG if is a F instruction that isn't FLW or FSW at the decode.
 
   //Forwarding logic op2
  always @(*)
-  if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs2_t) & !e_is_load_store_o & (e_FP_OP_o == FP_OP_t)) e_regfile_rs2_t = alu_i;
-  else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs2_t) & !m_is_load_store_i & (m_FP_OP_i == FP_OP_t)) e_regfile_rs2_t = m_regfile_rd_i;
-        else if (w_regfile_wr_i & i_r2_t & (regfile_raddr_rs2_t == w_regfile_waddr_i) & (w_FP_OP_i == FP_OP_t)) e_regfile_rs2_t = w_regfile_rd_i;
-             else e_regfile_rs2_t = FP_OP_t ? reg_file_f_rs2_t : reg_file_rs2_t;
+  if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs2_t) & !e_is_load_store_o) e_regfile_rs2_t = alu_i;
+  else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs2_t) & !m_is_load_store_i) e_regfile_rs2_t = m_regfile_rd_i;
+        else if (w_regfile_wr_i & i_r2_t & (regfile_raddr_rs2_t == w_regfile_waddr_i)) e_regfile_rs2_t = w_regfile_rd_i;
+             else e_regfile_rs2_t = regfile_raddr_rs2_t[5] ? reg_file_f_rs2_t : reg_file_rs2_t;
 
   //Forwarding logic op3
  always @(*)
-  if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ( e_regfile_waddr_o == regfile_raddr_rs3_t) & !e_is_load_store_o & (e_FP_OP_o == FP_OP_t)) e_regfile_rs3_t = alu_i;
-  else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ( m_regfile_waddr_i == regfile_raddr_rs3_t) & !m_is_load_store_i & (m_FP_OP_i == FP_OP_t)) e_regfile_rs3_t = m_regfile_rd_i;
-        else if (w_regfile_wr_i & i_r3_t & (regfile_raddr_rs3_t == w_regfile_waddr_i) & (w_FP_OP_i == FP_OP_t)) e_regfile_rs3_t = w_regfile_rd_i;
-             else e_regfile_rs3_t = FP_OP_t & i_r3_t ? reg_file_f_rs3_t : 32'b0;
+  if (e_regfile_wr_o & ( e_regfile_waddr_o != 0) & ({1'b1, regfile_raddr_rs3_t} == e_regfile_waddr_o) & !e_is_load_store_o) e_regfile_rs3_t = alu_i;
+  else if (m_regfile_wr_i & ( m_regfile_waddr_i != 0) & ({1'b1, regfile_raddr_rs3_t} == m_regfile_waddr_i) & !m_is_load_store_i) e_regfile_rs3_t = m_regfile_rd_i;
+        else if (w_regfile_wr_i & i_r3_t & ({1'b1, regfile_raddr_rs3_t} == w_regfile_waddr_i)) e_regfile_rs3_t = w_regfile_rd_i;
+             else e_regfile_rs3_t = reg_file_f_rs3_t;
    
- // The possible data hazards are reading or storing (COMPLETE...), which requires a single clock cycle stall, and a mutli-cycle operation, which stalls the whole core many clock cycles.
- //Hazard detection unit
+ // The possible data hazards when reading and the value is required for a instruction, which requires a single clock cycle stall if the load instruction is at MEM or
+ // two clock cycles if is at EXE stage.
   assign stall_o =  (e_data_rd_o & ((i_r1_t & (e_regfile_waddr_o == regfile_raddr_rs1_t)) | (i_r2_t & (e_regfile_waddr_o == regfile_raddr_rs2_t))))
                    |(m_data_rd_i & ((i_r1_t & (m_regfile_waddr_i == regfile_raddr_rs1_t)) | (i_r2_t & (m_regfile_waddr_i == regfile_raddr_rs2_t))));
   assign stall_general_o = d_busy_alu_i;
@@ -302,7 +294,6 @@ module id_stage
     e_data_target_o <= 2'b0;
     e_pc4_o <= {`DATA_WIDTH{1'b0}};
     e_brj_pc_o <= {`DATA_WIDTH{1'b0}};
-    e_FP_OP_o <= 1'b0;
     e_frm_o <= 3'b0;
    end
   else if(!stall_general_o)
@@ -324,7 +315,6 @@ module id_stage
     e_data_target_o <= data_target_t;
     e_pc4_o <= d_pc4_i;
     e_brj_pc_o <= brj_pc_o;
-    e_FP_OP_o <= FP_OP_t;
     e_frm_o <= frm_t;
    end
      

@@ -10,7 +10,7 @@
 // This is done because most of the logic is the same for many arithmetic 
 // instructions (F.ADD, F.SUB, F.MUL, F.DIV, etc).
 
-`include "defines.vh"
+`include "../../../defines.vh"
 
 module ADDSUB_FPs(rs1_i, rs2_i, SUBflag_i, frm_i, c_o, fflags_o);
 // Input operands and control signals;
@@ -122,8 +122,8 @@ assign Postalign_e = zeroMantissa ? 9'b0 :
                      prePostalign_m[26] ? res_e + 8'b1
                                         : res_e - Lshifts + (res_e == 8'b0 & prePostalign_m[25]);
 assign Postalign_m = prePostalign_m[26] ? {prePostalign_m[25:2], |prePostalign_m[1:0]}
-                     : prePostalign_m << ((Postalign_e == 9'b0 & Lshifts != 8'b0) ? Lshifts - 8'b1
-                                                                                    : Lshifts);
+                     : prePostalign_m[24:0] << ((Postalign_e == 9'b0 & Lshifts != 8'b0) ? Lshifts - 8'b1
+                                                                                        : Lshifts);
 
 
 // Step 4: Rounding
@@ -170,7 +170,7 @@ reg [22:0] postRound_m;
 always @(*)
 begin
  postRound_s = 1'b0;
- postRound_e = 9'hF;
+ postRound_e = 9'hFF;
  postRound_m = 23'h400000;
 
 case(frm_i)
@@ -231,6 +231,8 @@ case(frm_i)
       postRound_e = Round_e0;
     end
   end
+
+  default: ; //default required by Quartus II 13.1
 
 endcase
 end

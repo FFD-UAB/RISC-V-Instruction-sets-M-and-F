@@ -6,13 +6,13 @@
 
 `include "../../defines.vh"
 
-module FPU_S(rs1_i, rs2_i, rs3_i, funct5_i, frm_i, start_i, clk, rstLow, c_o, fflags_o, busy_o);
+module FPU_S(rs1_i, rs2_i, rs3_i, ALUop_i, frm_i, start_i, clk, rstLow, c_o, fflags_o, busy_o);
 // Input operands and control signals;
 input wire [31:0] rs1_i;
 input wire [31:0] rs2_i;
 input wire [31:0] rs3_i;
 
-input wire  [4:0] funct5_i; // Operation selector.
+input wire  [5:0] ALUop_i; // Operation selector.
 input wire  [2:0] frm_i;    // Rounding mode bits from the FCSR or instruction.
 input wire        start_i;
 input wire        clk;
@@ -56,7 +56,7 @@ wire  [4:0] FDIV_fflags;
 ADDSUB_FPs ADDSUBs(
          .rs1_i     ( rs1_i          ), 
          .rs2_i     ( rs2_i          ),
-         .SUBflag_i ( funct5_i[0]    ), 
+         .SUBflag_i ( ALUop_i[0]    ), 
          .frm_i     ( frm_i          ), 
          .c_o       ( FAddSub_res    ), 
          .fflags_o  ( FAddSub_fflags )
@@ -112,7 +112,7 @@ wire RS12Inf;   // RS1 and RS2 are infinite.
 wire RS12Sign;  // RS1 and RS2 signed multiplied/divided.
 
 assign RS12NaN   = NaNRS1 | NaNRS2;
-assign RS12PNInf = InfRS1 & InfRS2 & (rs1_s != rs2_s);
+assign RS12PNInf = InfRS1 & InfRS2 & (rs1_s != (rs2_s^ALUop_i[0]));
 assign RS12ZInf  = (ZRS1 & InfRS2) | (ZRS2 & InfRS1);
 assign RS12Z     = ZRS1 & ZRS2;
 assign RS12Inf   = InfRS1 & InfRS2;
@@ -123,15 +123,15 @@ always @(*) begin
 c_o <= 32'b0;
 {NV, DZ, OF, UF, NX} <= 5'b0;
 
-case(funct5_i)
+case(ALUop_i)
  `ALU_OP_FADD, `ALU_OP_FSUB:
  begin
   if(RS12NaN | RS12PNInf) begin
-   c_o <= 32'h7FC00000;
+   c_o <= 32'h7FC00000; // qNaN
    NV  <= 1'b1;
   end else if(InfRS1 | InfRS2)
-   c_o <= InfRS1 ? rs1_i : rs2_i; // In my opinion, the NX flag should be raised,
-  else begin                      // but the IEEE Std 754 doesn't specify as it is.
+   c_o <= InfRS1 ? rs1_i : {rs2_s^ALUop_i[0], rs2_i[30:0]};
+  else begin                      
    c_o <= FAddSub_res;
    {NV, DZ, OF, UF, NX} <= FAddSub_fflags;
  end end
@@ -139,7 +139,7 @@ case(funct5_i)
  `ALU_OP_FMUL:
  begin
   if(RS12NaN | RS12ZInf) begin
-   c_o <= 32'h7FC00000; // NaN
+   c_o <= 32'h7FC00000; // qNaN
    NV  <= 1'b1;
   end else if(InfRS1 | InfRS2)
    c_o <= {RS12Sign, 31'h7F800000}; // Inf with proper sign.
@@ -151,7 +151,7 @@ case(funct5_i)
  `ALU_OP_FDIV:
  begin
   if(RS12NaN | RS12Z | RS12Inf) begin
-   c_o <= 32'h7FC00000; // NaN
+   c_o <= 32'h7FC00000; // qNaN
    NV  <= 1'b1;
   end else if(InfRS1 | InfRS2 | ZRS1 | ZRS2) begin
    c_o <= {RS12Sign, InfRS1 | ZRS2 ? 31'h7F800000 : 31'b0};

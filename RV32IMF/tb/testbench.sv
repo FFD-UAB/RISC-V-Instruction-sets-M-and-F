@@ -674,11 +674,177 @@ task test_FP1;
        $display("ERROR: dataMem[8] has to be 0x%h but is: 0x%h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8], TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
        //$fatal;
     end
-
    
   end
 endtask
 
+/*
+task test_FPMandelbrot; // Coded but not tested. WIP
+  begin
+    pc = 32'b0;
+    rstinstrMem();
+    // JMP or branch labels:
+    wire Finish = 12'hd4;
+    wire LoopX  = 12'h50;
+    wire LoopY  = 12'h38;
+    wire Res0   = 12'hb4;
+    wire Res1   = 12'hb0;
+    wire MandelLoop = 12'h68;
+    wire STOREres = 12'hc0;
+    
+    wire Pzoom = 12';
+    wire Mzoom = 12';
+    wire PX = 12';
+    wire MX = 12';
+    wire PY = 12';
+    wire MY = 12';
+
+    // The step value changes the screen zoom and Mandelbrot precision. Freg 2 and 3 are 
+    // XY values of the screen that can be changed to move around. VGA = 640 x 480 px
+    //
+    // Freg 1  = step value,   Freg 2 = X screen position,   Freg 3 = Y screen position.
+    // Freg 17 = X display resolution/8,   Freg 18 = Y display resolution/8.
+    //
+    //    ///////////////////// <- Y pos + step (Y counter = 1)
+    //    //        |        //
+    //    //--------+--------//
+    //    //        |        //
+    //    ///////////////////// <- Y pos - 480 x step (Y counter = 480)
+    //    ^                   ^
+    //    |                   X pos + 640 x step (X counter = 640)
+    //    X pos + step (X counter = 1)
+
+
+    // Data memory pointer and counters to store the results.
+    //
+    // Reg 2  = Max X resolution,          Reg 3 = Max Y resolution,
+    // Reg 5  = X counter,                 Reg 6 = Y counter, 
+    // Reg 7  = Flag of OOB (FP.S value > 2 in magnitude when high).
+    // Reg 8  = contains '1' to perform BEQ at Reg 7.
+    // Reg 9  = '1' shifted to set the bit position of the result.
+    // Reg 10 = '10..0' used to compate Reg 9
+    // Reg 11 = Last 32 Mandelbrot results. Store when all 32 are done.
+    // Reg 12 = memory pointer counter used to store result.
+
+
+    // The Mandelbrot set computes Z_(n+1) = Z_n x Z_n + C, where Z_0 is 0 and C is 
+    // a complex number equal to the X + iY screen positions values. The equation 
+    // is computed up to reg 1 number of times unless the real or imag values goes 
+    // over 2 in magnitude, that is stored at Freg 4. 
+    // The values at Freg 10 and 11 contain the XY position that changes with each loop 
+    // finished, being then C = Freg 10 + iFreg 11. Freg 12 and 13 are the results of each
+    // iteration that are updated with the middle operands of Freg[14, 16].
+    //
+    // Freg  4 = value 2 in FP.S, Freg  5 = value -2 in FP.S, 
+    // Freg 10 = Real init value, Freg 11 = Imag init value,  Reg 1 = Max number of iterations.
+    // Freg 12 = Real value,      Freg 13 = Imag value,       Reg 4 = iteration counter.
+    // Freg 14 = RxR result,      Freg 15 = IxI result,     Freg 16 = 2xRxI result.
+
+       // Boot code, used to update step, X or Y screen position.
+/*00/ encodeFLW (5'b0,  5'd1,  12'h0); // Freg 1 <- dataMem #0.  Freg 1 <- step value.
+/*04/ encodeFLW (5'b0,  5'd2,  12'h4); // Freg 2 <- dataMem #4.  Freg 2 <- X screen position.
+/*08/ encodeFLW (5'b0,  5'd3,  12'h8); // Freg 3 <- dataMem #8.  Freg 3 <- Y screen position.
+/*0c/ encodeFLW (5'b0,  5'd4,  12'hc); // Freg 4 <- dataMem #12. Freg 4 <- 2 in single-prec.
+/*10/ encodeLW  (5'b0,  5'd17, 12'h10);// Freg 17 <- dataMem #16. Freg 17 <- X screen resolution.
+/*14/ encodeLW  (5'b0,  5'd18, 12'h14);// Freg 18 <- dataMem #20. Freg 18 <- Y screen resolution.
+/*18/ encodeFSUB(5'b0,  5'd4,  5'd5, `FRM_RTZ);  // Freg 5 <- -2.
+/*1c/ encodeLW  (5'b0,  5'd1,  12'h18);// Reg 1  <- dataMem #24. Reg 1 is max Mandelbrot iterations.
+/*20/ encodeLW  (5'b0,  5'd2,  12'h1c);// Reg 2  <- dataMem #28. Reg 2 <- X screen resolution.
+/*24/ encodeLW  (5'b0,  5'd3,  12'h20);// Reg 3  <- dataMem #32. Reg 3 <- Y screen resolution.
+/*28/ encodeAddi(5'b0,  5'd8,  12'h1); // Reg 8  <- '1'.
+/*2c/ encodeAddi(5'b0,  5'd9,  12'h1); // Reg 9  <- '1'.
+/*30/ encodeSlli(5'd8,  5'd10, 12'd31);// Reg 10 <- '10..0'
+    
+    
+/*  / // Init Y vector
+/*34/ encodeFADD(5'b0,  5'd3,  5'd11, `FRM_RTZ);  // Reset Y position
+
+/*  / // Loop Y vector
+/*38/ encodeAddi(5'b0,  5'd6,  12'h1); // Increase Y counter
+/*3c/ encodeBlt (5'd3,  5'd6,  Finish);// JMP "Finish" if Y > Y resolution
+/*40/ encodeFSUB(5'd11, 5'd1,  5'd11, `FRM_RTZ); // Decrease Y step
+/*44/ encodeFADD(5'b0,  5'd11, 5'd13, `FRM_RTZ); // Init Imag register
+    
+/*  / // Init X vector
+/*48/ encodeAdd (5'b0,  5'b0,  5'd5 ); // Reset X counter
+/*4c/ encodeFADD(5'b0,  5'd2,  5'd10, `FRM_RTZ); // Reset X position
+    
+/*  / // Loop X vector
+/*50/ encodeAddi(5'b0,  5'd5,  12'h1); // Increase X counter
+/*54/ encodeBlt (5'd2,  5'd5,  LoopY); // JMP "Loop Y" if X > X resolution
+/*58/ encodeFADD(5'd10, 5'd1,  5'd10, `FRM_RTZ); // Increase X step
+/*5c/ encodeFADD(5'b0,  5'd10, 5'd12, `FRM_RTZ); // Init Real register
+    
+/*  / // Init Mandelbrot
+/*60/ encodeAdd (5'b0,  5'b0,  5'd7 ); // Flush flag OOB
+/*64/ encodeAdd (5'b0,  5'b0,  5'd4 ); // Flush iteration counter
+    
+/*  / // Mandelbrot iteration loop
+/*68/ encodeAddi(5'b0,  5'd4,  12'h1); // Increase iteration counter
+/*6c/ encodeBge (5'd4,  5'd1,  Res1 ); // JMP "Result = 1" if count > Max iter.
+
+/*70/ encodeFMUL(5'd10, 5'd10, 5'd14, `FRM_RTZ); // RxR
+/*74/ encodeFMUL(5'd13, 5'd13, 5'd15, `FRM_RTZ); // IxI
+/*78/ encodeFMUL(5'd10, 5'd13, 5'd16, `FRM_RTZ); // RxI
+/*7c/ encodeFSUB(5'd14, 5'd15, 5'd12, `FRM_RTZ); // Real = RxR - IxI
+/*80/ encodeFADD(5'd16, 5'd16, 5'd13, `FRM_RTZ); // Imag = 2xRxI
+
+/*84/ encodeFADD(5'd10, 5'd12, 5'd12, `FRM_RTZ); // Real = Real + C_real
+/*88/ encodeFADD(5'd11, 5'd13, 5'd13, `FRM_RTZ); // Imag = Imag + C_imag
+
+/*8c/ encodeFlt (5'd4,  5'd12, 5'd7 ); // Rise flag of Real > 2
+/*90/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*94/ encodeFlt (5'd4,  5'd13, 5'd7 ); // Rise flag of Imag > 2
+/*98/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*9c/ encodeFlt (5'd12, 5'd5,  5'd7 ); // Rise flag of Real < -2
+/*a0/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*a4/ encodeFlt (5'd13, 5'd5,  5'd7 ); // Rise flag of Imag < -2
+/*a8/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*ac/ encodeJal (5'b0,  MandelLoop  ); // JMP Mandelbrot Loop, for next iteration loop
+    
+/*  / // Mandelbrot result
+/*  /   // Result = 1
+/*b0/ encodeAdd (5'd9,  5'd11, 5'd11 );// Update result register.
+/*  /   // Result = 0
+/*b4/ encodeBeq (5'd9,  5'd10, STOREres);// JMP "STORE res" if shifter is '10..0'
+/*b8/ encodeSlli(5'd9,  5'd9,  12'b1 );// Prepare counter shifter for next result
+/*bc/ encodeJal (5'b0,  LoopX);        // JMP "Loop X" Result recorded, next X.
+/*  /   // STORE res
+/*c0/ encodeAddi(5'b0,  5d'9,  12'h1 );// Reset shifter counter
+/*c4/ encodeSW  (5'd12, 5'd11, 12'h24);// Store 32 Mandelbrot results
+/*c8/ encodeAddi(5'd12, 5'd12, 12'h4 );// Increment +4 data store pointer
+/*cc/ encodeAdd (5'b0,  5'b0,  5'd11 );// Flush result register after storing
+/*d0/ encodeJal (5'b0,  LoopX);        // JMP "Loop X" Result recorded, next X.
+    
+/*  / // Finish. Check what writes the AXI bus to change screen.
+/*d4/ encodeLW  (5'b0,  5'd4,  12'h24); // LOAD AXI bus buttons and check its value.
+
+/*d8/ encodeBeq (5'd8,  5'd4,  Pzoom);  // 1 = JMP +zoom
+/*dc/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*e0/ encodeBeq (5'd8,  5'd4,  Mzoom);  // 2 = JMP -zoom
+/*e4/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*e8/ encodeBeq (5'd8,  5'd4,  PX);     // 4 = JMP +X
+/*ec/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*f0/ encodeBeq (5'd8,  5'd4,  MX);     // 8 = JMP -X
+/*f4/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*f8/ encodeBeq (5'd8,  5'd4,  PY);     // 16 = JMP +Y
+/*fc/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*100/encodeBeq (5'd8,  5'd4,  MY);     // 32 = JMP -Y
+
+/*104/encodeJal (5'b0,  12'hd4); // JMP "Finish" Check again if the buttons have been pressed.
+
+/ / // +zoom
+/ /
+/ /
+/ /
+/ /
+
+  end
+endtask */
 
 //**********************************//**********************************//**********************************/
 //**********************************//**********************************//**********************************/
@@ -1284,9 +1450,9 @@ task encodeREMU;
 endtask
 
 
-//********************************
-//** Instruction set F.S encode **
-//********************************
+//******************************
+//** Instruction set F encode **
+//******************************
 
 task encodeFLW;
   input  [4:0] rs1;
@@ -1530,7 +1696,7 @@ task encodeFCVT_W_S;
   input  [4:0] rd;
   input  [2:0] rm;
   begin
-    instruction = {`ALU_OP_FCVT_W_F, 2'b0, 5'b00000, rs1, rm, rd, `OPCODE_R_FPU};
+    instruction = {`ALU_OP_FCVT_W_S, 2'b0, 5'b00000, rs1, rm, rd, `OPCODE_R_FPU};
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
@@ -1544,7 +1710,7 @@ task encodeFCVT_WU_S;
   input  [4:0] rd;
   input  [2:0] rm;
   begin
-    instruction = {`ALU_OP_FCVT_W_F, 2'b0, 5'b00001, rs1, rm, rd, `OPCODE_R_FPU};
+    instruction = {`ALU_OP_FCVT_W_S, 2'b0, 5'b00001, rs1, rm, rd, `OPCODE_R_FPU};
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
@@ -1557,7 +1723,7 @@ task encodeFMV_X_W;
   input  [4:0] rs1;
   input  [4:0] rd;
   begin
-    instruction = {`ALU_OP_FMV_X, 2'b0, 5'b00000, rs1, 3'b000, rd, `OPCODE_R_FPU};
+    instruction = {`ALU_OP_FMV_X_W, 2'b0, 5'b00000, rs1, 3'b000, rd, `OPCODE_R_FPU};
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
@@ -1612,7 +1778,7 @@ task encodeFCLASS;
   input  [4:0] rs1;
   input  [4:0] rd;
   begin
-    instruction = {`ALU_OP_FMV_X, 2'b0, 5'b00000, rs1, 3'b001, rd, `OPCODE_R_FPU};
+    instruction = {`ALU_OP_FMV_X_W, 2'b0, 5'b00000, rs1, 3'b001, rd, `OPCODE_R_FPU};
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];

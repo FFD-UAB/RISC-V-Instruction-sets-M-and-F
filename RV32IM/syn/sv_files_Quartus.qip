@@ -1,0 +1,62 @@
+#///////////
+#// RV32I //
+#///////////
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/config.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/ram_mux.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/instr_ram_wrap.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/boot_code.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/boot_rom_wrap.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/sp_ram_wrap_data.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/sp_ram_wrap_instr.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/sp_ram_data.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "../src/mem/sp_ram_instr.sv"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/core_execution_unit_alu.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_instrDecode_unit/core_control_unit.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_instrDecode_unit/core_branching_unit.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_instrDecode_unit/core_reg_file.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_id_stage.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_if_stage.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_exe_stage.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_mem_stage.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_wb_stage.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_csr_unit/core_csr_unit.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_csr_unit/core_csr_unit_counter.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_csr_unit/core_csr_unit_timer.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/top_CoreMem.v"]
+
+#/////////////////////////////////////////////
+#// Instruction expansion set RV32M modules //
+#/////////////////////////////////////////////
+#// MULDIV module
+#// MULDIV, uses LPM_MULT or no IP MUL
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/core_execution_unit_alu_m.v"]
+#// MULDIV2, uses ALTMULT_ADD
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/core_execution_unit_alu_m2.v"]
+
+#// No IP MUL (IP MUL are called at .comp_sv file)  No IP MUL, requires MULDIV
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/MULgold.v"]
+
+#// DIV modules
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/tDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/bDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/qsDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/seDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/dDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/deqsDIVrest32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v"]
+
+#// Addons used by some DIV modules
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/MULDIV/Normal32u.v"]
+
+
+#//////////////////
+#// IP Libraries //
+#//////////////////
+set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) "../lib/ALTMULT_ADD32.qip"]
+set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) "../lib/LPM_MULT32.qip"]
+set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) "../lib/PLL.qip"]
+

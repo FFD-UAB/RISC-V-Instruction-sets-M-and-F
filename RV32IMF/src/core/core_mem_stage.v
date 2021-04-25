@@ -28,16 +28,14 @@ module core_mem_stage
         w_is_load_store_o,
         m_LOAD_op_i,
         w_LOAD_op_o,
-        m_FP_OP_i,
-        w_FP_OP_o,
         stall_general_i
         );
 
  input  wire                           clk;
  input  wire                           rst_n;
 
- input  wire [4:0]                     m_regfile_waddr_i;
- output reg  [4:0]                     w_regfile_waddr_o;
+ input  wire [`REG_ADDR_WIDTH-1:0]     m_regfile_waddr_i;
+ output reg  [`REG_ADDR_WIDTH-1:0]     w_regfile_waddr_o;
  input  wire [`DATA_WIDTH-1:0]         m_regfile_rd_i;
  output reg  [`DATA_WIDTH-1:0]         w_regfile_rd_o;
  input  wire                           m_regfile_wr_i;
@@ -59,8 +57,6 @@ module core_mem_stage
  output reg                            w_is_load_store_o;
  input  wire [2:0]                     m_LOAD_op_i;
  output reg  [2:0]                     w_LOAD_op_o;
- input  wire                           m_FP_OP_i;
- output reg                            w_FP_OP_o;
  input  wire                           stall_general_i;
 
  reg [1:0]                             state;
@@ -119,7 +115,6 @@ module core_mem_stage
     w_regfile_wr_o <= 1'b0;
     w_is_load_store_o <= 1'b0;
     w_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
-    w_FP_OP_o <= 1'b0;
    end
   else if(!stall_general_i)
    begin
@@ -128,7 +123,6 @@ module core_mem_stage
     w_regfile_wr_o <= m_regfile_wr_i;
     w_is_load_store_o <= m_is_load_store_i;
     w_LOAD_op_o <= m_LOAD_op_i;
-    w_FP_OP_o <= m_FP_OP_i;
    end
          
 endmodule

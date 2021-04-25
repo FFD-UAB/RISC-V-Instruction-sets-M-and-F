@@ -1,6 +1,7 @@
 //`default_nettype none
 `timescale 1ns/1ps
 `include "../defines.vh"
+`include "../config_core.vh"
 
 module exe_stage
        (
@@ -116,7 +117,8 @@ module exe_stage
 
   // ALU Module that implements the ALU operations of the 32M Standard Extension Instruction Set
   `ifdef RV32IM_MULDIV2 MULDIV2 
-  `else  MULDIV MULDIV(
+  `else  MULDIV
+  `endif ALU_M(
          .rs1_i                        (op1_ALU            ),
          .rs2_i                        (op2_ALU            ),
          .funct3_i                     (e_ALU_op_i[2:0]    ),
@@ -126,7 +128,7 @@ module exe_stage
          .c_o                          (alu_M              ),
          .busy_o                       (d_alu_busy_o       )
           );
-  `endif
+
 
 
  //STORE logic

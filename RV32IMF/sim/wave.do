@@ -1,29 +1,29 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/rst_n
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/clk
-add wave -noupdate /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regFile
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_we_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_raddr_rs1_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_raddr_rs2_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_waddr_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_data_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_rs1_o
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_rs2_o
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/ADDR_WIDTH
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/DATA_WIDTH
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/NUM_WORDS
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/words
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/clk
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/en_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/addr_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/wdata_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/rdata_o
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/we_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/be_i
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/wdata
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/addr
-add wave -noupdate -radix hexadecimal /load_store_test/TB/top_CoreMem_inst/data_mem/sp_ram_i/i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/rst_n
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/clk
+add wave -noupdate /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regFile
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_we_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_raddr_rs1_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_raddr_rs2_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_waddr_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_data_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_rs1_o
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/core_inst/id_stage_inst/reg_file_inst/regfile_rs2_o
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/ADDR_WIDTH
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/DATA_WIDTH
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/NUM_WORDS
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/words
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/clk
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/en_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/addr_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/wdata_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/rdata_o
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/we_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/be_i
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/wdata
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/addr
+add wave -noupdate -radix hexadecimal /tb_load_store/TB/top_CoreMem_inst/data_mem/sp_ram_data_i/i
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {2035020 ps} 0}
 configure wave -namecolwidth 476

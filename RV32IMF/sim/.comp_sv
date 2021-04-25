@@ -14,12 +14,12 @@ vlog -sv -f sv_files
 # Depending on your decision to use the MULDIV (LPM_MULT or no IP MUL) or MULDIV2 
 # (ALTMULT_ADD), is recommended to comment the lines which are not being used to lower
 # compilation time. In order to be able to simulate, use the next syntax command:
-# vsim -L LPM -L ALTMULT work.tb_load_store
-# vsim -L LPM -L ALTMULT work.tb_arithmeticologic
-# vsim -L LPM -L ALTMULT work.tb_arithmeticologic_m
-# vsim -L LPM -L ALTMULT work.tb_branch
-# vsim -L LPM -L ALTMULT work.tb_instrMem
-# vsim -L LPM -L ALTMULT work.tb_FP
+# vsim -L LPM -L ALTMULT -novopt work.tb_load_store
+# vsim -L LPM -L ALTMULT -novopt work.tb_arithmeticologic
+# vsim -L LPM -L ALTMULT -novopt work.tb_arithmeticologic_m
+# vsim -L LPM -L ALTMULT -novopt work.tb_branch
+# vsim -L LPM -L ALTMULT -novopt work.tb_instrMem
+# vsim -L LPM -L ALTMULT -novopt work.tb_FP
 
 # Load IP Multifunction Libraries (change "QuartusPath" to your Quartus directory)
 # Library created for compiling files required by LPM_MULT32 for MULDIV module

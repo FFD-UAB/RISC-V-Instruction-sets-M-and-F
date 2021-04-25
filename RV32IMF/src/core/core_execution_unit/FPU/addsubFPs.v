@@ -170,7 +170,7 @@ reg [22:0] postRound_m;
 always @(*)
 begin
  postRound_s = 1'b0;
- postRound_e = 9'hF;
+ postRound_e = 9'hFF;
  postRound_m = 23'h400000;
 
 case(frm_i)
