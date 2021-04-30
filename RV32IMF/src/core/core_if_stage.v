@@ -24,7 +24,7 @@ module if_stage
     input  wire                        brj_i;
     input  wire [`DATA_WIDTH-1:0]      brj_pc_i;
     input  wire [`DATA_WIDTH-1:0]      instruction_rdata_i;
-    output wire [`MEM_ADDR_WIDTH-1:0]  instruction_addr_o;
+    output wire [`MEM_ADDR_INSTR_WIDTH-1:0]  instruction_addr_o;
     output wire [`DATA_WIDTH-1:0]      d_instruction_o;
     output reg  [`DATA_WIDTH-1:0]      d_pc_o;
     output reg  [`DATA_WIDTH-1:0]      d_pc4_o;
@@ -41,7 +41,7 @@ module if_stage
     reg                                core_init; // High during the first clock cycle after rst
                                                   // to avoid loading a wrong first instruction.
     
-    assign instruction_addr_o = pc[`MEM_ADDR_WIDTH-1:0];
+    assign instruction_addr_o = pc[`MEM_ADDR_INSTR_WIDTH-1:0];
     assign pc4  = pc + {{`DATA_WIDTH-3{1'b0}}, 3'd4};
     assign flush_inst_o = !brj_i;
     assign stall_any = stall_i | stall_general_i;

@@ -7,7 +7,7 @@ module top_CoreMem
         rst_n,
 
         // AXI to instr mem
-        axi_instr_req, // Uncomment to use pulpine
+        axi_instr_req,
         axi_instr_addr,
         axi_instr_we,
         axi_instr_be,
@@ -18,7 +18,7 @@ module top_CoreMem
         axi_instr_rdata,
 
         // AXI to data mem
-        axi_data_req, // Uncomment to use pulpine
+        axi_data_req,
         axi_data_addr,
         axi_data_we,
         axi_data_be,
@@ -51,17 +51,17 @@ module top_CoreMem
     localparam AXI_ID_MASTER_WIDTH  = 10;
     localparam AXI_ID_SLAVE_WIDTH   = 10;
     localparam AXI_USER_WIDTH       = 0;
-    localparam DATA_RAM_SIZE        = 32768/2; // in bytes
+    localparam DATA_RAM_SIZE        = 2 ** `MEM_ADDR_DATA_WIDTH ; // in bytes
     localparam INSTR_RAM_SIZE       = 32768; // in bytes
     localparam INSTR_ADDR_WIDTH     = $clog2(INSTR_RAM_SIZE)+1; // to make space for the boot rom
-    localparam DATA_ADDR_WIDTH      = $clog2(DATA_RAM_SIZE);
+    localparam DATA_ADDR_WIDTH      = `MEM_ADDR_DATA_WIDTH; //$clog2(DATA_RAM_SIZE);
     localparam AXI_B_WIDTH          = $clog2(AXI_DATA_WIDTH/8); // AXI "Byte" width
     
     input 	wire clk;
     input 	wire rst_n;
 
   // signals AXI to/from instr mem
-  input  wire                        axi_instr_req; // Uncomment to use pulpine
+  input  wire                        axi_instr_req; // Uncomment to use on synthesis
   input  wire [INSTR_ADDR_WIDTH-1:0] axi_instr_addr;
   input  wire                        axi_instr_we;
   input  wire [AXI_DATA_WIDTH/8-1:0] axi_instr_be;
@@ -72,7 +72,7 @@ module top_CoreMem
   output wire [AXI_DATA_WIDTH-1:0]   axi_instr_rdata;
   
   // signals AXI to/from data mem
-  input  wire                        axi_data_req; // Uncomment to use pulpine
+  input  wire                        axi_data_req; // Uncomment to use on synthesis
   input  wire [DATA_ADDR_WIDTH-1:0]  axi_data_addr;
   input  wire                        axi_data_we;
   input  wire [AXI_DATA_WIDTH/8-1:0] axi_data_be;
@@ -100,7 +100,7 @@ module top_CoreMem
 
   // signals core to/from instr mem
   wire                        core_instr_req;
-  output wire [`MEM_ADDR_WIDTH-1:0]  core_instr_addr;
+  output wire [`MEM_ADDR_INSTR_WIDTH-1:0]  core_instr_addr;
   wire                        core_instr_we;
   wire [AXI_DATA_WIDTH/8-1:0] core_instr_be;
   wire [`DATA_WIDTH-1:0]      core_instr_wdata;
@@ -111,7 +111,7 @@ module top_CoreMem
 
   // signals core to/from data mem
   wire                        core_data_req;
-  output wire [`MEM_ADDR_WIDTH-1:0]  core_data_addr;
+  output wire [`MEM_ADDR_DATA_WIDTH-1:0]  core_data_addr;
   output wire                        core_data_we;
   wire [AXI_DATA_WIDTH/8-1:0] core_data_be;
   output wire [`DATA_WIDTH-1:0]      core_data_wdata;
@@ -167,12 +167,12 @@ core core_inst(
  assign core_instr_we = 1'b0;  // Core shouldn't be able to write its instructions... What do you think this is? An AI with free will?... Not yet.
  assign core_instr_be = {(AXI_DATA_WIDTH/8){1'b0}}; // Mask to write in instr mem. 0=Don't write anything.
  assign core_instr_wdata = {AXI_DATA_WIDTH{1'b0}};
-/*
- wire axi_instr_req;          // Comment to use pulpine
- wire axi_data_req;           // Comment to use pulpine
- assign axi_instr_req = 1'b0; // Comment to use pulpine
- assign axi_data_req = 1'b0;  // Comment to use pulpine
-*/
+
+ // wire axi_instr_req;          // Comment to use on synthesis
+ // wire axi_data_req;           // Comment to use on synthesis
+ // assign axi_instr_req = 1'b0; // Comment to use on synthesis
+ // assign axi_data_req = 1'b0;  // Comment to use on synthesis
+
 
   //----------------------------------------------------------------------------//
   // Instruction RAM                                                            //
@@ -221,7 +221,7 @@ instr_ram_wrap
     .port1_req_i    ( core_instr_req    ),
     .port1_gnt_o    ( core_instr_gnt    ),
     .port1_rvalid_o ( core_instr_rvalid ),
-    .port1_addr_i   ( {{INSTR_ADDR_WIDTH-`MEM_ADDR_WIDTH{1'b0}}, core_instr_addr} ),
+    .port1_addr_i   ( {{INSTR_ADDR_WIDTH-`MEM_ADDR_INSTR_WIDTH{1'b0}}, core_instr_addr} ),
     .port1_we_i     ( core_instr_we     ),
     .port1_be_i     ( core_instr_be     ),
     .port1_rdata_o  ( core_instr_rdata  ),
@@ -282,7 +282,7 @@ instr_ram_wrap
     .port1_req_i    ( core_data_req    ),
     .port1_gnt_o    ( core_data_gnt    ),
     .port1_rvalid_o ( core_data_rvalid ),
-    .port1_addr_i   ( {{DATA_ADDR_WIDTH-`MEM_ADDR_WIDTH{1'b0}}, core_data_addr} ),
+    .port1_addr_i   ( {{(DATA_ADDR_WIDTH-`MEM_ADDR_DATA_WIDTH){1'b0}}, core_data_addr} ),
     .port1_we_i     ( core_data_we     ),
     .port1_be_i     ( core_data_be     ),
     .port1_rdata_o  ( core_data_rdata  ),

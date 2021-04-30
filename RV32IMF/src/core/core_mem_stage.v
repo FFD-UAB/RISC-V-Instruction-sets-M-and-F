@@ -45,7 +45,7 @@ module core_mem_stage
  input  wire [`DATA_WIDTH-1:0]         m_data_addr_i;
  input  wire [`MEM_TRANSFER_WIDTH-1:0] m_data_be_i;
  output wire                           data_wr_o;
- output wire [`MEM_ADDR_WIDTH-1:0]     data_addr_o;
+ output wire [`MEM_ADDR_DATA_WIDTH-1:0]     data_addr_o;
  input  wire [`DATA_WIDTH-1:0]         data_rdata_i;
  output wire [`DATA_WIDTH-1:0]         w_data_rdata_o;
  output wire [`DATA_WIDTH-1:0]         data_wdata_o;
@@ -67,7 +67,7 @@ module core_mem_stage
  localparam READ = 1;
  localparam WRITE = 2;
  
- assign data_addr_o = m_data_addr_i[`MEM_ADDR_WIDTH-1:0];
+ assign data_addr_o = m_data_addr_i[`MEM_ADDR_DATA_WIDTH-1:0];
  assign data_wdata_o = m_regfile_rd_i;
  assign data_wr_o = m_data_wr_i;
  assign data_be_o = m_data_be_i;

@@ -20,7 +20,7 @@ module core
 
  input wire                            clk;
  input wire                            rst_n;
- output wire [`MEM_ADDR_WIDTH-1:0]     data_addr_o;
+ output wire [`MEM_ADDR_DATA_WIDTH-1:0]     data_addr_o;
  input wire                            data_gnt_i;
  output wire                           data_req_o;  
  input wire  [`DATA_WIDTH-1:0]         data_rdata_i;
@@ -28,7 +28,7 @@ module core
  output wire [`DATA_WIDTH-1:0]         data_wdata_o;
  output wire [`MEM_TRANSFER_WIDTH-1:0] data_be_o;
  output wire                           data_wr_o;
- output wire [`MEM_ADDR_WIDTH-1:0]     instruction_addr_o;
+ output wire [`MEM_ADDR_INSTR_WIDTH-1:0]     instruction_addr_o;
  input wire  [`DATA_WIDTH-1:0]         instruction_rdata_i;
  output wire                           flush_inst_o;
 

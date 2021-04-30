@@ -95,7 +95,7 @@ module id_stage
  wire [`ALU_OP_WIDTH-1:0]              ALU_op_t;
  wire [1:0]                            STORE_op_t;
  wire [2:0]                            LOAD_op_t;
- wire [2:0]                            BR_op_t;
+ wire [`BR_OP_WIDTH-1:0]               BR_op_t;
  wire [`DATA_ORIGIN_WIDTH-1:0]         data_origin_t; 
  wire                                  reg_file_wr_t;
  wire                                  is_load_store_t;
@@ -139,8 +139,8 @@ module id_stage
         .data_target_o                 (data_target_t      ),
         .data_wr                       (data_wr_t          ),  // LoadStore indicator output
         .data_be_o                     (data_be_t          ),
-        .branch_i                      (branch_t           ),  // Branch indicator output
-        .brj_o                         (brj_o              ),
+        .branch_i                      (branch_t & !stall_o),  // Branch indicator output
+        .brj_o                         (brj_o              ),    // During a stall for dataMem access, do not branch.
         .is_load_store                 (is_load_store_t    ),  // execution_unit 
         .regfile_raddr_rs1_i           (regfile_raddr_rs1_t),  // RS1 addr
         .regfile_raddr_rs2_i           (regfile_raddr_rs2_t),  // RS2 addr
@@ -195,24 +195,26 @@ module id_stage
   // location. This means that whatever are the ALU's inputs, even if is a recent result, from the DataMem or Regfile, the correct operand will be at the input and 
   // whatever result will continue its way to be recorded by the instruction assignment.
   //Forwarding logic op1   
- always @*
-  if (e_regfile_wr_o && ( e_regfile_waddr_o != 0) && ( e_regfile_waddr_o == regfile_raddr_rs1_t) && (e_is_load_store_o == 1'b0)) e_regfile_rs1_t = alu_i;
-  else if (m_regfile_wr_i && ( m_regfile_waddr_i != 0) &&  ( m_regfile_waddr_i == regfile_raddr_rs1_t) && (m_is_load_store_i == 1'b0)) e_regfile_rs1_t = m_regfile_rd_i;
-       else if (w_regfile_wr_i & (i_r1_t & (regfile_raddr_rs1_t == w_regfile_waddr_i))) e_regfile_rs1_t = w_regfile_rd_i;
-            else e_regfile_rs1_t = reg_file_rs1_t;
+ always @(*)// 1st check if it writes on REGS. 2nd check if is not x0. 3rd check if is same register as requested. 4th check if is a load.
+       if (e_regfile_wr_o & (e_regfile_waddr_o != 0) & (e_regfile_waddr_o == regfile_raddr_rs1_t)) e_regfile_rs1_t = alu_i;
+  else if (m_regfile_wr_i & (m_regfile_waddr_i != 0) & (m_regfile_waddr_i == regfile_raddr_rs1_t)) e_regfile_rs1_t = m_regfile_rd_i;
+  else if (w_regfile_wr_i & (w_regfile_waddr_i != 0) & (w_regfile_waddr_i == regfile_raddr_rs1_t)) e_regfile_rs1_t = w_regfile_rd_i;
+  else e_regfile_rs1_t = reg_file_rs1_t;
 
   //Forwarding logic op2
- always @*
-  if (e_regfile_wr_o && ( e_regfile_waddr_o != 0) && ( e_regfile_waddr_o == regfile_raddr_rs2_t) && (e_is_load_store_o == 1'b0)) e_regfile_rs2_t = alu_i;
-  else if (m_regfile_wr_i && ( m_regfile_waddr_i != 0) && ( m_regfile_waddr_i == regfile_raddr_rs2_t) && (m_is_load_store_i == 1'b0)) e_regfile_rs2_t = m_regfile_rd_i;
-        else if (w_regfile_wr_i & (i_r2_t & (regfile_raddr_rs2_t == w_regfile_waddr_i))) e_regfile_rs2_t = w_regfile_rd_i;
-             else e_regfile_rs2_t = reg_file_rs2_t;
+ always @(*) 
+       if (e_regfile_wr_o & (e_regfile_waddr_o != 0) & (e_regfile_waddr_o == regfile_raddr_rs2_t)) e_regfile_rs2_t = alu_i;
+  else if (m_regfile_wr_i & (m_regfile_waddr_i != 0) & (m_regfile_waddr_i == regfile_raddr_rs2_t)) e_regfile_rs2_t = m_regfile_rd_i;
+  else if (w_regfile_wr_i & (w_regfile_waddr_i != 0) & (w_regfile_waddr_i == regfile_raddr_rs2_t)) e_regfile_rs2_t = w_regfile_rd_i;
+  else e_regfile_rs2_t = reg_file_rs2_t;
    
- // The possible data hazards are reading or storing (COMPLETE...), which requires a single clock cycle stall, and a mutli-cycle operation, which stalls the whole core many clock cycles.
- //Hazard detection unit
-  assign stall_o =  (e_data_rd_o & ((i_r1_t & (e_regfile_waddr_o == regfile_raddr_rs1_t)) | (i_r2_t & (e_regfile_waddr_o == regfile_raddr_rs2_t))))
-                   |(m_data_rd_i & ((i_r1_t & (m_regfile_waddr_i == regfile_raddr_rs1_t)) | (i_r2_t & (m_regfile_waddr_i == regfile_raddr_rs2_t))));
-  assign stall_general_o = d_busy_alu_i;
+ // In the case where the requested operand is not yet loaded, stall PC and do not transmit read/write signals to further stages. 
+ // If the LOAD op is at the EXE stage (this stage regs), stall for two clock cycles.
+ // If the LOAD op is at the MEM stage (EXE stage regs), stall for a single clock cycle to retrieve the operand (the forwarding will do it).
+  assign stall_o =  (e_data_rd_o & ((e_regfile_waddr_o == regfile_raddr_rs1_t) | (e_regfile_waddr_o == regfile_raddr_rs2_t)))
+                   |(m_data_rd_i & ((m_regfile_waddr_i == regfile_raddr_rs1_t) | (m_regfile_waddr_i == regfile_raddr_rs2_t)));
+ // For multi-cycle operations stall. General because stops the pipeline.
+  assign stall_general_o = d_busy_alu_i; 
 
  
  always @(*)
@@ -261,14 +263,14 @@ module id_stage
     e_regfile_raddr_rs2_o <= regfile_raddr_rs2_t;
     e_regfile_rs1_o <= e_regfile_rs1_tt;
     e_regfile_rs2_o <= e_regfile_rs2_tt;
-    e_ALU_op_o <= ALU_op_t;
-    e_STORE_op_o <= STORE_op_t;
-    e_LOAD_op_o <= LOAD_op_t;
-    e_data_origin_o <= data_origin_t;
-    e_regfile_wr_o <= reg_file_wr_t;
-    e_is_load_store_o <= is_load_store_t;
-    e_data_wr_o <= data_wr_t;
-    e_data_rd_o <= data_rd_t;
+    e_ALU_op_o <= stall_o ? `ALU_OP_ADD : ALU_op_t;
+    e_STORE_op_o <= STORE_op_t;                     // To avoid executing an operation
+    e_LOAD_op_o <= LOAD_op_t;                       // with worng values or transmiting
+    e_data_origin_o <= data_origin_t;               // through the pipeline read/write
+    e_regfile_wr_o <= reg_file_wr_t & !stall_o;     // commands during a forwaring stall
+    e_is_load_store_o <= is_load_store_t;           // because the operands are not loaded
+    e_data_wr_o <= data_wr_t & !stall_o;            // yet from the dataMem, the stall_o is used.
+    e_data_rd_o <= data_rd_t & !stall_o;        
     e_imm_val_o <= imm_val_t;
     e_data_be_o <= data_be_t;
     e_data_target_o <= data_target_t;

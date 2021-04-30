@@ -4,6 +4,17 @@
 
 //`include"testbench.v"
 
+// Data memory file to save on ../data/dataMem_h.mem
+// 10101010
+// f04a1c0f
+// 11111111
+// ffffffff
+// 00000000
+// 00000000
+// 00000000
+// 00000000
+
+
 module tb_load_store();
 
 	tb TB();

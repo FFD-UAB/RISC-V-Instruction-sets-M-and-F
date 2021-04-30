@@ -238,7 +238,7 @@ module control_unit
                              data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
                              data_target_o = 2'b11;
                              imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
-                             jump = 1'b1;
+                             //jump = 1'b1;   // AUIPC does not jump, but is usually used to compute dynamic address jump.
                              regfile_wr = regfile_waddr != 5'b0;  // Write the resut in RD
                              ALU_op = `ALU_OP_ADD;  // Add the values
                             end
@@ -261,7 +261,7 @@ module control_unit
                            end
             OPCODE_B_BRANCH: begin
                               data_origin_o = `REGS;  // Mantain RS2 value and RS1 value // DefaultValue
-                              imm_val_o = {{(`DATA_WIDTH - 13) {imm12b[11]}},  imm12b[11:0], 1'b0  }; // TODO last bit is used? or is always 0
+                              imm_val_o = {{`DATA_WIDTH - 13 {imm12b[11]}},  imm12b[11:0], 1'b0  }; // TODO last bit is used? or is always 0
                               case(funct3)
                                FUNCT3_BEQ: BR_op_o = `BR_EQ; // beq        "Branch to PC relative 12-bit signed immediate (shifted 1 bit left) if rs1 == rs2"
                                FUNCT3_BNE: BR_op_o = `BR_NE;  // bne        "Branch to PC relative 12-bit signed immediate (shifted 1 bit left) if rs1 != rs2"

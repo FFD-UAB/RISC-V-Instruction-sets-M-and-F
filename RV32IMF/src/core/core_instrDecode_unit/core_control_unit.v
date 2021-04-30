@@ -276,7 +276,7 @@ module control_unit
                              data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
                              data_target_o = 2'b11;
                              imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
-                             jump = 1'b1;
+                             //jump = 1'b1;   // AUIPC does not jump, but is usually used to compute dynamic address jump.
                              regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};  // Write the resut in RD
                              ALU_op = `ALU_OP_ADD;  // Add the values
                             end
@@ -299,7 +299,7 @@ module control_unit
                            end
             OPCODE_B_BRANCH: begin
                               data_origin_o = `REGS;  // Mantain RS2 value and RS1 value // DefaultValue
-                              imm_val_o = {{(`DATA_WIDTH - 13) {imm12b[11]}},  imm12b[11:0], 1'b0  }; // TODO last bit is used? or is always 0
+                              imm_val_o = {{`DATA_WIDTH - 13 {imm12b[11]}},  imm12b[11:0], 1'b0  }; // TODO last bit is used? or is always 0
                               case(funct3)
                                FUNCT3_BEQ: BR_op_o = `BR_EQ; // beq        "Branch to PC relative 12-bit signed immediate (shifted 1 bit left) if rs1 == rs2"
                                FUNCT3_BNE: BR_op_o = `BR_NE;  // bne        "Branch to PC relative 12-bit signed immediate (shifted 1 bit left) if rs1 != rs2"
@@ -403,26 +403,34 @@ module control_unit
                           end
 
             OPCODE_R_FPU, OPCODE_R4_FMADD, OPCODE_R4_FMSUB, OPCODE_R4_FNMSUB, OPCODE_R4_FNMADD: begin // All FP Single-precision operations.
-                           i_r1_o = 1'b1; // No sure about what does this. Something about the
-                           i_r2_o = 1'b1; // forwarding after the MEM stage. No idea.
-                           i_r3_o = 1'b1;
+                           i_r1_o = 1'b1; // No sure about what does this. 
+                           i_r2_o = 1'b1; // Think that is flag of being REG being requested.
                            regfile_raddr_rs1_t = 1'b1; // Select FPRF
                            regfile_raddr_rs2_t = 1'b1; // as origin
                            case(opcode[4:2])
-                           3'b100: begin
-                             ALU_op = {1'b1, funct7[6:2]};
-                             case(opcode) // This operations store in integer RF
-                               ALU_OP_FCVT_W_S, ALU_OP_FEQ, ALU_OP_FMV_W_X: begin
-                                 regfile_waddr_t = 1'b0; // Write on integer Regfile
-                                 regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}}; // Reg0 cannot be written on.
-                               end default: begin // This operations store in integer FPRF
-                                 regfile_waddr_t = 1'b1; // Write on FPRF
-                                 regfile_wr = 1'b1;      // Freg0 can be written.
-                               end
-                             endcase
+                           3'b100: 
+                             begin
+                               ALU_op = {1'b1, funct7[6:2]};
+
+                               case(opcode) // This operations store in integer RF
+                               ALU_OP_FCVT_W_S, ALU_OP_FEQ, ALU_OP_FMV_W_X: 
+                                 begin
+                                   regfile_waddr_t = 1'b0; // Write on integer Regfile
+                                   regfile_wr = regfile_waddr[4:0] != {`REG_ADDR_WIDTH-1 {1'b0}}; // Reg0 cannot be written on.
+                                 end 
+                               default: 
+                                 begin // This operations store in integer FPRF
+                                   regfile_waddr_t = 1'b1; // Write on FPRF
+                                   regfile_wr = 1'b1;      // Freg0 can be written.
+                                 end
+                               endcase
+
                              end
                            default: // Fused multiply-add operation
-                             ALU_op = {3'b010, opcode[4:2]};
+                             begin
+                               ALU_op = {3'b010, opcode[4:2]};
+                               i_r3_o = 1'b1;
+                             end
                            endcase
                            end
 

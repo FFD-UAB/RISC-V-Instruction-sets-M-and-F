@@ -11,8 +11,8 @@ module tb_arithmeticologic();
 	initial begin 
 
 		TB.pc = 32'b0;
-    TB.top_CoreMem_inst.mem_instr_inst.initializeinstrMem;
-    TB.iniinstrMem;
+    //TB.top_CoreMem_inst.mem_instr_inst.initializeinstrMem;
+    //TB.iniinstrMem;
 		// Initialize registers
 		TB.clk = 1'b0;
 		TB.rst_n = 1'b0;
@@ -20,7 +20,7 @@ module tb_arithmeticologic();
 		
 		// Load memory
 		//$readmemb("data/instrramMem_b.mem", TB.top_CoreMem_inst.mem_instr_inst.mem, 0, 3);
-		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
+		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
 		
 		TB.test_add;
 	  TB.rst_n = 1'b0;

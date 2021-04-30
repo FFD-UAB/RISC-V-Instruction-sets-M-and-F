@@ -1,0 +1,103 @@
+// Francis Fuentes Diaz 1391267 - 30/4/2021 - UAB Telecom Master
+
+This tutorial shows a way to compile C code and dissasemble it in RISC-V 
+bare-metal machine code. It may not function properly without additional 
+options when calling libraries, but it is a start point.
+
+As a point, this guide uses programs and tools exclusively on Windows, 
+contrary to most sources out there about this subject.
+
+*************************
+| Software requirements |
+*************************
+
+1) Eclipse IDE for Embedded C/C++ Developers.
+     https://www.eclipse.org/downloads/packages/
+   MAKE sure to download the Embedded C/C++ version, which is the one 
+   that supports RISC-V plugins. For record sake, I'm using 2020-09
+   (4.17.0) version.
+
+2) Once installed, go to Help > Eclipse Marketplace.
+   There, check for "Eclipse Embedded C/C/++" and install all it's
+   contents. Probably it's not a requirement all, but better be safe.
+
+3) The compiler plugins (also called MCU in Eclipse) required are two.
+   First it's the "Windows build tools," that at the moment are at:
+   https://github.com/xpack-dev-tools/windows-build-tools-xpack/releases
+
+   Second, the toolchain "xPack GNU RISC-V Embedded GCC."
+   https://github.com/xpack-dev-tools/riscv-none-embed-gcc-xpack/releases/
+
+   Both of these tools will be updated and may change in the future.
+   The ones I'm using now are 4.2.1-2 for the build tools and 
+   10.1.0-1.1 for the toolchain.
+
+4) Having downloaded the correct packets, decompress them somwhere.
+   Then at Eclipse, go to Window > Preferences. Here just add the 
+   Global and Workspace paths of the "Build Tools Path" and "RISC-V 
+   Toolchain paths," selecting for the second the "xPack GNU RISC-V 
+   Embedded GCC" default toolchain option. If it changes, select 
+   acordengly.
+   The folder paths specified must end with "bin" from the decompressed 
+   packages from the previous step.
+
+
+**********************
+| Program conversion |
+**********************
+
+Now that everything is laid out and prepared, just go to Eclipse and 
+that will be your program enviroment.
+
+New project > C/C++ Project > C Managed Build > Empty Project and 
+make sure to select the "RISC-V Cross GCC" toolchain. If it's not there,
+reset Eclipse, that it may not got it all right if you just installed 
+everything. Next, next and once the project is created, just program 
+if it were a C program code. Create folders, .c files... pretty much 
+normal C programming, but go low on including libraries. It may work, 
+it may not.
+
+System calls and things that RISC-V will not understand can be interpreted 
+by calling assembler code that you have to write to manage them, but 
+that's too far for me at the moment. So I'll leave that to you.
+
+After the program is a-okey for the conversion, go to Project > Properties 
+and on C/C++ Build > Settings there is all the compiler, assembler, linker, 
+there is even a debuger that I didn't use.
+Just follow the same options as the pictures attached with this .txt and 
+you should be fine. There is always a warning about not _start address,
+but is okey for short programs.
+
+To evaluate complex programs, including a start section that manages 
+global pointers and all of that, you can try to untick the "No startup 
+or default libs" at the General page of the Linker. I didn't found how 
+to make it work on the actual project's core, but maybe you will.
+Something tells me that is about using "Script files" at the linker, 
+but for much I tried with many of the .ld scripts by default, I did not 
+find any option that suits 0x0 starting address and that it worked.
+
+Probably it's just the lack of proper link script, but if the instruction 
+memory is big enough and you don't see problems at the data memory during 
+simulation (not enough space to run the total stack), then it shouldn't 
+be a problem. Even though on complex programs, this must be addressed, as 
+it would give information to the toolchain to optimize code.
+
+
+Hope your programs translate well to RISC-V and you find fast and easily 
+every bug in your archi... who am I lying to, it will take time as always 
+this thing does. Time and mental sanity.
+
+
+PD: Search on the toolchain folder for .pdf. You'll find options that may 
+help you. There's also de option of executing the /bin/ program by command 
+prompt, which also provides similar results without requiring the other 
+software.
+
+# Compile:
+riscv-none-embed-gcc.exe main.c -S -march=rv32i -mabi=ilp32
+
+# Assemble:
+riscv-none-embed-gcc.exe main.s -c -march=rv32i -mabi=ilp32
+
+# Dissasemble:
+riscv-none-embed-objdump.exe main.o --target=verilog --architecture=riscv:rv32 -d > main.txt

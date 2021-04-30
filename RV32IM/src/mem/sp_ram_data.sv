@@ -1,10 +1,10 @@
 // Copyright 2017 ETH Zurich and University of Bologna.
 // Copyright and related rights are licensed under the Solderpad Hardware
-// License, Version 0.51 (the ‚ÄúLicense‚Äù); you may not use this file except in
+// License, Version 0.51 (the ÅgLicenseÅh); you may not use this file except in
 // compliance with the License.  You may obtain a copy of the License at
 // http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
 // or agreed to in writing, software, hardware and materials distributed under
-// this License is distributed on an ‚ÄúAS IS‚Äù BASIS, WITHOUT WARRANTIES OR
+// this License is distributed on an ÅgAS ISÅh BASIS, WITHOUT WARRANTIES OR
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
@@ -60,9 +60,8 @@ module sp_ram_data
 
   initial
   begin
-//  for (i = 0; i < words; i++)
-//  mem_data[i] = {DATA_WIDTH{1'b0}};
-   //$readmemh("../../data/dataMem_h.mem", mem_data); // This is synthesable by Intel support
+  //for (i = 0; i < words; i++) mem_data[i] = {DATA_WIDTH{1'b0}};
+  //$readmemh("../../data/dataMem_h.mem", mem_data); // This is synthesable by Intel support
   end
 
 endmodule

@@ -4,6 +4,17 @@
 
 //`include"testbench.v"
 
+// Data memory file to save on ../data/dataMem_h.mem
+// 10101010
+// f04a1c0f
+// 11111111
+// ffffffff
+// 00000000
+// 00000000
+// 00000000
+// 00000000
+
+
 module tb_load_store();
 
 	tb TB();
@@ -21,21 +32,21 @@ module tb_load_store();
 		// Load memory
 		//$readmemb("data/instrramMem_b.mem", TB.top_CoreMem_inst.mem_instr_inst.mem, 0, 3);
 		//$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
-		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem, 0, 3);
+		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
 		TB.test_load;
 		#100
 		TB.rst_n = 1'b0;
 		#100
 		//Load data from memory
 		//$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
-		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem, 0, 3);
+		$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
 		TB.test_store;
         #100
         TB.rst_n = 1'b0;
         #100
 		//Load data from memory
 		//$readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.mem_data_inst.mem, 0, 3);
-        $readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem, 0, 3);
+        $readmemh("../data/dataMem_h.mem", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data, 0, 7);
         TB.test_store_stall;
 	    $stop;
     end
