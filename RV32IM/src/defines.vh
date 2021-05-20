@@ -130,6 +130,7 @@
 `define ALU_OP_SRA        5'b01101
 `define ALU_OP_OR         5'b00110
 `define ALU_OP_AND        5'b00111
+// ALU_M {funct7[0], funct7[5], funct3};								
 `define ALU_OP_MUL        5'b10000  // Instruction set M -> ALU_OP[4] = 1;
 `define ALU_OP_MULH       5'b10001  // Then, it can be used as start_M signal.
 `define ALU_OP_MULHSU     5'b10010
@@ -175,7 +176,7 @@
 //`define UNUSED               3
 
 // CSR
-`define CSR_OP_WIDTH         2
+`define CSR_OP_WIDTH         3
 `define CSR_ADDR_WIDTH       12
 `define CSR_DATA_WIDTH       32
 `define CSR_XLEN             64

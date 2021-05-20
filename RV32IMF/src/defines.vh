@@ -208,7 +208,7 @@
 //`define UNUSED               3
 
 // CSR
-`define CSR_OP_WIDTH         2
+`define CSR_OP_WIDTH         3
 `define CSR_ADDR_WIDTH       12
 `define CSR_DATA_WIDTH       32
 `define CSR_XLEN             64
@@ -231,7 +231,7 @@
 `define FRM_ADDR             12'h002
 `define FCSR_ADDR            12'h003
  
-// FCSR
+// Rounding Modes RV32F
 `define FRM_RNE 3'b000 // Round to Nearest, ties to Even
 `define FRM_RTZ 3'b001 // Rounds towards Zero
 `define FRM_RDN 3'b010 // Rounds Down (towards -inf)

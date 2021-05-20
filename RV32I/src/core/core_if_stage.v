@@ -15,8 +15,8 @@ module if_stage
     instruction_addr_o,                //Address of instruction to fetch. To memory.
     instruction_rdata_i,               //Fetched instruction. From memory.
     rst_n,                             //Reset. Asynchronous active low.
-    stall_i,                           // Stall core one cycle flag.
-    stall_general_i                    // Stall core many cicles flag.
+    stall_i                           // Stall core one cycle flag.
+//    stall_general_i                    // Stall core many cicles flag.
     );
 
     input  wire                        rst_n;
@@ -29,7 +29,7 @@ module if_stage
     output reg  [`DATA_WIDTH-1:0]      d_pc_o;
     output reg  [`DATA_WIDTH-1:0]      d_pc4_o;
     input  wire                        stall_i;
-    input  wire                        stall_general_i;
+//    input  wire                        stall_general_i;
     output wire                        flush_inst_o;
                 
     wire [`DATA_WIDTH-1:0]             pc4;
@@ -44,7 +44,7 @@ module if_stage
     assign instruction_addr_o = pc[`MEM_ADDR_INSTR_WIDTH-1:0];
     assign pc4  = pc + {{`DATA_WIDTH-3{1'b0}}, 3'd4};
     assign flush_inst_o = !brj_i;
-    assign stall_any = stall_i | stall_general_i;
+    assign stall_any = stall_i; //| stall_general_i;
     
     always @(posedge clk or negedge rst_n)
      if (!rst_n) pc <= {`DATA_WIDTH{1'b0}};

@@ -14,8 +14,6 @@ module exe_stage
         e_data_origin_i,
         e_regfile_rs1_i,  // rs1
         e_regfile_rs2_i,  // rs2
-        e_regfile_raddr_rs1_i,
-        e_regfile_raddr_rs2_i,
         e_regfile_waddr_i,
         e_regfile_wr_i,
         e_imm_val_i,  // in use to store a value and add the immidiate value
@@ -48,9 +46,7 @@ module exe_stage
  input  wire [`DATA_WIDTH-1:0]         e_regfile_rs1_i;
  input  wire [`DATA_WIDTH-1:0]         e_regfile_rs2_i;
  input  wire [`DATA_WIDTH-1:0]         e_imm_val_i;
- input  wire [4:0]                     e_regfile_waddr_i;
- input  wire [4:0]                     e_regfile_raddr_rs1_i;
- input  wire [4:0]                     e_regfile_raddr_rs2_i;  
+ input  wire [`REG_ADDR_WIDTH-1:0]     e_regfile_waddr_i;
  input  wire [`DATA_WIDTH-1:0]         e_pc4_i;
  input  wire [`DATA_WIDTH-1:0]         e_brj_pc_i;
  input  wire                           e_regfile_wr_i;
@@ -60,7 +56,7 @@ module exe_stage
  input  wire [`MEM_TRANSFER_WIDTH-1:0] e_data_be_i;
  output reg                            m_regfile_wr_o;
  output reg                            m_is_load_store_o;
- output reg  [4:0]                     m_regfile_waddr_o;
+ output reg  [`REG_ADDR_WIDTH-1:0]     m_regfile_waddr_o;
  output reg  [`DATA_WIDTH-1:0]         m_regfile_rd_o;
  output reg  [`DATA_WIDTH-1:0]         m_data_addr_o;
  output reg                            m_data_wr_o;

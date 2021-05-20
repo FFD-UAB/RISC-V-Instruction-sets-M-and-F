@@ -66,12 +66,10 @@ module core
  wire [`DATA_WIDTH-1:0]                w_regfile_rd_t;
  wire [`DATA_WIDTH-1:0]                reg_file_rd_t;
  wire [`REG_ADDR_WIDTH-1:0]            m_regfile_waddr_t;
- wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs1_t;	
- wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs2_t;
  wire [1:0]                            e_data_target_t;
- wire                                  d_alu_busy_t;
+// wire                                  d_alu_busy_t;
  wire                                  stall_t;
- wire                                  stall_general_t;
+// wire                                  stall_general_t;
 
 
  wire [`DATA_WIDTH-1:0]                alu_t;
@@ -90,7 +88,7 @@ module core
         .instruction_addr_o            (instruction_addr_o),
         .instruction_rdata_i           (instruction_rdata_i),
         .stall_i                       (stall_t),
-        .stall_general_i               (stall_general_t),
+//        .stall_general_i               (stall_general_t),
         .flush_inst_o                  (flush_inst_o)
          );
         
@@ -109,8 +107,6 @@ module core
         .e_regfile_waddr_o             (e_regfile_waddr_t),
         .e_regfile_rs1_o               (e_regfile_rs1_t),
         .e_regfile_rs2_o               (e_regfile_rs2_t),
-        .e_regfile_raddr_rs1_o         (e_regfile_raddr_rs1_t),
-        .e_regfile_raddr_rs2_o         (e_regfile_raddr_rs2_t),
         .e_imm_val_o                   (e_imm_val_t),  //execution unit imm val rs1
         .e_data_be_o                   (e_data_be_t),
         .w_regfile_wr_i                (w_regfile_wr_t),
@@ -129,9 +125,9 @@ module core
         .m_is_load_store_i             (m_is_load_store_t),
         .m_regfile_wr_i                (m_regfile_wr_t),
         .brj_pc_o                      (brj_pc_t),
-        .brj_o                         (brj_t),
-        .d_busy_alu_i                  (d_alu_busy_t),
-        .stall_general_o               (stall_general_t)
+        .brj_o                         (brj_t)
+//        .d_busy_alu_i                  (d_alu_busy_t),
+//        .stall_general_o               (stall_general_t)
         );
     
   exe_stage exe_stage_inst(
@@ -144,8 +140,6 @@ module core
         .e_data_origin_i               (e_data_origin_t),
         .e_regfile_rs1_i               (e_regfile_rs1_t),  // rs1
         .e_regfile_rs2_i               (e_regfile_rs2_t),  // rs2
-        .e_regfile_raddr_rs1_i         (e_regfile_raddr_rs1_t),
-        .e_regfile_raddr_rs2_i         (e_regfile_raddr_rs2_t),
         .e_regfile_wr_i                (e_regfile_wr_t),
         .e_regfile_waddr_i             (e_regfile_waddr_t),
         .m_regfile_waddr_o             (m_regfile_waddr_t),
@@ -164,9 +158,9 @@ module core
         .e_data_be_i                   (e_data_be_t),
         .m_data_be_o                   (m_data_be_t),
         .e_data_target_i               (e_data_target_t),
-        .d_alu_busy_o                  (d_alu_busy_t),
-        .alu_o                         (alu_t),
-        .stall_general_i               (stall_general_t)
+//        .d_alu_busy_o                  (d_alu_busy_t),
+        .alu_o                         (alu_t)
+//        .stall_general_i               (stall_general_t)
         );
 
 core_mem_stage mem_stage_inst(
@@ -194,8 +188,8 @@ core_mem_stage mem_stage_inst(
         .m_is_load_store_i             (m_is_load_store_t),
         .w_is_load_store_o             (w_is_load_store_t),
         .m_LOAD_op_i                   (m_LOAD_op_t),
-        .w_LOAD_op_o                   (w_LOAD_op_t),
-        .stall_general_i               (stall_general_t)
+        .w_LOAD_op_o                   (w_LOAD_op_t)
+//        .stall_general_i               (stall_general_t)
         );
 
 core_wb_stage wb_stage_inst(

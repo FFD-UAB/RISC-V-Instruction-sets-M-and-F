@@ -24,7 +24,7 @@ module crs_unit
  wire [`CSR_XLEN-1:0]                  csr_rdcycle;
  wire [`CSR_XLEN-1:0]                  csr_rdinstret;
 
- reg [`CSR_DATA_WIDTH-1:0]                 csr_ustatus;
+ reg  [`CSR_DATA_WIDTH-1:0]            csr_ustatus;
 
  timer rdtimer_inst (
         .clk                           (clk                ),

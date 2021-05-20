@@ -20,6 +20,7 @@ vlog -sv -f sv_files
 # vsim -L LPM -L ALTMULT -novopt work.tb_branch
 # vsim -L LPM -L ALTMULT -novopt work.tb_instrMem
 # vsim -L LPM -L ALTMULT -novopt work.tb_FP
+# vsim -L LPM -L ALTMULT -novopt work.tb_fcsr
 
 # Load IP Multifunction Libraries (change "QuartusPath" to your Quartus directory)
 # Library created for compiling files required by LPM_MULT32 for MULDIV module

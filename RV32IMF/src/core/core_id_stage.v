@@ -107,7 +107,6 @@ module id_stage
  wire                                  i_r1_t;
  wire                                  i_r2_t;
  wire                                  i_r3_t;
- wire                                  csr_cntr_t;
  wire                                  branch_t;
  wire                                  jalr_t;
  wire [`REG_ADDR_WIDTH-1:0]            regfile_raddr_rs1_t; // Register address of RS1,
@@ -118,19 +117,19 @@ module id_stage
  reg  [`DATA_WIDTH-1:0]                e_regfile_rs2_t;
  reg  [`DATA_WIDTH-1:0]                e_regfile_rs2_tt;
  reg  [`DATA_WIDTH-1:0]                e_regfile_rs3_t;
- wire [`CSR_ADDR_WIDTH-1:0]            csr_raddr_t;
- wire [`CSR_ADDR_WIDTH-1:0]            csr_waddr_t; 
+ wire [`CSR_ADDR_WIDTH-1:0]            csr_addr_t; 
+ reg  [`DATA_WIDTH-1:0]                csr_wdata_t;
+ reg  [`DATA_WIDTH-1:0]                csr_wop1_t;
  wire                                  csr_wr_t;
  wire [`DATA_WIDTH-1:0]                csr_rdata_t;
- wire [`CSR_OP_WIDTH-1:0]              csr_op_rs1_t;
- wire [`CSR_OP_WIDTH-1:0]              csr_op_rs2_t;
+ wire [`CSR_OP_WIDTH-1:0]              csr_op_t;
  wire [`CSR_IMM_WIDTH-1:0]             csr_imm_t;
  
  wire [`DATA_WIDTH-1:0]                reg_file_f_rs1_t; // FP Regfile data from RS1,
  wire [`DATA_WIDTH-1:0]                reg_file_f_rs2_t; // RS2
  wire [`DATA_WIDTH-1:0]                reg_file_f_rs3_t; // and RS3.
  wire [2:0]                            frm_t;    // FP rounding mode to use at EXE.
- wire [2:0]                            frm_fcsr; // FP rounding mode from the FCSR.
+ wire [2:0]                            csr_frm;  // FP rounding mode from the FCSR.
 
 
  control_unit control_unit_inst(
@@ -139,11 +138,9 @@ module id_stage
         .STORE_op                      (STORE_op_t         ),  // Load Store Operation output
         .LOAD_op                       (LOAD_op_t          ),  // Load Store Operation output
         .BR_op_o                       (BR_op_t            ),  // Branch operation output
-        .csr_cntr_o                    (csr_cntr_t         ),
         .csr_imm_o                     (csr_imm_t          ),
-        .csr_raddr_o                   (csr_raddr_t        ),
-        .csr_op_rs1_o                  (csr_op_rs1_t       ),
-        .csr_op_rs2_o                  (csr_op_rs2_t       ),
+        .csr_raddr_o                   (csr_addr_t         ),
+        .csr_op_o                      (csr_op_t           ),
         .csr_wr_o                      (csr_wr_t           ),
         .data_origin_o                 (data_origin_t      ),  // Data origin output (Rs2 or imm or pc)
         .data_rd_o                     (data_rd_t          ),
@@ -151,7 +148,7 @@ module id_stage
         .data_wr                       (data_wr_t          ),  // LoadStore indicator output
         .data_be_o                     (data_be_t          ),
         .branch_i                      (branch_t & !stall_o),  // Branch indicator output
-        .brj_o                         (brj_o              ),    // During a stall for dataMem access, do not branch.
+        .brj_o                         (brj_o              ),  // During a stall for dataMem access, do not branch.
         .is_load_store                 (is_load_store_t    ),  // execution_unit 
         .regfile_raddr_rs1_o           (regfile_raddr_rs1_t),  // RS1 addr
         .regfile_raddr_rs2_o           (regfile_raddr_rs2_t),  // RS2 addr
@@ -162,7 +159,7 @@ module id_stage
         .i_r1_o                        (i_r1_t             ),
         .i_r2_o                        (i_r2_t             ),
         .i_r3_o                        (i_r3_t             ),
-        .frm_i                         (frm_fcsr           ),
+        .frm_i                         (csr_frm            ),
         .frm_o                         (frm_t              ),
         .jalr_o                        (jalr_t             )
     );
@@ -194,22 +191,22 @@ module id_stage
         .regfile_rs3_o       (reg_file_f_rs3_t                       )   // Output register 3
         );
 
-//???????????????????????????????
- assign csr_waddr_t = csr_raddr_t;
  
  // TODO ABOUT EXPANSION SET F:
  // - Assign "frm_fcsr" to the rm bits from the FCSR
  // - Write onto the FCSR the "d_fflags_i" which are updated and maintained until rst or instr swap FCSR.
- assign frm_fcsr = 3'b0;  // Temp WIP
+ //assign frm_fcsr = 3'b0;  // Temp WIP
 
  crs_unit crs_unit_inst(
         .rst_n                         (rst_n              ),
         .clk                           (clk                ),
-        .csr_waddr_i                   (csr_waddr_t        ),
-        .csr_wdata_i                   (e_regfile_rs1_t    ), 
+        .csr_waddr_i                   (csr_addr_t         ),
+        .csr_wdata_i                   (csr_wdata_t        ), 
         .csr_wr_i                      (csr_wr_t           ),
-        .csr_raddr_i                   (csr_raddr_t        ),
-        .csr_rdata_o                   (csr_rdata_t        ) 
+        .csr_raddr_i                   (csr_addr_t         ),
+        .csr_fflags_i                  (d_fflags_i         ),
+        .csr_rdata_o                   (csr_rdata_t        ),
+        .csr_frm_o                     (csr_frm            )
         );
 
  br br_inst(
@@ -252,26 +249,42 @@ module id_stage
  // In the case where the requested operand is not yet loaded, stall PC and do not transmit read/write signals to further stages. 
  // If the LOAD op is at the EXE stage (this stage regs), stall for two clock cycles.
  // If the LOAD op is at the MEM stage (EXE stage regs), stall for a single clock cycle to retrieve the operand (the forwarding will do it).
-  assign stall_o =  (e_data_rd_o & ((e_regfile_waddr_o == regfile_raddr_rs1_t) | (e_regfile_waddr_o == regfile_raddr_rs2_t) | (e_regfile_waddr_o == {1'b1, regfile_raddr_rs3_t})))
-                   |(m_data_rd_i & ((m_regfile_waddr_i == regfile_raddr_rs1_t) | (m_regfile_waddr_i == regfile_raddr_rs2_t) | (m_regfile_waddr_i == {1'b1, regfile_raddr_rs3_t})));
+  assign stall_o =   (e_data_rd_o & (  ((e_regfile_waddr_o == regfile_raddr_rs1_t) & i_r1_t)
+                                     | ((e_regfile_waddr_o == regfile_raddr_rs2_t) & i_r2_t)
+                                     | ((e_regfile_waddr_o == {1'b1, regfile_raddr_rs3_t}) & i_r3_t)))
+                   | (m_data_rd_i & (  ((m_regfile_waddr_i == regfile_raddr_rs1_t) & i_r1_t)
+                                     | ((m_regfile_waddr_i == regfile_raddr_rs2_t) & i_r2_t)
+                                     | ((m_regfile_waddr_i == {1'b1, regfile_raddr_rs3_t}) & i_r3_t)));
  // For multi-cycle operations stall. General because stops the pipeline.
   assign stall_general_o = d_busy_alu_i; 
 
  
+ // CSR operands to write on rd. At EXE, rs1 = 0 and rs2 = CSR when executing CSR read operation.
  always @(*)
-  case(csr_op_rs1_t)
-   2'd0: e_regfile_rs1_tt = e_regfile_rs1_t;
-   2'd1: e_regfile_rs1_tt = {`DATA_WIDTH{1'b0}};
-   2'd2: e_regfile_rs1_tt = {{`DATA_WIDTH-`CSR_IMM_WIDTH{1'b0}}, csr_imm_t};
-   2'd3: e_regfile_rs1_tt = e_regfile_rs1_t;
+  case(|csr_op_t[1:0])
+   1'd0: e_regfile_rs1_tt = e_regfile_rs1_t;
+   1'd1: e_regfile_rs1_tt = {`DATA_WIDTH{1'b0}};
   endcase
 
  always @(*)
-  case(csr_op_rs2_t)
-   2'd0: e_regfile_rs2_tt = e_regfile_rs2_t;//(csr_op_rs2_t ? csr_rdata_t : csr_op_rs2_t);
-   2'd1: e_regfile_rs2_tt = csr_rdata_t;
-   2'd2: e_regfile_rs2_tt = csr_op_rs2_t;
-   2'd3: e_regfile_rs2_tt = e_regfile_rs2_t;
+  case(|csr_op_t[1:0])
+   1'd0: e_regfile_rs2_tt = e_regfile_rs2_t;
+   1'd1: e_regfile_rs2_tt = csr_rdata_t;
+  endcase
+
+ // CSR operands to write on CSR. First take between RS1 and UIMM and then operate what to write.
+ always @(*)
+  case(csr_op_t[2])
+   1'b0: csr_wop1_t = e_regfile_rs1_t;
+   1'b1: csr_wop1_t = {{`DATA_WIDTH-`CSR_IMM_WIDTH{1'b0}}, csr_imm_t};
+  endcase
+
+ always @(*)
+  case(csr_op_t[1:0])
+   2'd0: csr_wdata_t = csr_rdata_t;               // ECALL/EBREAK. Don't write
+   2'd1: csr_wdata_t = csr_wop1_t;                // CSRRW[I], CSR = RS1/CSRIMM
+   2'd2: csr_wdata_t = csr_wop1_t | csr_rdata_t;  // CSRRS[I], set CSR positions that RS1/CSRIMM are high
+   2'd3: csr_wdata_t = ~csr_wop1_t & csr_rdata_t; // CSRRC[I], clear CSR positions that RS1/CSRIMM are high
   endcase
 
 
@@ -306,9 +319,9 @@ module id_stage
     e_regfile_rs3_o <= e_regfile_rs3_t;
     e_ALU_op_o <= stall_o ? `ALU_OP_ADD : ALU_op_t;
     e_STORE_op_o <= STORE_op_t;                     // To avoid executing an operation
-    e_LOAD_op_o <= LOAD_op_t;                       // with worng values or transmiting
+    e_LOAD_op_o <= LOAD_op_t;                       // with wrong values or transmiting
     e_data_origin_o <= data_origin_t;               // through the pipeline read/write
-    e_regfile_wr_o <= reg_file_wr_t & !stall_o;     // commands during a forwaring stall
+    e_regfile_wr_o <= reg_file_wr_t & !stall_o;     // commands during a forwarding stall
     e_is_load_store_o <= is_load_store_t;           // because the operands are not loaded
     e_data_wr_o <= data_wr_t & !stall_o;            // yet from the dataMem, the stall_o is used.
     e_data_rd_o <= data_rd_t & !stall_o;        

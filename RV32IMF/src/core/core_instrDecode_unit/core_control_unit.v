@@ -8,11 +8,9 @@ module control_unit
         STORE_op,
         LOAD_op,
         BR_op_o,
-        csr_cntr_o,
         csr_imm_o,
         csr_raddr_o,
-        csr_op_rs1_o,
-        csr_op_rs2_o,
+        csr_op_o,
         csr_wr_o,
         data_origin_o,
         branch_i,
@@ -164,10 +162,8 @@ module control_unit
  output reg  [`LOAD_OP_WIDTH-1:0]      LOAD_op;
  output      [`BR_OP_WIDTH-1:0]        BR_op_o;
  output wire [`CSR_IMM_WIDTH-1:0]      csr_imm_o;
- output reg                            csr_cntr_o;
  output wire [`CSR_ADDR_WIDTH-1:0]     csr_raddr_o;
- output reg  [`CSR_OP_WIDTH-1:0]       csr_op_rs1_o;
- output reg  [`CSR_OP_WIDTH-1:0]       csr_op_rs2_o;
+ output reg  [`CSR_OP_WIDTH-1:0]       csr_op_o;
  output reg                            csr_wr_o;
  output      [`DATA_ORIGIN_WIDTH-1:0]  data_origin_o;  // To indicate what data to use by the execution unit 
  output      [`DATA_WIDTH-1:0]         imm_val_o;
@@ -183,11 +179,11 @@ module control_unit
  output      [`MEM_TRANSFER_WIDTH-1:0] data_be_o;
  output reg  [1:0]                     data_target_o;
  output reg                            data_rd_o;
- output reg                            i_r1_o;
- output reg                            i_r2_o;
- output reg                            i_r3_o;
- input  wire [2:0]                     frm_i; // Floating rounding mode from FCSR
- output wire [2:0]                     frm_o; // Floating rounding mode to execute
+ output reg                            i_r1_o; // Don't know the initial purpose of these.
+ output reg                            i_r2_o; // I re-used them to indicate any regfile read
+ output reg                            i_r3_o; // through RS1, RS2 or RS3 paths.
+ input  wire [2:0]                     frm_i;  // Floating rounding mode from FCSR
+ output wire [2:0]                     frm_o;  // Floating rounding mode to execute
  output reg                            jalr_o;
  
  reg                                   data_wr;
@@ -252,7 +248,6 @@ module control_unit
         regfile_raddr_rs1_t = 1'b0; // By default, read and write 
         regfile_raddr_rs2_t = 1'b0; // on the integer Regfile
         regfile_waddr_t = 1'b0;
-        csr_cntr_o = 1'b0;
         imm_val_o = {`DATA_WIDTH{1'b0}};
         // Decode
         data_target_o = 2'b0;
@@ -261,8 +256,7 @@ module control_unit
         i_r2_o = 1'b0;
         i_r3_o = 1'b0;
         jalr_o = 1'b0;
-        csr_op_rs1_o = 2'b0;
-        csr_op_rs2_o = 2'b0;
+        csr_op_o = {`CSR_OP_WIDTH{1'b0}};
         csr_wr_o = 1'b0;
         case(opcode)
             OPCODE_U_LUI: begin  // Set and sign extend the 20-bit immediate (shited 12 bits left) and zero the bottom 12 bits into rd
@@ -273,15 +267,15 @@ module control_unit
                            ALU_op = `ALU_OP_ADD;  // Sum with 0
                           end
             OPCODE_U_AUIPC: begin  // Place the PC plus the 20-bit signed immediate (shited 12 bits left) into rd (used before JALR)
-                             data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
-                             data_target_o = 2'b11;
-                             imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
-                             //jump = 1'b1;   // AUIPC does not jump, but is usually used to compute dynamic address jump.
-                             regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};  // Write the resut in RD
-                             ALU_op = `ALU_OP_ADD;  // Add the values
-                            end
+                           data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
+                           data_target_o = 2'b11;
+                           imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
+                           //jump = 1'b1;   // AUIPC does not jump, but is usually used to compute dynamic address jump.
+                           regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};  // Write the resut in RD
+                           ALU_op = `ALU_OP_ADD;  // Add the values
+                          end
             OPCODE_J_JAL: begin  // Jump to the PC plus 20-bit signed immediate while saving PC+4 into rd
-                           data_target_o = 2'b11;                
+                           data_target_o = 2'b11;
                            jump = 1'b1;
                            data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
                            imm_val_o = {{`DATA_WIDTH - 21 {imm20j[19]}},  imm20j[19:0], 1'b0  }; // TODO last bit is used? or is always 0
@@ -290,6 +284,7 @@ module control_unit
                           end
             OPCODE_I_JALR: begin  // jalr       "Jump to rs1 plus the 12-bit signed immediate while saving PC+4 into rd"
                             data_target_o = 2'b11;
+                            i_r1_o = 1'b1;
                             jump = 1'b1;
                             jalr_o = 1'b1;
                             data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and mantain RS1 the value
@@ -299,6 +294,8 @@ module control_unit
                            end
             OPCODE_B_BRANCH: begin
                               data_origin_o = `REGS;  // Mantain RS2 value and RS1 value // DefaultValue
+                              i_r1_o = 1'b1;
+                              i_r2_o = 1'b1;
                               imm_val_o = {{`DATA_WIDTH - 13 {imm12b[11]}},  imm12b[11:0], 1'b0  }; // TODO last bit is used? or is always 0
                               case(funct3)
                                FUNCT3_BEQ: BR_op_o = `BR_EQ; // beq        "Branch to PC relative 12-bit signed immediate (shifted 1 bit left) if rs1 == rs2"
@@ -312,6 +309,7 @@ module control_unit
                              end
             OPCODE_I_LOAD: begin  // Loads
                             is_load_store = 1'b1;
+                            i_r1_o = 1'b1;
                             regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};            
                             ALU_op = `ALU_OP_ADD;  // to add the immideate value to the addr
                             data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value
@@ -358,7 +356,8 @@ module control_unit
                            imm_val_o = { {`DATA_WIDTH - 12 {imm12[11]}}, imm12[11:0] };
                            regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};
                            i_r1_o = 1'b1;
-                           i_r2_o = 1'b0;
+                           ALU_op = {{`ALU_OP_WIDTH-3{1'b0}}, funct7[0], funct7[5], funct3};
+                           /* Old way of encoding. Not necessary if well handled at the execution stage.
                            case(funct3)
                                FUNCT3_ADD_SUB: ALU_op = `ALU_OP_ADD;   // addi       "Add sign-extended 12-bit immediate to register rs1 and place the result in rd"
                                FUNCT3_SLL:     ALU_op = `ALU_OP_SLL;   // slli       "Shift rs1 left by the 5 or 6 (RV32/64) bit (RV64) immediate and place the result into rd"
@@ -369,14 +368,14 @@ module control_unit
                                                                                                      // srai       "Shift rs1 right by the 5 or 6 (RV32/64) bit immediate and place the result into rd while retaining the sign"
                                FUNCT3_OR:      ALU_op = `ALU_OP_OR;    // ori        "Set rd to the bitwise or of rs1 with the sign-extended 12-bit immediate"
                                FUNCT3_AND:     ALU_op = `ALU_OP_AND;   // andi       "Set rd to the bitwise and of rs1 with the sign-extended 12-bit immediate"
-                           endcase
+                           endcase */
                           end
 
             OPCODE_R_ALU: begin
                            regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};
                            i_r1_o = 1'b1;
                            i_r2_o = 1'b1;
-                           ALU_op = {1'b0, funct7[0], funct7[5], funct3};
+                           ALU_op = {{`ALU_OP_WIDTH-3{1'b0}}, funct7[0], funct7[5], funct3};
                            /* Old way of encoding. Not necessary if well handled at the execution stage.
                            if(funct7[0] == 1'b1) // Check if its an operation from Instruction set M
                              case(funct3)
@@ -399,7 +398,7 @@ module control_unit
                                FUNCT3_SRL_SRA : ALU_op = funct7[5] == 1'b1 ? `ALU_OP_SRA : `ALU_OP_SRL;
                                FUNCT3_OR      : ALU_op = `ALU_OP_OR;
                                FUNCT3_AND     : ALU_op = `ALU_OP_AND;
-                           endcase*/
+                           endcase */
                           end
 
             OPCODE_R_FPU, OPCODE_R4_FMADD, OPCODE_R4_FMSUB, OPCODE_R4_FNMSUB, OPCODE_R4_FNMADD: begin // All FP Single-precision operations.
@@ -410,7 +409,7 @@ module control_unit
                            case(opcode[4:2])
                            3'b100: 
                              begin
-                               ALU_op = {1'b1, funct7[6:2]};
+                               ALU_op = {{`ALU_OP_WIDTH-6{1'b0}}, 1'b1, funct7[6:2]};
 
                                case(opcode) // This operations store in integer RF
                                ALU_OP_FCVT_W_S, ALU_OP_FEQ, ALU_OP_FMV_W_X: 
@@ -428,7 +427,7 @@ module control_unit
                              end
                            default: // Fused multiply-add operation
                              begin
-                               ALU_op = {3'b010, opcode[4:2]};
+                               ALU_op = {{`ALU_OP_WIDTH-6{1'b0}}, 3'b010, opcode[4:2]};
                                i_r3_o = 1'b1;
                              end
                            endcase
@@ -437,6 +436,7 @@ module control_unit
             OPCODE_I_FLOAD: if(funct3 == 3'b010) // FLW instruction, LOAD FP.S
                             begin  // Loads
                              is_load_store = 1'b1;
+                             i_r1_o = 1'b1;
                              regfile_wr = 1'b1;       // Freg0 can be written.
                              regfile_waddr_t = 1'b1; // Write on FPRF
                              ALU_op = `ALU_OP_ADD;    // to add the immideate value to the addr
@@ -466,42 +466,17 @@ module control_unit
             // fence.i    "Synchronize the instruction and data streams
                             end
 
-            OPCODE_I_SYSTEM: begin  // SYSTEM + CSR  // TODO Add control signals to enable CSR unit
-                regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};
-                csr_op_rs2_o = 2'b01;
-                csr_wr_o = 1'b1;
-                case(funct3)
-                    FUNCT3_ECALL_EBREAK: ;  // NOP
-                    FUNCT3_CSRRW:begin  // CSRRW â€“ for CSR reading and writing (CSR content is read to a destination register and source-register content is then copied to the CSR);
-                        csr_cntr_o = 1'b0;
-                        csr_op_rs1_o = 1; //rs1 is set to 0. rd = 0 + rs2 = 0 + CSR
-                        ALU_op = `ALU_OP_ADD;
-                    end
-                    FUNCT3_CSRRS:begin  // CSRRS â€“ for CSR reading and setting (CSR content is read to the destination register and then its content is set according to the source register bit-mask);
-                        csr_cntr_o = 1'b0;
-                        csr_op_rs1_o = 0; //rs1 is a bit mask to set bits to 1. rd = rs1 | CSR
-                        ALU_op = `ALU_OP_OR; 
-                    end
-                    FUNCT3_CSRRC:begin  // CSRRC â€“ for CSR reading and clearing (CSR content is read to the destination register and then its content is cleared according to the source register bit-mask);
-                        csr_cntr_o = 1'b0;
-                        csr_op_rs1_o = 0; //rs1 is a bit mask to clear bits to 0. rd = rs1 & CSR
-                        ALU_op = `ALU_OP_AND;
-                    end
-                    FUNCT3_CSRRWI:begin  // CSRRWI â€“ the CSR content is read to the destination register and then the immediate constant is written into the CSR;
-                        csr_cntr_o = 1'b1;
-                        csr_op_rs1_o = 1; //rs1 is set to 0. rd = 0 + rs2 = 0 + CSR
-                        ALU_op = `ALU_OP_ADD;
-                    end
-                    FUNCT3_CSRRSI:begin  // CSRRSI â€“ the CSR content is read to the destination register and then set according to the immediate constant;
-                        csr_cntr_o = 1'b1;
-                        imm_val_o = regfile_raddr_rs1_o[4:0];
-                    end
-                    FUNCT3_CSRRCI:begin  // CSRRCI â€“ the CSR content is read to the destination register and then cleared according to the immediate constant;
-                        csr_cntr_o = 1'b1;
-                        imm_val_o = regfile_raddr_rs1_o[4:0];
-                    end
-                    default: ; //default required by Quartus II 13.1
-                endcase
+            OPCODE_I_SYSTEM: begin  // SYSTEM + CSR
+                // All CSR instructions (CSRR[W,S,C][I]) write on the CSR destiny address.
+                csr_wr_o = |funct3; // <- This discriminates CSR operations from ECALL/EBREAK
+
+                // All CSR instructions (CSRR[W,S,C][I]) read old CSR and write it on rd, unless it's x0.
+                regfile_wr = (regfile_waddr != {`REG_ADDR_WIDTH {1'b0}}) & (|funct3);
+                ALU_op = `ALU_OP_ADD; //rs1 is set to 0 for EXE. rd = rs1 + rs2 = 0 + CSR
+
+                // csr_op[2] = 1 indicates immediate. csr_op[1:0] indicates RW/RS/RC = 01/10/11. 
+                csr_op_o = funct3;
+                i_r1_o = !funct3[2];
             end
 
             default: ; //default required by Quartus II 13.1

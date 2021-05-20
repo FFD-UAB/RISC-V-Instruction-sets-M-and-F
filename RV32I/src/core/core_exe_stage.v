@@ -14,8 +14,6 @@ module exe_stage
         e_data_origin_i,
         e_regfile_rs1_i,  // rs1
         e_regfile_rs2_i,  // rs2
-        e_regfile_raddr_rs1_i,
-        e_regfile_raddr_rs2_i,
         e_regfile_waddr_i,
         e_regfile_wr_i,
         e_imm_val_i,  // in use to store a value and add the immidiate value
@@ -34,9 +32,9 @@ module exe_stage
         m_data_wr_o,
         m_data_be_o,
         e_data_target_i,
-        d_alu_busy_o,
-        alu_o,
-        stall_general_i
+//        d_alu_busy_o,
+        alu_o
+//        stall_general_i
         );
 
  input  wire                           clk;
@@ -48,9 +46,7 @@ module exe_stage
  input  wire [`DATA_WIDTH-1:0]         e_regfile_rs1_i;
  input  wire [`DATA_WIDTH-1:0]         e_regfile_rs2_i;
  input  wire [`DATA_WIDTH-1:0]         e_imm_val_i;
- input  wire [4:0]                     e_regfile_waddr_i;
- input  wire [4:0]                     e_regfile_raddr_rs1_i;
- input  wire [4:0]                     e_regfile_raddr_rs2_i;  
+ input  wire [`REG_ADDR_WIDTH-1:0]     e_regfile_waddr_i;
  input  wire [`DATA_WIDTH-1:0]         e_pc4_i;
  input  wire [`DATA_WIDTH-1:0]         e_brj_pc_i;
  input  wire                           e_regfile_wr_i;
@@ -60,7 +56,7 @@ module exe_stage
  input  wire [`MEM_TRANSFER_WIDTH-1:0] e_data_be_i;
  output reg                            m_regfile_wr_o;
  output reg                            m_is_load_store_o;
- output reg  [4:0]                     m_regfile_waddr_o;
+ output reg  [`REG_ADDR_WIDTH-1:0]     m_regfile_waddr_o;
  output reg  [`DATA_WIDTH-1:0]         m_regfile_rd_o;
  output reg  [`DATA_WIDTH-1:0]         m_data_addr_o;
  output reg                            m_data_wr_o;
@@ -69,8 +65,8 @@ module exe_stage
  output reg  [2:0]                     m_LOAD_op_o;
  input  wire [1:0]                     e_data_target_i;
  output wire [`DATA_WIDTH-1:0]         alu_o;
- output wire                           d_alu_busy_o;    // Not a reg because is a flag.
- input  wire                           stall_general_i; // Here could be used "d_alu_busy_o", but stall_general_i is a general case.
+// output wire                           d_alu_busy_o;    // Not a reg because is a flag.
+// input  wire                           stall_general_i; // Here could be used "d_alu_busy_o", but stall_general_i is a general case.
 
  wire                                  ALU_zero_t;
  wire [`DATA_WIDTH-1:0]                op1_ALU;
@@ -155,7 +151,7 @@ module exe_stage
     m_is_load_store_o <= 1'b0;
     m_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
-  else if(!stall_general_i)
+  else //if(!stall_general_i)
    begin
     m_regfile_waddr_o <= e_regfile_waddr_i;
     m_regfile_rd_o <= reg_file_rd;

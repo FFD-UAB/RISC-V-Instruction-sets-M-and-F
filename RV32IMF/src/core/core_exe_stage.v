@@ -154,7 +154,7 @@ module exe_stage
          .frm_i                        ( e_frm_i         ),
          .start_i                      ( ctrlStartF      ), 
          .clk                          ( clk             ), 
-         .rstLow                       ( rst_n           ),
+         .rst_n                        ( rst_n           ),
          .c_o                          ( alu_F           ), 
          .fflags_o                     ( d_fflags_o      ), 
          .busy_o                       ( busy_f          )

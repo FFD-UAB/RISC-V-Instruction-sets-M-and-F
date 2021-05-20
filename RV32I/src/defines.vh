@@ -10,8 +10,8 @@
 
 
 `define MEM_DATA_WIDTH 32   // Word Width
-`define MEM_ADDR_WIDTH 10   // Address With
-`define MEM_DEPTH 1 << `MEM_ADDR_WIDTH-2  // Total number of positions (1024)
+`define MEM_ADDR_INSTR_WIDTH 12   // Address Width for the core
+`define MEM_ADDR_DATA_WIDTH 8    // Address Width for the core
 
 `define MEM_TRANSFER_WIDTH 4  // Mask to store word, halfword or byte
 
@@ -117,27 +117,19 @@
 `define IMM_EBREAK         12'b000000000001
 
 // ALU_OPERATIONS
-`define ALU_OP_WIDTH      5
+`define ALU_OP_WIDTH      4
 
-// {funct7[0], funct7[5], funct3};
-`define ALU_OP_ADD        5'b00000        
-`define ALU_OP_SUB        5'b01000
-`define ALU_OP_SLL        5'b00001
-`define ALU_OP_SLT        5'b00010
-`define ALU_OP_SLTU       5'b00011
-`define ALU_OP_XOR        5'b00100
-`define ALU_OP_SRL        5'b00101
-`define ALU_OP_SRA        5'b01101
-`define ALU_OP_OR         5'b00110
-`define ALU_OP_AND        5'b00111
-`define ALU_OP_MUL        5'b10000  // Instruction set M -> ALU_OP[4] = 1;
-`define ALU_OP_MULH       5'b10001  // Then, it can be used as start_M signal.
-`define ALU_OP_MULHSU     5'b10010
-`define ALU_OP_MULHU      5'b10011
-`define ALU_OP_DIV        5'b10100
-`define ALU_OP_DIVU       5'b10101
-`define ALU_OP_REM        5'b10110
-`define ALU_OP_REMU       5'b10111
+// {funct7[5], funct3};
+`define ALU_OP_ADD        4'b0000        
+`define ALU_OP_SUB        4'b1000
+`define ALU_OP_SLL        4'b0001
+`define ALU_OP_SLT        4'b0010
+`define ALU_OP_SLTU       4'b0011
+`define ALU_OP_XOR        4'b0100
+`define ALU_OP_SRL        4'b0101
+`define ALU_OP_SRA        4'b1101
+`define ALU_OP_OR         4'b0110
+`define ALU_OP_AND        4'b0111
 
 // LOAD_OPERATIONS
 `define LOAD_OP_WIDTH     3
@@ -175,7 +167,7 @@
 //`define UNUSED               3
 
 // CSR
-`define CSR_OP_WIDTH         2
+`define CSR_OP_WIDTH         3
 `define CSR_ADDR_WIDTH       12
 `define CSR_DATA_WIDTH       32
 `define CSR_XLEN             64

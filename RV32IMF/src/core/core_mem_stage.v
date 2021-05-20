@@ -116,13 +116,13 @@ module core_mem_stage
     w_is_load_store_o <= 1'b0;
     w_LOAD_op_o <= {`LOAD_OP_WIDTH{1'b0}};
    end
-  else if(!stall_general_i)
+  else
    begin
     w_regfile_waddr_o <= m_regfile_waddr_i;
     w_regfile_rd_o <= m_regfile_rd_i;
-    w_regfile_wr_o <= m_regfile_wr_i;
-    w_is_load_store_o <= m_is_load_store_i;
-    w_LOAD_op_o <= m_LOAD_op_i;
-   end
+    w_regfile_wr_o <= m_regfile_wr_i & !stall_general_i;       // During multi-cycle EXE operation,
+    w_is_load_store_o <= m_is_load_store_i & !stall_general_i; // let next instruction pass through
+    w_LOAD_op_o <= m_LOAD_op_i;                                // but don't send more than a single
+   end                                                         // read/write.
          
 endmodule

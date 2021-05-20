@@ -66,8 +66,6 @@ module core
  wire [`DATA_WIDTH-1:0]                w_regfile_rd_t;
  wire [`DATA_WIDTH-1:0]                reg_file_rd_t;
  wire [`REG_ADDR_WIDTH-1:0]            m_regfile_waddr_t;
- wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs1_t;	
- wire [`REG_ADDR_WIDTH-1:0]            e_regfile_raddr_rs2_t;
  wire [1:0]                            e_data_target_t;
  wire                                  d_alu_busy_t;
  wire                                  stall_t;
@@ -109,8 +107,6 @@ module core
         .e_regfile_waddr_o             (e_regfile_waddr_t),
         .e_regfile_rs1_o               (e_regfile_rs1_t),
         .e_regfile_rs2_o               (e_regfile_rs2_t),
-        .e_regfile_raddr_rs1_o         (e_regfile_raddr_rs1_t),
-        .e_regfile_raddr_rs2_o         (e_regfile_raddr_rs2_t),
         .e_imm_val_o                   (e_imm_val_t),  //execution unit imm val rs1
         .e_data_be_o                   (e_data_be_t),
         .w_regfile_wr_i                (w_regfile_wr_t),
@@ -144,8 +140,6 @@ module core
         .e_data_origin_i               (e_data_origin_t),
         .e_regfile_rs1_i               (e_regfile_rs1_t),  // rs1
         .e_regfile_rs2_i               (e_regfile_rs2_t),  // rs2
-        .e_regfile_raddr_rs1_i         (e_regfile_raddr_rs1_t),
-        .e_regfile_raddr_rs2_i         (e_regfile_raddr_rs2_t),
         .e_regfile_wr_i                (e_regfile_wr_t),
         .e_regfile_waddr_i             (e_regfile_waddr_t),
         .m_regfile_waddr_o             (m_regfile_waddr_t),

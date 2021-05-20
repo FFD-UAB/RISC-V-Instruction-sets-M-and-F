@@ -336,18 +336,6 @@ task test_csr;
   end
 endtask
 
-task test_csr1;
-  begin
-    $display("CSR1 Test");
-    pc = 32'b0;
-    rstinstrMem();
-    encodeAddi(5'h0, 5'h3, 12'h555); 
-    encodeCsr(12'h000, 5'h3, `FUNCT3_CSRRW, 5'h0); //Value stored in CSR is stored in rd(0) and value stored in rd(0) in CSR
-    encodeCsr(12'h000, 5'h3, `FUNCT3_CSRRW, 5'h0);
-    //encodeCsr(12'hC02, 5'h0, `FUNCT3_CSRRS, 5'h3);
-    rst_n = 1'b1;
-  end
-endtask
 
 
 //*****************************
@@ -592,6 +580,289 @@ task test_div2; // Tests two multi-cycle operations in a row.
 endtask
 
 
+//*******************************
+//** Instruction set F.S tests **
+//*******************************
+
+task test_fcsr;
+  begin
+    $display("FCSR Test");
+    pc = 32'b0;
+    rstinstrMem();
+    encodeAddi(5'h0, 5'h10, 12'b1);  // Reg10 <- 1;
+    encodeSW(5'h0, 5'h10, 12'h0);    // Mem[0] <- 1;
+    encodeFLW(5'h0, 5'h10, 12'h0);   // Freg10 <- Mem[0];
+    encodeCsr(`FRM_ADDR, 5'h3, `FUNCT3_CSRRSI, 5'h0);  // Set FCSR rm to RUP (h3).
+    encodeFDIV(5'h10, 5'h0, 5'h1, `FRM_DYN);           // ?/0 to set DZ fflag high. Reg1 <- +inf;
+    encodeCsr(`FFLAGS_ADDR, 5'h0, `FUNCT3_CSRRW, 5'h2);// Reg2 <- fflags. Should be 32'b01000. Clear FFLAGS
+    encodeCsr(`FFLAGS_ADDR, 5'h0, `FUNCT3_CSRRW, 5'h3);// Reg3 <- fflags. Should be 32'b00000. Clear FFLAGS
+    encodeCsr(`FRM_ADDR, 5'h10, `FUNCT3_CSRRC, 5'h4);  // Reg4 <- frm. Should be RUP (h3). frm <- frm & ~1.
+    rst_n = 1'b1;
+    while (!top_CoreMem_inst.core_inst.exe_stage_inst.ctrlStartF) @(posedge clk); // Wait until FPU operation at EXE.
+    if(top_CoreMem_inst.core_inst.exe_stage_inst.e_frm_i == `FRM_RUP) $display("OK: Correct rounding mode from FCSR. \n");
+    else $display("ERROR: Wrong rounding mode being used at EXE, which is %b. \n", top_CoreMem_inst.core_inst.exe_stage_inst.e_frm_i);
+    waitNclockCycles(6);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2] == 5'b01000) $display("OK: reg2 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2]);
+    else $display("ERROR: reg2 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3] == 5'b00000) $display("OK: reg3 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+    else $display("ERROR: reg3 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4] == 5'b00011) $display("OK: reg4 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4]);
+    else $display("ERROR: reg4 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.crs_unit_inst.csr_frm_o == 5'b00010) $display("OK: frm is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.crs_unit_inst.csr_frm_o);
+    else $display("ERROR: frm is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.crs_unit_inst.csr_frm_o);
+  end
+endtask
+
+task test_FP1;
+  begin
+    pc = 32'b0;
+    rstinstrMem();
+	
+    // rs1, Frd, offset.        Frd <- Mem(rs1 + sign extended offset)
+    encodeFLW(5'h0, 5'h0, 12'h0); // Freg[0] = 0x00000001  exp=0, mantissa 1
+    encodeFLW(5'h0, 5'h1, 12'h4); // Freg[1] = 0x007fffff  exp=0, full mantissa
+    encodeFLW(5'h0, 5'h2, 12'h8); // Freg[2] = 0x7f7fffff  Inf-1
+    encodeFLW(5'h0, 5'h3, 12'hc); // Freg[3] = 0x7fc00001  sNaN
+    // Frs1, Frs2, Frd, rm.
+    encodeFADD(5'h0, 5'h1, 5'h4, `FRM_RNE); // 0x00000001 + 0x007fffff = 0x00800000
+    encodeFADD(5'h4, 5'h1, 5'h5, `FRM_RTZ); // 0x00800000 + 0x007fffff = 0x00ffffff
+    encodeFSUB(5'h4, 5'h5, 5'h6, `FRM_RNE); // 0x00800000 - 0x00ffffff = 0x807fffff
+    encodeFADD(5'h0, 5'h2, 5'h7, `FRM_RNE); // Inf-1 + mantissa 1 = Inf-1 because RNE (0x7f7fffff)
+    encodeFADD(5'h0, 5'h2, 5'h8, `FRM_RUP); // Inf-1 + mantissa 1 = Inf because RUP (0x7f800000)
+    encodeFADD(5'h3, 5'h0, 5'h9, `FRM_RNE); // sNaN + 0x00000001 = qNaN
+    // rs1, Frs2, offset.       Frs2 -> Mem(rs1 + sign extended offset)
+    encodeFSW(5'h0, 5'h4, 12'h10); // Dmem[4] = 0x00800000
+    encodeFSW(5'h0, 5'h5, 12'h14); // Dmem[5] = 0x00ffffff
+    encodeFSW(5'h0, 5'h6, 12'h18); // Dmem[6] = 0x807fffff
+    encodeFSW(5'h0, 5'h7, 12'h1c); // Dmem[7] = 0x7f7fffff
+    encodeFSW(5'h0, 5'h8, 12'h20); // Dmem[8] = 0x7f800000 +Inf
+    encodeFSW(5'h0, 5'h9, 12'h24); // Dmem[9] = 0x7FC00000 qNaN
+
+    //TEST
+    rst_n = 1'b1;
+    waitNclockCycles(30);
+
+    $display("FP LOAD Test");
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3] == 32'h7fc00001)
+    $display("OK: freg3 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3]);
+    else begin
+      $display("ERROR: freg3 has to be 0x7fc00001 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3]);
+      //$fatal;
+    end
+
+
+    $display("FP ADD/SUB Test");
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6] == 32'h807fffff)
+    $display("OK: freg6 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6]);
+    else begin
+      $display("ERROR: freg6 has to be 0x807fffff but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6]);
+      //$fatal;
+    end
+
+    $display("FP ADD/SUB rm Test");
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7] == 32'h7f7fffff)
+    $display("OK: freg7 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7]);
+    else begin
+      $display("ERROR: freg7 has to be 0x7f7fffff but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7]);
+      //$fatal;
+    end
+
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8] == 32'h7f800000)
+    $display("OK: freg8 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]);
+    else begin
+      $display("ERROR: freg8 has to be 0x7f800000 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]);
+      //$fatal;
+    end
+
+    $display("FP ADD/SUB NaN Test");
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9] == 32'h7fc00000)
+    $display("OK: freg9 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9]);
+    else begin
+      $display("ERROR: freg9 has to be 0x7fc00000 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9]);
+      //$fatal;
+    end
+
+    $display("FP STORE Test");
+    if (TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8] == top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]) 
+    $display("OK: dataMem[8] is : 0x%h \n", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
+    else begin
+       $display("ERROR: dataMem[8] has to be 0x%h but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8], TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
+       //$fatal;
+    end
+   
+  end
+endtask
+
+/*
+task test_FPMandelbrot; // Coded but not tested. WIP
+  begin
+    pc = 32'b0;
+    rstinstrMem();
+    // JMP or branch labels:
+    wire Finish = 12'hd4;
+    wire LoopX  = 12'h50;
+    wire LoopY  = 12'h38;
+    wire Res0   = 12'hb4;
+    wire Res1   = 12'hb0;
+    wire MandelLoop = 12'h68;
+    wire STOREres = 12'hc0;
+    
+    wire Pzoom = 12';
+    wire Mzoom = 12';
+    wire PX = 12';
+    wire MX = 12';
+    wire PY = 12';
+    wire MY = 12';
+
+    // The step value changes the screen zoom and Mandelbrot precision. Freg 2 and 3 are 
+    // XY values of the screen that can be changed to move around. VGA = 640 x 480 px
+    //
+    // Freg 1  = step value,   Freg 2 = X screen position,   Freg 3 = Y screen position.
+    // Freg 17 = X display resolution/8,   Freg 18 = Y display resolution/8.
+    //
+    //    ///////////////////// <- Y pos + step (Y counter = 1)
+    //    //        |        //
+    //    //--------+--------//
+    //    //        |        //
+    //    ///////////////////// <- Y pos - 480 x step (Y counter = 480)
+    //    ^                   ^
+    //    |                   X pos + 640 x step (X counter = 640)
+    //    X pos + step (X counter = 1)
+
+
+    // Data memory pointer and counters to store the results.
+    //
+    // Reg 2  = Max X resolution,          Reg 3 = Max Y resolution,
+    // Reg 5  = X counter,                 Reg 6 = Y counter, 
+    // Reg 7  = Flag of OOB (FP.S value > 2 in magnitude when high).
+    // Reg 8  = contains '1' to perform BEQ at Reg 7.
+    // Reg 9  = '1' shifted to set the bit position of the result.
+    // Reg 10 = '10..0' used to compate Reg 9
+    // Reg 11 = Last 32 Mandelbrot results. Store when all 32 are done.
+    // Reg 12 = memory pointer counter used to store result.
+
+
+    // The Mandelbrot set computes Z_(n+1) = Z_n x Z_n + C, where Z_0 is 0 and C is 
+    // a complex number equal to the X + iY screen positions values. The equation 
+    // is computed up to reg 1 number of times unless the real or imag values goes 
+    // over 2 in magnitude, that is stored at Freg 4. 
+    // The values at Freg 10 and 11 contain the XY position that changes with each loop 
+    // finished, being then C = Freg 10 + iFreg 11. Freg 12 and 13 are the results of each
+    // iteration that are updated with the middle operands of Freg[14, 16].
+    //
+    // Freg  4 = value 2 in FP.S, Freg  5 = value -2 in FP.S, 
+    // Freg 10 = Real init value, Freg 11 = Imag init value,  Reg 1 = Max number of iterations.
+    // Freg 12 = Real value,      Freg 13 = Imag value,       Reg 4 = iteration counter.
+    // Freg 14 = RxR result,      Freg 15 = IxI result,     Freg 16 = 2xRxI result.
+
+       // Boot code, used to update step, X or Y screen position.
+/*00/ encodeFLW (5'b0,  5'd1,  12'h0); // Freg 1 <- dataMem #0.  Freg 1 <- step value.
+/*04/ encodeFLW (5'b0,  5'd2,  12'h4); // Freg 2 <- dataMem #4.  Freg 2 <- X screen position.
+/*08/ encodeFLW (5'b0,  5'd3,  12'h8); // Freg 3 <- dataMem #8.  Freg 3 <- Y screen position.
+/*0c/ encodeFLW (5'b0,  5'd4,  12'hc); // Freg 4 <- dataMem #12. Freg 4 <- 2 in single-prec.
+/*10/ encodeLW  (5'b0,  5'd17, 12'h10);// Freg 17 <- dataMem #16. Freg 17 <- X screen resolution.
+/*14/ encodeLW  (5'b0,  5'd18, 12'h14);// Freg 18 <- dataMem #20. Freg 18 <- Y screen resolution.
+/*18/ encodeFSUB(5'b0,  5'd4,  5'd5, `FRM_RTZ);  // Freg 5 <- -2.
+/*1c/ encodeLW  (5'b0,  5'd1,  12'h18);// Reg 1  <- dataMem #24. Reg 1 is max Mandelbrot iterations.
+/*20/ encodeLW  (5'b0,  5'd2,  12'h1c);// Reg 2  <- dataMem #28. Reg 2 <- X screen resolution.
+/*24/ encodeLW  (5'b0,  5'd3,  12'h20);// Reg 3  <- dataMem #32. Reg 3 <- Y screen resolution.
+/*28/ encodeAddi(5'b0,  5'd8,  12'h1); // Reg 8  <- '1'.
+/*2c/ encodeAddi(5'b0,  5'd9,  12'h1); // Reg 9  <- '1'.
+/*30/ encodeSlli(5'd8,  5'd10, 12'd31);// Reg 10 <- '10..0'
+    
+    
+/*  / // Init Y vector
+/*34/ encodeFADD(5'b0,  5'd3,  5'd11, `FRM_RTZ);  // Reset Y position
+
+/*  / // Loop Y vector
+/*38/ encodeAddi(5'b0,  5'd6,  12'h1); // Increase Y counter
+/*3c/ encodeBlt (5'd3,  5'd6,  Finish);// JMP "Finish" if Y > Y resolution
+/*40/ encodeFSUB(5'd11, 5'd1,  5'd11, `FRM_RTZ); // Decrease Y step
+/*44/ encodeFADD(5'b0,  5'd11, 5'd13, `FRM_RTZ); // Init Imag register
+    
+/*  / // Init X vector
+/*48/ encodeAdd (5'b0,  5'b0,  5'd5 ); // Reset X counter
+/*4c/ encodeFADD(5'b0,  5'd2,  5'd10, `FRM_RTZ); // Reset X position
+    
+/*  / // Loop X vector
+/*50/ encodeAddi(5'b0,  5'd5,  12'h1); // Increase X counter
+/*54/ encodeBlt (5'd2,  5'd5,  LoopY); // JMP "Loop Y" if X > X resolution
+/*58/ encodeFADD(5'd10, 5'd1,  5'd10, `FRM_RTZ); // Increase X step
+/*5c/ encodeFADD(5'b0,  5'd10, 5'd12, `FRM_RTZ); // Init Real register
+    
+/*  / // Init Mandelbrot
+/*60/ encodeAdd (5'b0,  5'b0,  5'd7 ); // Flush flag OOB
+/*64/ encodeAdd (5'b0,  5'b0,  5'd4 ); // Flush iteration counter
+    
+/*  / // Mandelbrot iteration loop
+/*68/ encodeAddi(5'b0,  5'd4,  12'h1); // Increase iteration counter
+/*6c/ encodeBge (5'd4,  5'd1,  Res1 ); // JMP "Result = 1" if count > Max iter.
+
+/*70/ encodeFMUL(5'd10, 5'd10, 5'd14, `FRM_RTZ); // RxR
+/*74/ encodeFMUL(5'd13, 5'd13, 5'd15, `FRM_RTZ); // IxI
+/*78/ encodeFMUL(5'd10, 5'd13, 5'd16, `FRM_RTZ); // RxI
+/*7c/ encodeFSUB(5'd14, 5'd15, 5'd12, `FRM_RTZ); // Real = RxR - IxI
+/*80/ encodeFADD(5'd16, 5'd16, 5'd13, `FRM_RTZ); // Imag = 2xRxI
+
+/*84/ encodeFADD(5'd10, 5'd12, 5'd12, `FRM_RTZ); // Real = Real + C_real
+/*88/ encodeFADD(5'd11, 5'd13, 5'd13, `FRM_RTZ); // Imag = Imag + C_imag
+
+/*8c/ encodeFlt (5'd4,  5'd12, 5'd7 ); // Rise flag of Real > 2
+/*90/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*94/ encodeFlt (5'd4,  5'd13, 5'd7 ); // Rise flag of Imag > 2
+/*98/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*9c/ encodeFlt (5'd12, 5'd5,  5'd7 ); // Rise flag of Real < -2
+/*a0/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*a4/ encodeFlt (5'd13, 5'd5,  5'd7 ); // Rise flag of Imag < -2
+/*a8/ encodeBeq (5'd8,  5'd7,  Res0 ); // JMP "Result = 0" if value OOB.
+
+/*ac/ encodeJal (5'b0,  MandelLoop  ); // JMP Mandelbrot Loop, for next iteration loop
+    
+/*  / // Mandelbrot result
+/*  /   // Result = 1
+/*b0/ encodeAdd (5'd9,  5'd11, 5'd11 );// Update result register.
+/*  /   // Result = 0
+/*b4/ encodeBeq (5'd9,  5'd10, STOREres);// JMP "STORE res" if shifter is '10..0'
+/*b8/ encodeSlli(5'd9,  5'd9,  12'b1 );// Prepare counter shifter for next result
+/*bc/ encodeJal (5'b0,  LoopX);        // JMP "Loop X" Result recorded, next X.
+/*  /   // STORE res
+/*c0/ encodeAddi(5'b0,  5d'9,  12'h1 );// Reset shifter counter
+/*c4/ encodeSW  (5'd12, 5'd11, 12'h24);// Store 32 Mandelbrot results
+/*c8/ encodeAddi(5'd12, 5'd12, 12'h4 );// Increment +4 data store pointer
+/*cc/ encodeAdd (5'b0,  5'b0,  5'd11 );// Flush result register after storing
+/*d0/ encodeJal (5'b0,  LoopX);        // JMP "Loop X" Result recorded, next X.
+    
+/*  / // Finish. Check what writes the AXI bus to change screen.
+/*d4/ encodeLW  (5'b0,  5'd4,  12'h24); // LOAD AXI bus buttons and check its value.
+
+/*d8/ encodeBeq (5'd8,  5'd4,  Pzoom);  // 1 = JMP +zoom
+/*dc/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*e0/ encodeBeq (5'd8,  5'd4,  Mzoom);  // 2 = JMP -zoom
+/*e4/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*e8/ encodeBeq (5'd8,  5'd4,  PX);     // 4 = JMP +X
+/*ec/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*f0/ encodeBeq (5'd8,  5'd4,  MX);     // 8 = JMP -X
+/*f4/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*f8/ encodeBeq (5'd8,  5'd4,  PY);     // 16 = JMP +Y
+/*fc/ encodeSlli(5'd4,  5'd4,  12'h1);
+/*100/encodeBeq (5'd8,  5'd4,  MY);     // 32 = JMP -Y
+
+/*104/encodeJal (5'b0,  12'hd4); // JMP "Finish" Check again if the buttons have been pressed.
+
+/ / // +zoom
+/ /
+/ /
+/ /
+/ /
+
+  end
+endtask */
+
+//**********************************//**********************************//**********************************/
+//**********************************//**********************************//**********************************/
 //**********************************
 //** Instruction set RV32I encode **
 //********************************** 
@@ -1185,6 +1456,385 @@ task encodeREMU;
   input [4:0] rd;
   begin
     instruction = {7'b1, rs2, rs1, 3'b111, rd, `OPCODE_R_ALU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+
+//******************************
+//** Instruction set F encode **
+//******************************
+
+task encodeFLW;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  input [11:0] immediate;
+  begin
+    instruction = {immediate, rs1, 3'b010, rd, `OPCODE_I_FLOAD};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFSW;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input [11:0] immediate;
+  begin
+    instruction = {immediate[11:5], rs2, rs1, 3'b010, immediate[4:0], `OPCODE_S_FSTORE};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMADD;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rs3;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {rs3, 2'b0, rs2, rs1, rm, rd, `OPCODE_R4_FMADD};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMSUB;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rs3;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {rs3, 2'b0, rs2, rs1, rm, rd, `OPCODE_R4_FMSUB};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFNMSUB;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rs3;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {rs3, 2'b0, rs2, rs1, rm, rd, `OPCODE_R4_FNMSUB};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFNMADD;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rs3;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {rs3, 2'b0, rs2, rs1, rm, rd, `OPCODE_R4_FNMADD};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFADD;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FADD, 2'b0, rs2, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFSUB;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FSUB, 2'b0, rs2, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMUL;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FMUL, 2'b0, rs2, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFDIV;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FDIV, 2'b0, rs2, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFSQRT;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FSQRT, 2'b0, rs2, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFSGNJ;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FSGNJ, 2'b0, rs2, rs1, 3'b000, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFSGNJN;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FSGNJ, 2'b0, rs2, rs1, 3'b001, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFSGNJX;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FSGNJ, 2'b0, rs2, rs1, 3'b010, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMIN;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FMINMAX, 2'b0, rs2, rs1, 3'b000, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMAX;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FMINMAX, 2'b0, rs2, rs1, 3'b001, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFCVT_W_S;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FCVT_W_S, 2'b0, 5'b00000, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFCVT_WU_S;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FCVT_W_S, 2'b0, 5'b00001, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMV_X_W;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FMV_X_W, 2'b0, 5'b00000, rs1, 3'b000, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFEQ;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FEQ, 2'b0, rs2, rs1, 3'b010, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFLT;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FEQ, 2'b0, rs2, rs1, 3'b001, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFLE;
+  input  [4:0] rs1;
+  input  [4:0] rs2;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FEQ, 2'b0, rs2, rs1, 3'b000, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFCLASS;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FMV_X_W, 2'b0, 5'b00000, rs1, 3'b001, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFCVT_S_W;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FCVT_F_W, 2'b0, 5'b00000, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFCVT_S_WU;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  input  [2:0] rm;
+  begin
+    instruction = {`ALU_OP_FCVT_F_W, 2'b0, 5'b00001, rs1, rm, rd, `OPCODE_R_FPU};
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];
+    top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][3] = instruction[31:24];		
+    pc = pc + 32'd4;
+  end
+endtask
+
+task encodeFMV_W_X;
+  input  [4:0] rs1;
+  input  [4:0] rd;
+  begin
+    instruction = {`ALU_OP_FMV_W_X, 2'b0, 5'b00000, rs1, 3'b000, rd, `OPCODE_R_FPU};
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][0] = instruction[7:0];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][1] = instruction[15:8];
     top_CoreMem_inst.instr_mem.sp_ram_wrap_instr_i.sp_ram_instr_i.mem_instr[pc >> 2][2] = instruction[23:16];

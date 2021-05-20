@@ -60,6 +60,7 @@
 ../src/core/core_execution_unit/FPU/addsubFPs.v
 ../src/core/core_execution_unit/FPU/alignFPs.v
 ../src/core/core_execution_unit/FPU/HighestLeftBit28u.v
+../src/core/core_execution_unit/FPU/roundingFPs.v
 
 
 ///////////
@@ -71,3 +72,4 @@
 ../tb/branch.v
 ../tb/mem_test.v
 ../tb/FP_test.v
+../tb/fcsr_test.v

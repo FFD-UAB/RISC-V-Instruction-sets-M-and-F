@@ -336,18 +336,6 @@ task test_csr;
   end
 endtask
 
-task test_csr1;
-  begin
-    $display("CSR1 Test");
-    pc = 32'b0;
-    rstinstrMem();
-    encodeAddi(5'h0, 5'h3, 12'h555); 
-    encodeCsr(12'h000, 5'h3, `FUNCT3_CSRRW, 5'h0); //Value stored in CSR is stored in rd(0) and value stored in rd(0) in CSR
-    encodeCsr(12'h000, 5'h3, `FUNCT3_CSRRW, 5'h0);
-    //encodeCsr(12'hC02, 5'h0, `FUNCT3_CSRRS, 5'h3);
-    rst_n = 1'b1;
-  end
-endtask
 
 
 //*****************************
@@ -596,6 +584,35 @@ endtask
 //** Instruction set F.S tests **
 //*******************************
 
+task test_fcsr;
+  begin
+    $display("FCSR Test");
+    pc = 32'b0;
+    rstinstrMem();
+    encodeAddi(5'h0, 5'h10, 12'b1);  // Reg10 <- 1;
+    encodeSW(5'h0, 5'h10, 12'h0);    // Mem[0] <- 1;
+    encodeFLW(5'h0, 5'h10, 12'h0);   // Freg10 <- Mem[0];
+    encodeCsr(`FRM_ADDR, 5'h3, `FUNCT3_CSRRSI, 5'h0);  // Set FCSR rm to RUP (h3).
+    encodeFDIV(5'h10, 5'h0, 5'h1, `FRM_DYN);           // ?/0 to set DZ fflag high. Reg1 <- +inf;
+    encodeCsr(`FFLAGS_ADDR, 5'h0, `FUNCT3_CSRRW, 5'h2);// Reg2 <- fflags. Should be 32'b01000. Clear FFLAGS
+    encodeCsr(`FFLAGS_ADDR, 5'h0, `FUNCT3_CSRRW, 5'h3);// Reg3 <- fflags. Should be 32'b00000. Clear FFLAGS
+    encodeCsr(`FRM_ADDR, 5'h10, `FUNCT3_CSRRC, 5'h4);  // Reg4 <- frm. Should be RUP (h3). frm <- frm & ~1.
+    rst_n = 1'b1;
+    while (!top_CoreMem_inst.core_inst.exe_stage_inst.ctrlStartF) @(posedge clk); // Wait until FPU operation at EXE.
+    if(top_CoreMem_inst.core_inst.exe_stage_inst.e_frm_i == `FRM_RUP) $display("OK: Correct rounding mode from FCSR. \n");
+    else $display("ERROR: Wrong rounding mode being used at EXE, which is %b. \n", top_CoreMem_inst.core_inst.exe_stage_inst.e_frm_i);
+    waitNclockCycles(6);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2] == 5'b01000) $display("OK: reg2 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2]);
+    else $display("ERROR: reg2 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[2]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3] == 5'b00000) $display("OK: reg3 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+    else $display("ERROR: reg3 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[3]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4] == 5'b00011) $display("OK: reg4 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4]);
+    else $display("ERROR: reg4 is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_inst.regFile[4]);
+    if (top_CoreMem_inst.core_inst.id_stage_inst.crs_unit_inst.csr_frm_o == 5'b00010) $display("OK: frm is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.crs_unit_inst.csr_frm_o);
+    else $display("ERROR: frm is : %b. \n", top_CoreMem_inst.core_inst.id_stage_inst.crs_unit_inst.csr_frm_o);
+  end
+endtask
+
 task test_FP1;
   begin
     pc = 32'b0;
@@ -623,10 +640,11 @@ task test_FP1;
 
     //TEST
     rst_n = 1'b1;
+    waitNclockCycles(34);
+
     $display("FP LOAD Test");
-    waitNclockCycles(20);
     if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3] == 32'h7fc00001)
-    $display("OK: freg3 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3]);
+    $display("OK: freg3 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3]);
     else begin
       $display("ERROR: freg3 has to be 0x7fc00001 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[3]);
       //$fatal;
@@ -635,43 +653,40 @@ task test_FP1;
 
     $display("FP ADD/SUB Test");
     if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6] == 32'h807fffff)
-    $display("OK: freg6 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6]);
+    $display("OK: freg6 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6]);
     else begin
       $display("ERROR: freg6 has to be 0x807fffff but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[6]);
       //$fatal;
     end
 
-
     $display("FP ADD/SUB rm Test");
     if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7] == 32'h7f7fffff)
-    $display("OK: freg7 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7]);
+    $display("OK: freg7 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7]);
     else begin
       $display("ERROR: freg7 has to be 0x7f7fffff but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[7]);
       //$fatal;
     end
 
     if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8] == 32'h7f800000)
-    $display("OK: freg8 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]);
+    $display("OK: freg8 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]);
     else begin
       $display("ERROR: freg8 has to be 0x7f800000 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]);
       //$fatal;
     end
 
-
     $display("FP ADD/SUB NaN Test");
     if (top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9] == 32'h7fc00000)
-    $display("OK: freg9 is : %h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9]);
+    $display("OK: freg9 is : 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9]);
     else begin
       $display("ERROR: freg9 has to be 0x7fc00000 but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[9]);
       //$fatal;
     end
 
-
     $display("FP STORE Test");
     if (TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8] == top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8]) 
-    $display("OK: dataMem[8] is : %h", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
+    $display("OK: dataMem[8] is : 0x%h \n", TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
     else begin
-       $display("ERROR: dataMem[8] has to be 0x%h but is: 0x%h", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8], TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
+       $display("ERROR: dataMem[8] has to be 0x%h but is: 0x%h \n", top_CoreMem_inst.core_inst.id_stage_inst.reg_file_f_inst.regFile_F[8], TB.top_CoreMem_inst.data_mem.sp_ram_data_i.mem_data[8]);
        //$fatal;
     end
    
