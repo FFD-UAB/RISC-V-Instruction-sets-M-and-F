@@ -61,6 +61,9 @@ set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/FPU/addsubFPs.v"]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/FPU/alignFPs.v"]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/FPU/HighestLeftBit28u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/FPU/HighestLeftBit48u.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/FPU/mulFPs.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../src/core/core_execution_unit/FPU/roundingFPs.v"]
 
 
 #//////////////////

@@ -1,31 +1,35 @@
 // Telecommunications Master Dissertation - Francis Fuentes 14-05-2021
 //
 // Rounding module for single-precision floating-point operands.
+//
+// This module is capable of generating the various floating-point flags, while also 
+// output the proper result. That's the reason of the rather strange "preRound" input format.
+// The limits of this module input value is that it must fall between zero and a 510 exponent 
+// bit overflow. Underflows must be managed previously to the input of this module with the proper 
+// value, wheter is zero or a little value (also called denormalized values).
+//
+// It takes a clock cycle to execute the rounding magic, and the register is at the input, 
+// so it can be provided from anywhere on any latency load, but caution on concatenating this
+// module with anything else at the output.
 
 `include "../../../defines.vh"
 
-module roundingFPs(clk, rst_n, busy, preRound, frm_i, c_o, fflags_o);
+module roundingFPs(clk, rst_n, busy_i, preRound, frm_i, c_o, fflags_o);
 input wire         clk;
 input wire         rst_n;
-input wire         busy;
-input wire  [34:0] preRound;
+input wire         busy_i;
+input wire  [34:0] preRound;    // 1 sign + 1 OF exponent + 8 exponent + 23 mantissa + 2 rounding bits
 input wire   [2:0] frm_i;       // rounding mode
 
 output wire [31:0] c_o;         // 1 sign + 8 exponent + 27 mantissa bits
 output wire  [4:0] fflags_o;    // 5 bits NV, DZ, OV, UF, NX
 
-// Floating Rounding Mode bits
-/*  FRM_RNE = 3'b000; // Round to Nearest, ties to Even
-  FRM_RTZ = 3'b001; // Rounds towards Zero
-  FRM_RDN = 3'b010; // Rounds Down (towards -inf)
-  FRM_RUP = 3'b011; // Rounds Up (towards +inf)
-  FRM_RMM = 3'b100; // Round to Nearest, ties to Max Magnitude */
 
 reg  [34:0] registeredInput;
 
 always@(posedge clk or negedge rst_n)
  if(!rst_n) registeredInput = 35'h0;
- else if(busy) registeredInput = preRound;
+ else if(busy_i) registeredInput = preRound;
 
 wire         preRound_s;
 wire   [8:0] preRound_e; // 1 overflow exponent + 8 exponent bits
@@ -35,34 +39,37 @@ assign preRound_s = registeredInput[34];
 assign preRound_e = registeredInput[33:25];
 assign preRound_m = registeredInput[24:0];
 
-// Step 4: Rounding
+// Step 1: Possible rounding outputs.
 // Because of the rounding modes and the absolute magnitude mantissa, there's always two possible 
 // outcomes. For ease, let's first compute both of them, that includes the possibility of overflowing 
 // the mantissa (adding 1 to the exponent) because of the rounding.
 
-wire        zero0;     // Zero value flags of both possible outcomes to put correct zero sign.
-wire [22:0] Round_m0;  // 23 mantissa bits   Normal output
-wire [22:0] Round_m1;  // 23 mantissa bits   Output +1
-wire [23:0] Round_m1t; // 1 overflow mantissa + 23 mantissa bits
-wire [22:0] Round_m1tt;// 23 mantissa bits
-wire  [8:0] Round_e0;  // 1 OF/UF exponent + 8 exponent bits 
-wire  [8:0] Round_e1;  // 1 OF/UF exponent + 8 exponent bits
-wire        subNin;   // Subnormal rounding input (exponent = 0)
-assign subNin     = !(|preRound_e);
+wire [22:0] Round_m0;  // 23 mantissa bits                                       Normal output
+wire [22:0] Round_m1;  // 23 mantissa bits                                       Output +1
+wire [24:0] Round_m1t; // 1 overflow mantissa + [1.] + 23 mantissa bits          Output +1
+wire  [8:0] Round_e0;  // 1 OF exponent + 8 exponent bits                        Normal output
+wire  [8:0] Round_e1;  // 1 OF exponent + 8 exponent bits                        Output +1
+wire        nzeroExp;  // '0' when 0 exponent.
+
 assign Round_m0   = preRound_m[24:2];
 assign Round_e0   = preRound_e;
-assign Round_m1t  = preRound_m[24:2] + 2'b1;
-// Because when the hidden [1.] bit must be generated if the exponent is raised from 0 to 1 by the
-// rounding, an extra left-shift must be done at the mantissa if it's the case.
-assign Round_m1   = subNin ? Round_m1t[22:0] // At subnormal value, only push if '1' MSB is at [1.]
-                           : Round_m1t[23] ? Round_m1t[22:0] : Round_m1t[23:1];
-assign Round_e1   = preRound_e + Round_m1t[23];
+assign nzeroExp   = |preRound_e;
+
+assign Round_m1t  = {nzeroExp, preRound_m[24:2]} + 2'b1;
+
+assign Round_m1   = Round_m1t[24] ? Round_m1t[23:1] : Round_m1t[22:0];
+assign Round_e1   = preRound_e + (Round_m1t[24] | (Round_m1t[23] & !nzeroExp));
+
+
 
 // IEEE 754 indicates that when 0 result, sign is positive in all cases but RDN rm.
-// Only checking Round_0 because Round_1 would never be 0.
-assign zero0 = {Round_e0, Round_m0} == 32'b0;
+// Only checking on normal outcome because +1 output will never be 0.
+wire   zero0;     // Zero value flag to set correct zero sign for normal outcome.
+
+assign zero0 = !(|{nzeroExp, Round_m0});
 
 
+// Step 2: Output selection depending on the rounding mode input and rounding bits.
 // Extra assignment just for clearer code
 wire last;  // Last bit mantissa before rounding
 wire guard; // "guard" rounding bit
@@ -80,9 +87,17 @@ reg [22:0] c_m;
 
 always @(*)
 begin
+// Default output value qNaN.
  postRound_s = 1'b0;
  postRound_e = 9'hFF;
  postRound_m = 23'h400000;
+
+/* Floating Rounding Mode bits
+  FRM_RNE = 3'b000; // Round to Nearest, ties to Even
+  FRM_RTZ = 3'b001; // Rounds towards Zero
+  FRM_RDN = 3'b010; // Rounds Down (towards -inf)
+  FRM_RUP = 3'b011; // Rounds Up (towards +inf)
+  FRM_RMM = 3'b100; // Round to Nearest, ties to Max Magnitude */
 
 case(frm_i)
  `FRM_RNE: begin // Round to Nearest, ties to Even
@@ -149,7 +164,7 @@ endcase
 end
 
 
-// FFLAGS management. iNValid, Div by Zero, OverFlow, UnderFlow, iNeXact.
+// Step 3: FFLAGS and output management. iNValid, Div by Zero, OverFlow, UnderFlow, iNeXact.
 wire NV, DZ, OF, UF, NX;
 
 assign NV = frm_i == 3'b101 | frm_i == 3'b110 | frm_i == 3'b111; // Invalid rounding modes

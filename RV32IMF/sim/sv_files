@@ -58,8 +58,10 @@
 ../src/core/core_instrDecode_unit/core_reg_file_f.v
 ../src/core/core_execution_unit/core_execution_unit_alu_f.v
 ../src/core/core_execution_unit/FPU/addsubFPs.v
+../src/core/core_execution_unit/FPU/mulFPs.v
 ../src/core/core_execution_unit/FPU/alignFPs.v
 ../src/core/core_execution_unit/FPU/HighestLeftBit28u.v
+../src/core/core_execution_unit/FPU/HighestLeftBit48u.v
 ../src/core/core_execution_unit/FPU/roundingFPs.v
 
 

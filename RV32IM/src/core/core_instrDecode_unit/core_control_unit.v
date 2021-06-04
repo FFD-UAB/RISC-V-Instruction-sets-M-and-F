@@ -319,7 +319,7 @@ module control_unit
                            imm_val_o = { {`DATA_WIDTH - 12 {imm12[11]}}, imm12[11:0] };
                            regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};
                            i_r1_o = 1'b1;
-                           ALU_op = {{`ALU_OP_WIDTH-3{1'b0}}, funct7[0], funct7[5], funct3};
+                           ALU_op = {{`ALU_OP_WIDTH-5{1'b0}}, funct7[0], funct7[5], funct3};
                            /* Old way of encoding. Not necessary if well handled at the execution stage.
                            case(funct3)
                                FUNCT3_ADD_SUB: ALU_op = `ALU_OP_ADD;   // addi       "Add sign-extended 12-bit immediate to register rs1 and place the result in rd"
@@ -338,7 +338,7 @@ module control_unit
                            regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};
                            i_r1_o = 1'b1;
                            i_r2_o = 1'b1;
-                           ALU_op = {{`ALU_OP_WIDTH-3{1'b0}}, funct7[0], funct7[5], funct3};
+                           ALU_op = {{`ALU_OP_WIDTH-5{1'b0}}, funct7[0], funct7[5], funct3};
                            /* Old way of encoding. Not necessary if well handled at the execution stage.
                            if(funct7[0] == 1'b1) // Check if its an operation from Instruction set M
                              case(funct3)

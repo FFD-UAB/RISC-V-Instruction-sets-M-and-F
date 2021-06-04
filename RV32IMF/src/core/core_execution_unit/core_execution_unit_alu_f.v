@@ -24,10 +24,11 @@ output reg         busy_o;   // Multi-cycle operation on-going flag.
 reg                NV, DZ, OF, UF, NX; // iNValid operation, Divide by Zero, OverFlow,
 assign fflags_o = {NV, DZ, OF, UF, NX};// UnderFlow, iNeXact.
 
-reg   [3:0] counter; // multi-cycle operation counter.
 wire        local_busy;
 reg         busyADDSUB;
+reg         busyMUL;
 reg         busyRound;
+wire        busyDIV;
 wire [34:0] FAddSub_res;
 wire [34:0] FMUL_res;
 wire [34:0] FDIV_res;
@@ -41,28 +42,38 @@ wire  [4:0] round_flags;
 ADDSUB_FPs ADDSUBs(
          .clk       ( clk            ),
          .rst_n     ( rst_n          ),
-         .busy      ( busyADDSUB     ),
+         .busy_i    ( busyADDSUB     ),
          .rs1_i     ( rs1_i          ), 
          .rs2_i     ( rs2_i          ),
          .SUBflag_i ( ALUop_i[0]     ), 
          .c_o       ( FAddSub_res    )
          );
 
+MUL_FPs MULs(
+         .clk       ( clk            ),
+         .rst_n     ( rst_n          ),
+         .busy_i    ( busyMUL        ),
+         .rs1_i     ( rs1_i          ), 
+         .rs2_i     ( rs2_i          ),
+         .c_o       ( FMUL_res       )
+         );
+
 roundingFPs roundFP(
          .clk        ( clk           ),
          .rst_n      ( rst_n         ),
-         .busy       ( busyRound     ),
-         .preRound   ( preRound      ),
+         .busy_i     ( busyRound     ),
+         .preRound   ( preRound      ), // 1 sign + 1 OF exponent + 8 exponent + 23 mantissa + 2 rounding bits
          .frm_i      ( frm_i         ),
          .c_o        ( round_res     ),
          .fflags_o   ( round_flags   )
          );
 
 // For future implementation
-assign FMUL_res = 32'b0;
+//assign FMUL_res = 32'b0;
 assign FDIV_res = 32'b0;
 assign FMUL_fflags = 5'b0;
 assign FDIV_fflags = 5'b0;
+assign busyDIV = 1'b0; // Connect to the busy signal from the DIV module.
 
 
 // Input wires. RS2 not used on FSQRT operation (must be 0). RS3 only used when R4-type instr (0 otherwise).
@@ -126,7 +137,7 @@ always @(*) begin
 c_o = 32'b0;
 preRound = 35'b0;
 {NV, DZ, OF, UF, NX} = 5'b0;
-{busy_o, busyRound, busyADDSUB} = 3'b0;
+{busy_o, busyRound, busyADDSUB, busyMUL} = 4'b0;
 
 case(ALUop_i)
  `ALU_OP_FADD, `ALU_OP_FSUB:
@@ -139,7 +150,7 @@ case(ALUop_i)
   else begin
    preRound = FAddSub_res;
    c_o = round_res;
-   {NV, DZ, OF, UF, NX} = round_flags;
+   {NV, DZ, OF, UF, NX} = round_flags & {5{!local_busy}}; // To avoid signaling flags during operation.
    {busy_o, busyRound, busyADDSUB} = {3{local_busy}};
  end end
  
@@ -153,7 +164,8 @@ case(ALUop_i)
   else begin
    preRound = FMUL_res;
    c_o = round_res;
-   {NV, DZ, OF, UF, NX} = FMUL_fflags;
+   {NV, DZ, OF, UF, NX} = round_flags & {5{!local_busy}}; // To avoid signaling flags during operation.
+   {busy_o, busyRound, busyMUL} = {3{local_busy}};
  end end
  
  `ALU_OP_FDIV:
@@ -167,7 +179,7 @@ case(ALUop_i)
   end else begin
    preRound = FDIV_res;
    c_o = round_res;
-   {NV, DZ, OF, UF, NX} = FDIV_fflags;
+   {NV, DZ, OF, UF, NX} = FDIV_fflags & {5{!busyDIV}}; // To avoid signaling flags during operation.
  end end
  
  default: ; //default required by Quartus II 13.1
@@ -176,16 +188,19 @@ endcase
 end
 
 // Multi-cycle staller. Sets an initial counter value depending on the operation and decreases it every clock cycle.
-// To operate in single-cycle mode, do not set a "busy_o = local_busy" on the OP above. For 2 cycle OP, set it but put "counter =  0".
-// For higher cycle OP, set a initial counter value of X-2. For example, ADD/SUB OP takes 3 cc, then the counter is initial. with 1.
+// To operate in single-cycle mode, do not set a "busy_o = local_busy" on the OP above. For 2 cycle OP, set it but put "counter = 0".
+// For higher cycle OP, set aN initial counter value of X-2. For example, ADD/SUB OP takes 3 cc, then the counter is initialized with 1.
+reg   [3:0] counter; // Multi-cycle operation counter.
+
 always@(posedge clk or negedge rst_n)
       if(!rst_n)   counter = 0;
  else if(|counter) counter = counter - 2'b1;
  else if(start_i)  case(ALUop_i)
- `ALU_OP_FADD, `ALU_OP_FSUB: counter = 1; // Total = 3 cc (ALLIGN + ADD/SUB + ROUND).
+ `ALU_OP_FADD, `ALU_OP_FSUB: counter = 1; // Total = 3 cc (ALLIGN1/ADD/SUB + ALLIGN2 + ROUND).
+ `ALU_OP_FMUL:               counter = 1; // Total = 3 cc (MUL + ALLIGN3 + ROUND).
  default: counter = 0;
  endcase
 
-assign local_busy = (|counter) | start_i;
+assign local_busy = (|counter) | &{start_i, 1'b1}; // Change on place of '1', !(ALUop_i == `singleCycleOp) when the latency of the operation is a single clock cycle.
 
 endmodule

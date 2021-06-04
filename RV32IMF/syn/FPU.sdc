@@ -19,7 +19,7 @@
 ## PROGRAM "Quartus II"
 ## VERSION "Version 13.1.0 Build 162 10/23/2013 SJ Web Edition"
 
-## DATE    "Tue Jan 05 22:39:52 2021"
+## DATE    "Wed Jun 02 18:41:18 2021"
 
 ##
 ## DEVICE  "EP3C16F484C6"
@@ -63,14 +63,16 @@ create_clock -name {clk} -period 1.000 -waveform { 0.000 0.500 } [get_ports {clk
 # Set Input Delay
 #**************************************************************
 
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {ALUop_i[0]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {ALUop_i[1]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {ALUop_i[2]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {ALUop_i[3]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {ALUop_i[4]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {ALUop_i[5]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {clk}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {frm_i[0]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {frm_i[1]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {frm_i[2]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {funct5_i[0]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {funct5_i[1]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {funct5_i[2]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {funct5_i[3]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {funct5_i[4]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[0]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[1]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[2]}]
@@ -167,7 +169,7 @@ set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs3_i[2
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs3_i[29]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs3_i[30]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs3_i[31]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rstLow}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rst_n}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {start_i}]
 
 

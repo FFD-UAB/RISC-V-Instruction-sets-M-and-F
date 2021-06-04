@@ -19,7 +19,7 @@
 ## PROGRAM "Quartus II"
 ## VERSION "Version 13.1.0 Build 162 10/23/2013 SJ Web Edition"
 
-## DATE    "Tue Jan 05 22:51:13 2021"
+## DATE    "Wed Jun 02 17:47:31 2021"
 
 ##
 ## DEVICE  "EP3C16F484C6"
@@ -38,7 +38,7 @@ set_time_format -unit ns -decimal_places 3
 # Create Clock
 #**************************************************************
 
-create_clock -name {clk} -period 5.000 -waveform { 0.000 2.500 } 
+create_clock -name {clk} -period 1.000 -waveform { 0.000 0.500 } [get_ports {clk}]
 
 
 #**************************************************************
@@ -57,6 +57,10 @@ create_clock -name {clk} -period 5.000 -waveform { 0.000 2.500 }
 # Set Clock Uncertainty
 #**************************************************************
 
+set_clock_uncertainty -rise_from [get_clocks {clk}] -rise_to [get_clocks {clk}] -setup 0.000  
+set_clock_uncertainty -rise_from [get_clocks {clk}] -fall_to [get_clocks {clk}] -setup 0.000  
+set_clock_uncertainty -fall_from [get_clocks {clk}] -rise_to [get_clocks {clk}] -setup 0.000  
+set_clock_uncertainty -fall_from [get_clocks {clk}] -fall_to [get_clocks {clk}] -setup 0.000  
 
 
 #**************************************************************
@@ -64,9 +68,8 @@ create_clock -name {clk} -period 5.000 -waveform { 0.000 2.500 }
 #**************************************************************
 
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {SUBflag_i}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {frm_i[0]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {frm_i[1]}]
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {frm_i[2]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {busy_i}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {clk}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[0]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[1]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[2]}]
@@ -131,6 +134,7 @@ set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs2_i[2
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs2_i[29]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs2_i[30]}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs2_i[31]}]
+set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rst_n}]
 
 
 #**************************************************************
@@ -169,11 +173,9 @@ set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[28
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[29]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[30]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[31]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {fflags_o[0]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {fflags_o[1]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {fflags_o[2]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {fflags_o[3]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {fflags_o[4]}]
+set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[32]}]
+set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[33]}]
+set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {c_o[34]}]
 
 
 #**************************************************************

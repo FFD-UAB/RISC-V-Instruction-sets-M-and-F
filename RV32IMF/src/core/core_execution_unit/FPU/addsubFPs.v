@@ -1,22 +1,13 @@
 // Telecommunications Master Dissertation - Francis Fuentes 19-11-2020
 // Floating Point 32-bit single precision ADD/SUB operation module.
-// The FFLAGS that this module is able to update are NV, OF, UF and NX,
-// which occurs when an invalid FRM value is at the input, when the result 
-// is over infinity FP value or under 0 FP value (looking at the resulting 
-// exponent), and when the result is inaccurate, that may be because OF,
-// UF or rounding. The only time that a NaN is put at the output is when 
-// and NV flag is raised. Other special input cases (NaN, infinity) must be 
-// managed at the outside of this module (like when a NaN is at the input).
-// This is done because most of the logic is the same for many arithmetic 
-// instructions (F.ADD, F.SUB, F.MUL, F.DIV, etc).
 
 `include "../../../defines.vh"
 
-module ADDSUB_FPs(clk, rst_n, busy, rs1_i, rs2_i, SUBflag_i, c_o);
+module ADDSUB_FPs(clk, rst_n, busy_i, rs1_i, rs2_i, SUBflag_i, c_o);
 // Input operands and control signals;
 input wire         clk;
 input wire         rst_n;
-input wire         busy;
+input wire         busy_i;
 input wire  [31:0] rs1_i;
 input wire  [31:0] rs2_i;
 input wire         SUBflag_i; // Subtract signal operation.
@@ -31,7 +22,6 @@ output wire [34:0] c_o;
 // into account the hidden [1.] of the FP mantissa format and the rounding bits.
 
 wire [35:0] rs1_align, rs2_align;       // aligned operands
-reg  [35:0] rs1_alignReg, rs2_alignReg; // registered aligned operands
 wire        rs1_s, rs2_s; // 1 sign bit
 wire  [7:0] rs1_e, rs2_e; // 8 esponent bits
 wire [26:0] rs1_m, rs2_m; // 1 [1.], 23 mantissa + 3 rounding bits
@@ -43,20 +33,12 @@ alignFPs align(
      .b_aligned_o  ( rs2_align )
      );
 
-always@(posedge clk or negedge rst_n)
- if(!rst_n) rs1_alignReg = 36'h0;
- else rs1_alignReg = rs1_align;
-
-always@(posedge clk or negedge rst_n)
- if(!rst_n) rs2_alignReg = 36'h0;
- else if(busy) rs2_alignReg = rs2_align;
-
-assign rs1_s = rs1_alignReg[35];
-assign rs1_e = rs1_alignReg[34:27];
-assign rs1_m = rs1_alignReg[26:0];
-assign rs2_s = rs2_alignReg[35]^SUBflag_i; // FP doesn't use 2'C for negatives
-assign rs2_e = rs2_alignReg[34:27];
-assign rs2_m = rs2_alignReg[26:0];
+assign rs1_s = rs1_align[35];
+assign rs1_e = rs1_align[34:27];
+assign rs1_m = rs1_align[26:0];
+assign rs2_s = rs2_align[35]^SUBflag_i; // FP doesn't use 2'C for negatives
+assign rs2_e = rs2_align[34:27];
+assign rs2_m = rs2_align[26:0];
 
 
 // Step 2: Operation
@@ -85,6 +67,13 @@ assign res_m = (rs1_s == rs2_s) ? a_m + b_m  // Same sign -> add mantissas
 assign res_e = rs1_e; // rs1_e should be equal to rs2_e
 assign res_s = rs1mGErs2m ? rs1_s : rs2_s;
 
+  // Output of the step 2 registered to increase frequency of operation.
+reg  [36:0] rsO_Reg; // 1 sign + 8 exponent + 1 overflow mantissa + 1 [1.] + 23 mantissa + 3 rounding bits
+
+always@(posedge clk or negedge rst_n)
+ if(!rst_n) rsO_Reg = 37'h0;
+ else rsO_Reg = {res_s, res_e, res_m};
+
 
 // Step 3: Post-operation alignment
 // Both addition or subtraction operations may have moved the '1' MSB of the mantissa,
@@ -94,7 +83,7 @@ assign res_s = rs1mGErs2m ? rs1_s : rs2_s;
 
 wire [26:0] prePostalign_m; // 1 overflow mantissa + 1 [1.] + 23 mantissa + 2 rounding bits
 wire  [4:0] MSBOneBitPosition; // Highest '1' bit on the resulted mantissa.
-assign prePostalign_m = {res_m[27:2], |res_m[1:0]};
+assign prePostalign_m = {rsO_Reg[27:2], |rsO_Reg[1:0]};
 
 HighestLeftBit28u HLB28u({1'b0, prePostalign_m}, MSBOneBitPosition);
 
@@ -106,14 +95,14 @@ wire  [7:0] Lshifts;
 wire        zeroMantissa; // Flag of 0 mantissa.
 wire        notEnoughExponent; // FP value goes subnormal.
 
-assign Postalign_s = res_s;
-assign zeroMantissa = res_m == 28'b0;
+assign Postalign_s = rsO_Reg[36];
+assign zeroMantissa = rsO_Reg[27:0] == 28'b0;
 assign shifts = 8'd25 - MSBOneBitPosition;
-assign notEnoughExponent = shifts > res_e;
-assign Lshifts = notEnoughExponent ? res_e : shifts;
+assign notEnoughExponent = shifts > rsO_Reg[35:28];
+assign Lshifts = notEnoughExponent ? rsO_Reg[35:28] : shifts;
 assign Postalign_e = zeroMantissa ? 9'b0 : 
-                     prePostalign_m[26] ? res_e + 8'b1
-                                        : res_e - Lshifts + (res_e == 8'b0 & prePostalign_m[25]);
+                     prePostalign_m[26] ? rsO_Reg[35:28] + 8'b1
+                                        : rsO_Reg[35:28] - Lshifts + (rsO_Reg[35:28] == 8'b0 & prePostalign_m[25]);
 assign Postalign_m = prePostalign_m[26] ? {prePostalign_m[25:2], |prePostalign_m[1:0]}
                      : prePostalign_m[24:0] << ((Postalign_e == 9'b0 & Lshifts != 8'b0) ? Lshifts - 8'b1
                                                                                         : Lshifts);

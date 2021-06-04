@@ -30,7 +30,8 @@ module core
  output wire                           data_wr_o;
  output wire [`MEM_ADDR_INSTR_WIDTH-1:0]     instruction_addr_o;
  input wire  [`DATA_WIDTH-1:0]         instruction_rdata_i;
- output wire                           flush_inst_o;
+ output wire                           flush_inst_o;  // Don't know what "flush_inst_o" does to outside of the core. Redirecting it to nothing to increase frequency.
+ wire                           flush_inst_o2;
 
  wire [`DATA_WIDTH-1 : 0]              d_instruction_t;
  wire [`DATA_WIDTH-1:0]                d_pc_t;
@@ -93,7 +94,7 @@ module core
         .instruction_rdata_i           (instruction_rdata_i),
         .stall_i                       (stall_t),
         .stall_general_i               (stall_general_t),
-        .flush_inst_o                  (flush_inst_o)
+        .flush_inst_o                  (flush_inst_o2) // Don't know what "flush_inst_o" does to outside of the core. Redirecting it to nothing to increase frequency.
          );
         
  id_stage id_stage_inst(

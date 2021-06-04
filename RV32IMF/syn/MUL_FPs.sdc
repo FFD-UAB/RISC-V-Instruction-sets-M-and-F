@@ -19,7 +19,7 @@
 ## PROGRAM "Quartus II"
 ## VERSION "Version 13.1.0 Build 162 10/23/2013 SJ Web Edition"
 
-## DATE    "Wed Jun 02 17:47:31 2021"
+## DATE    "Wed Jun 02 19:01:00 2021"
 
 ##
 ## DEVICE  "EP3C16F484C6"
@@ -57,17 +57,12 @@ create_clock -name {clk} -period 1.000 -waveform { 0.000 0.500 } [get_ports {clk
 # Set Clock Uncertainty
 #**************************************************************
 
-set_clock_uncertainty -rise_from [get_clocks {clk}] -rise_to [get_clocks {clk}] -setup 0.000  
-set_clock_uncertainty -rise_from [get_clocks {clk}] -fall_to [get_clocks {clk}] -setup 0.000  
-set_clock_uncertainty -fall_from [get_clocks {clk}] -rise_to [get_clocks {clk}] -setup 0.000  
-set_clock_uncertainty -fall_from [get_clocks {clk}] -fall_to [get_clocks {clk}] -setup 0.000  
 
 
 #**************************************************************
 # Set Input Delay
 #**************************************************************
 
-set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {SUBflag_i}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {busy_i}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {clk}]
 set_input_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {rs1_i[0]}]

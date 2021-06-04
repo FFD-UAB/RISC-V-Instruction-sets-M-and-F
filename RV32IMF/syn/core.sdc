@@ -19,7 +19,7 @@
 ## PROGRAM "Quartus II"
 ## VERSION "Version 13.1.0 Build 162 10/23/2013 SJ Web Edition"
 
-## DATE    "Thu Jan 07 03:41:19 2021"
+## DATE    "Wed Jun 02 19:59:36 2021"
 
 ##
 ## DEVICE  "EP3C16F484C6"
@@ -38,7 +38,7 @@ set_time_format -unit ns -decimal_places 3
 # Create Clock
 #**************************************************************
 
-create_clock -name {clk} -period 5.000 -waveform { 0.000 2.500 } [get_ports {clk}]
+create_clock -name {clk} -period 1.000 -waveform { 0.000 0.500 } [get_ports {clk}]
 
 
 #**************************************************************
@@ -144,8 +144,6 @@ set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_a
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_addr_o[5]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_addr_o[6]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_addr_o[7]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_addr_o[8]}]
-set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_addr_o[9]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_be_o[0]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_be_o[1]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {data_be_o[2]}]
@@ -195,6 +193,8 @@ set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {instru
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {instruction_addr_o[7]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {instruction_addr_o[8]}]
 set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {instruction_addr_o[9]}]
+set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {instruction_addr_o[10]}]
+set_output_delay -add_delay  -clock [get_clocks {clk}]  0.000 [get_ports {instruction_addr_o[11]}]
 
 
 #**************************************************************
