@@ -1,20 +1,22 @@
 # RISC-V Standard Expansion of Instruction sets M and F
 
-This open source project is part of Francis Fuentes' Master in Telecommunication Engineering dissertation (2020/21), Escola d'Enginyeria, UAB, Spain.
+This open source project is part of the finished Francis Fuentes' Master in Telecommunication Engineering dissertation (2020/21), Escola d'Enginyeria, UAB, Spain.
 
 The objective of this project is to carry out the required modifications to a 5-stages RISC-V 32-bit core, develope and implement the modules capables of expanding the core with the instruction sets M and F of the ISA standard (RV32M and RV32F).
+However, only partial support for the set F has been developed. All hardware design is performed using Verilog HDL and some System Verilog when necessary.
 
-Authors of previous project used as starting point of this project are:
- - Pau Casacoverta Orta for implementing a base core RV32I compliant with the base instruction set fixed by the ISA standard (https://github.com/4a1c0/RV32i-Verilog).
- - Raimon Casanova Mohr for tutoring and adding pipeline structure to the core, facilitating the addition of expansions and increasing the data througput.
- - The open source PULPino's HW infraestructure authors (https://github.com/pulp-platform/pulpino), as this project uses their platform (excluding their core) at the synthesis phase on FPGA board to use the various I/O interfaces like SPI, UART, GPIO, between others.
+To see an overview of the project, check the "FFD_TFM_Slides3.pptx" presentation and read the commentaries. However, for a deeper detail and technical look of the work done, check the "FFD_TFM_TesisPapel.pdf." If more information is required, check the "Resource usage and RTL mapping" folder that contains just that, direct access to the synthesis data of the developed designs.
 
-All hardware design is performed using Verilog HDL and some System Verilog when necessary. The project folders are distributed by type of sub-project used in the prototyping a variety of designs that shapes different parts of the project:
- - "Core" includes the files of the last update on the whole RISC-V core. There's a option without the use of multifunction IP libraries, but lacks a MUL module capable of using the embedded DSP multipliers.
- - "MULDIV" includes the files of the modules capable of implementing the instruction set M. There's the MULDIV_noIP, MULDIV and MULDIV2 designs, which don't uses an multifunction IP library, the LPM_MULT IP and ALTMULT_ADD IP in that order. There's two options of MUL IPs because the LPM only performs unsigned operations, which requires pre and post-module logic, making the MULDIV design have a lower maximum operating frequency compared to the MULDIV2 design.
+The project folders are distributed by type of sub-project used in the prototyping of a variety of designs that shapes different parts of the project. Note that the most recent designs are at the cores RV32I, RV32IM and RV32IMF, leaving the other folders for legacy and particular test environment.
+
+ - The "RV32I," "RV32IM" and "RV32IMF" includes the files of the last update on the whole RISC-V cores. The RV32IM and RV32IMF have configuration files to select which divider and multiplier model to use at the implementation of the set M assets. Note that the "no_IP" option for multiplier does still use the multiplier by default of the synthesis tool.
+
+ - "DE0_FPGA_old" is the project used to port the core (just delete the "core" folder there is and copy whichever you want to port from the other folders) onto the DE0 development board. It is named "old," because it has been barely changed from the prior project.
+
+ - "MULDIV" includes the files of the modules capable of implementing the instruction set M. There's the MULDIV_noIP, MULDIV and MULDIV2 designs, which uses the default multiplier IP, the LPM_MULT IP and ALTMULT_ADD IP in respectively. There's two options of MUL IPs because the LPM only performs unsigned operations, which requires pre and post-module logic, making the MULDIV design have a lower maximum operating frequency compared to the MULDIV2 design.
    Mention that in order to simulate designs that uses multifunction IPs, it's required to have installed Quartus or at least the libraries necessaries to compile the branched (or wrapped) modules. For this, there's a path to change at the ".comp_sv" file at the "sim" folder. Also, there's a command required to write in order to load the main libraries and execute a simulation, that is commented in the same ".comp_sv" file.
 
-    There's multiple implementation options for the DIV module, but all follow a restoring divisor design:
+    There's multiple implementation options for the DIV module, but all are based on the restoring divisor design with different degrees of optimizations:
     - tDIVrest32u - Theoretical restoring divisor without any upgrade. 34 clock cycles every division, no matter what are the input operands.
     - bDIVrest32u - Basic restoring divisor. Checks if dividend "a" is lower than divisor "b", which skips the division operation (does it in one clock cycle). All the following designs have this ability.
     - qsDIVrest32u - Quick start restoring divisor. Pushes the dividend to the left-most position in the quotient register at the start, which skips "n" number of left zeros the dividend has in clock cycles. Great when the dividend has a low value (for example, if a 4-bit dividend is 0010, this model saves 2 clock cycles).
@@ -26,23 +28,31 @@ All hardware design is performed using Verilog HDL and some System Verilog when 
 
     All divisor models presented have a clock latency maximum of 34 clock cycles, but the dDIV, deqsDIV and dseDIV, which have 18 clock cycles. 
 
- - "FPunit" will include the files of the Floating-point unit capable of implementing the expansion insctruction set F.
+ - "FPU" includes the files of the Floating-Point Unit capable of implementing the single-precision addition and subtraction operations from the set F. It should be expanded in the future with the additional modules to support FMUL, FDIV, FSQR, etc.
+
+ - "RV32I_noPipeline" includes the files of the RV32I core without stage registration, obtaining what would be the core without the pipeline topology. This core has NOT been validated, since only the synthesis data of frequency and resources were required from him as an approximation to compre with the RV32I with pipeline.
 
  - "Resource usage and RTL mapping" includes all resource usage estimations performed by Quartus II 13.1 when targeting the DE0 FPGA platform, and also RTL maps by Quartus 15.1 of each design but the core.
 
+ - "C programing to RISC-V tutorial" includes the method used to compile a C program to RISC-V machine language, able to copy into the instruction memory of the core region to execute such program in our cores. It may be used in the future to perform torture tests.
 
 The other folders contain a variety of prototype modules used in other modules or discarded because they don't work, but enough time has been put into them and might be revisited in the future. For example, the newton division model follows the Newton-Raphson divisor design, but by time constrains and the complexity it carries, it has been put on hold at the moment and might get totally abandoned.
 
 The files distribution in each folder may contain:
  - src: Source Verilog files of the synthesizable HW models.
  - tb: Testbench Verilog files used to simulate the HW models.
+ - data: Folder containing the programs and data operands used to load the instruction and data memories of the core.
  - sim: All output simulation files end here, including scripts used for developing and testing. For example, on the "Core/sim" folder there's the "sv_files" which contains the dynamic directory of all the files of that project. Just execute "do .comp_sv" while in that directory to compile all the project files (you might have to flush the "work" folder and re-create it before the compilation). The file "wave.do" in the same directory is used to add many wave signals during the "load_store_test" simulation to debug that particular execution. Other scripts might be added, so check the .txt in the same directory in the future when it'll have many more scripts.
  - lib: Contains the branched multifunction IP modules. 
  - syn: Files used at the synthesis tool, like .sdc (TimeQuest Analizer) or .qsf (pin assignment for the DE0 board).
+
+Authors of previous project used as starting point of this project are:
+ - Pau Casacoverta Orta for implementing a base core RV32I compliant with the base instruction set fixed by the ISA standard (https://github.com/4a1c0/RV32i-Verilog).
+ - Raimon Casanova Mohr for tutoring and adding pipeline structure to the core, facilitating the addition of expansions and increasing the data througput.
+ - The open source PULPino's HW infraestructure authors (https://github.com/pulp-platform/pulpino), as this project uses their platform (excluding their core) at the synthesis phase on FPGA chip to use the various I/O interfaces like SPI, UART, GPIO, between others in the future.
  
-TODO:
-- Adequate the core for the instruction set F expansion.
-- Write the testbenchs of the instruction set F for the whole core, including the autoformat instruction.
-- Debug the instruction set F on the core.
-- Synthesize and reconfigure the modifications performed on the core to make it be low on resource usage and low latency as much as possible.
-- Synthesize the core in a FPGA platform to perform real frequency clock testing.
+Future work:
+- Complete the support for subset F operations and execute a validation process.
+- Do torture tests on the cores for further validation.
+- Create an AXI bus to allow access from external sources of the DE0 board, enabling the possibility of re-programing the instruction memory without re-synthesis of the whole project. It also would allow to use the onboard FLASH and DRAM chips to expand both instruction and data memories over the 32 and 16KB that are now with the M9K FPGA embedded blocks.
+- Add a debug ring to allow monitorization of the internal execution of the core.
