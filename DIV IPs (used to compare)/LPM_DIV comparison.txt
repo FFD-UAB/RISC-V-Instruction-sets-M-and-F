@@ -1,0 +1,68 @@
+Performance data from a variety of LPM_DIVIDE wrapped modules generated 
+from the IP core library available for Quartus 13.1 with Cyclone III.
+(All frequency numbers are in MHz and the resource are in Logic Elements)
+The number of the module is the latency it takes to execute the division 
+operation, and then there's for what it has been optimized:
+
+________________|_8area_|_8speed_|_18area_|_18speed_|_32area_|_32speed_|
+Max. Freq. 85ºC |  55.1 |   52.3 |  100.0 |   100.0 |  154.8 |   154.8 |
+Max. Freq. 0ºC  |  61.9 |   58.7 |  111.9 |   111.9 |  163.0 |   163.0 |
+Resource alloc. | 1,417 |  1,417 |  1,807 | 1,807   |  2,784 |   2,784 |
+
+Due to the difference between area and speed optimizations is barely 
+noticeable, these modules will be referenced as LPM_DIVx, being x the 
+latency of the module independent from the type of optimization.
+
+
+Now, in comparison with the ones we have developed:
+
+________________|___T___|___B___|___QS__|__EQS__|__SE__|___D___|__DEQS_|__DSE_|
+Max. Freq. 85ºC | 168.6 | 106.8 | 102.5 |  92.5 | 49.8 | 106.2 |  97.1 | 46.7 |
+Max. Freq. 0ºC  | 181.7 | 115.3 | 110.8 | 103.1 | 55.5 | 114.6 | 107.8 | 52.0 |
+Resource alloc. | 106   | 202   | 356   | 490   | 797  | 308   |  624  | 978  |
+
+In terms of frequency, the T model is comparable with the LPM_DIV32, the 
+B/QS/EQS/D/DEQS with the LPM_DIV18, and both SE/DSE with the LPM_DIV8.
+
+In terms of resources, it seems that the LPM_DIVIDE IP uses a full pipeline 
+topology, which could be used as a pipeline. However, this trait is not 
+required for our application. So our division models require far less resources 
+than its LPM module equivalent by re-using the same logic in a loop, which in 
+turns doesn't allow to use them as a pipeline contrary to the LPM's.
+
+However, in latency it's a completely different story. To start, all our dividers 
+without D (for Double) in their name take a maximum latency of 34 clock cycles, 
+18 clock cycles for the Double variants.
+With this in mind, the LPM_DIV32 is comparable in latency to with the T/B models, 
+and the LPM_DIV18 with the D model. All the other dividers we have designed 
+(QS, EQS, SE, DEQS, DSE) have a variable latency that depends on the inputs.
+
+That's why take as reference this table of the average latency (in clock cycles) 
+from the benchmark we have done. For specific info about this, check a look 
+(pun) the section 2.2.4 from the thesis document.
+
+________|__T_|___B__|_QS_|__EQS_|__SE__|___D__|_DEQS_|_DSE_|
+Latency | 34 | 32.9 | 32 | 18.3 | 12.9 | 17.4 | 10.4 | 8.5 |
+
+So in terms of latency, QS/EQS/SE/D/DEQS/DSE do better than the LPM_DIV32, 
+EQS/SE/D/DEQS/DSE fall around between LPM_DIV32 and LPM_DIV8. However, take 
+into account that these latencies are averages.
+
+
+With all the information on hand, our designs for the divider provide a solution 
+with lower resource usage for all cases. The latency of the operation is dynamic 
+however, with a maximum frequencies of operation comparable to the equivalent 
+LPM_DIVIDE module on terms of latency.
+
+I (the designer) understand that this "dynamic" latency may don't have the same 
+hook than the usual fixed latency modules. But where if not at a Master thesis 
+is the moment to create crazy thinks like these. 
+With all of this done and the results on hand, I think that the best solution 
+may be to implement a divider like the D model that implement a fixed latency 
+of 18 clock cycles, and work to make a Quad, Octo model providing a latency of 
+10 and 6 clock cycles.
+This was previously left aside to implement the dynamic optimizations 
+just for the reason of that an implementation of Q and O models would have a 
+frequency of operation really low. However, maybe with the implementation of 
+Carry-LookAhead (CLA) adders instead of the ladder adders used, the frequency 
+loss could be minimized at cost of a higher number of resources.
