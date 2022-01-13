@@ -224,16 +224,13 @@ module control_unit
         case(opcode)
             OPCODE_U_LUI: begin  // Set and sign extend the 20-bit immediate (shited 12 bits left) and zero the bottom 12 bits into rd
                            data_origin_o = `RS2IMM_RS1;  // Send the immediate value and mantain RS1 the value, in dis case 0
-                           data_target_o = 2'b11;
                            imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
                            regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};  // Write the resut in RD
                            ALU_op = `ALU_OP_ADD;  // Sum with 0
                           end
             OPCODE_U_AUIPC: begin  // Place the PC plus the 20-bit signed immediate (shited 12 bits left) into rd (used before JALR)
-                             data_origin_o = `RS2IMM_RS1PC;  // Send the immediate value and PC at the execution unit
-                             data_target_o = 2'b11;
                              imm_val_o = { imm20[19:0], {`DATA_WIDTH - 20 {1'b0}} };
-                             //jump = 1'b1;   // AUIPC does not jump, but is usually used to compute dynamic address jump.
+                             data_target_o = 2'b11;
                              regfile_wr = regfile_waddr != {`REG_ADDR_WIDTH {1'b0}};  // Write the resut in RD
                              ALU_op = `ALU_OP_ADD;  // Add the values
                             end

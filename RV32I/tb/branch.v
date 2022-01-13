@@ -35,9 +35,9 @@ tb TB();
   TB.rst_n = 1'b0;
   #100
 	
-/*TB.test_auipc;
+  TB.test_auipc;
   TB.rst_n = 1'b0;
-  #100*/
+  #100
 
   $stop();
 end

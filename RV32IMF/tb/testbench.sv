@@ -176,8 +176,8 @@ task test_auipc;
   begin
     rstinstrMem();
     encodeAuipc(5'h2, 20'h0000F);
-    //encodeAuipc(5'h3, 20'hAAAAA);
-    //encodeAuipc(5'h4, 20'h55555);
+    encodeAuipc(5'h3, 20'hAAAAA);
+    encodeAuipc(5'h4, 20'h55555);
     rst_n = 1'b1;
     waitNclockCycles(16);
   end

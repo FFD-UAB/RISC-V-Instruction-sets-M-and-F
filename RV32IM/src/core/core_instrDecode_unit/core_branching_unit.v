@@ -30,7 +30,7 @@ module 	br
   
  assign base_pc  = jalr_i ? regfile_rs1_i : pc_i;
  assign brj_pc   = base_pc + imm_val_i; 
- assign brj_pc_o = {brj_pc[`DATA_WIDTH-2:2], 2'b0};// don't understand why of this -> (jalr_i ? 1'b0 : brj_pc[0])};
+ assign brj_pc_o = {brj_pc[`DATA_WIDTH-1:2], 2'b0};// don't understand why of this -> (jalr_i ? 1'b0 : brj_pc[0])};
  
  //-----------------Branching logic----------------------------//
  assign signedRs1SmallerThanRs2 = ($signed(regfile_rs1_i) < $signed(regfile_rs2_i));

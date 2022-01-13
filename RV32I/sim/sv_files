@@ -29,33 +29,33 @@
 /////////////////////////////////////////////
 // Instruction expansion set RV32M modules //
 /////////////////////////////////////////////
-// MULDIV module
-../src/core/core_execution_unit/core_execution_unit_alu_m.v  // MULDIV, uses LPM_MULT or no IP MUL
-../src/core/core_execution_unit/core_execution_unit_alu_m2.v // MULDIV2, uses ALTMULT_ADD
-
-// No IP MUL (IP MUL are called at .comp_sv file)
-../src/core/core_execution_unit/MULDIV/MULgold.v             // No IP MUL, requires MULDIV
-
-// DIV modules
-../src/core/core_execution_unit/MULDIV/tDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/bDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/qsDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/seDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/dDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/deqsDIVrest32u.v
-../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
-
-// Addons used by some DIV modules
-../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v
-../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
-../src/core/core_execution_unit/MULDIV/Normal32u.v
+//// MULDIV module
+//../src/core/core_execution_unit/core_execution_unit_alu_m.v  // MULDIV, uses LPM_MULT or no IP MUL
+//../src/core/core_execution_unit/core_execution_unit_alu_m2.v // MULDIV2, uses ALTMULT_ADD
+//
+//// No IP MUL (IP MUL are called at .comp_sv file)
+//../src/core/core_execution_unit/MULDIV/MULgold.v             // No IP MUL, requires MULDIV
+//
+//// DIV modules
+//../src/core/core_execution_unit/MULDIV/tDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/bDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/qsDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/eqsDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/seDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/dDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/deqsDIVrest32u.v
+//../src/core/core_execution_unit/MULDIV/dseDIVrest32u.v
+//
+//// Addons used by some DIV modules
+//../src/core/core_execution_unit/MULDIV/Signed2Unsigned.v
+//../src/core/core_execution_unit/MULDIV/HighestLeftBit32u.v
+//../src/core/core_execution_unit/MULDIV/Normal32u.v
 
 ///////////
 // Tests //
 ///////////
 ../tb/load_store.v
-../tb/arithmeticologicM.v
+//../tb/arithmeticologicM.v
 ../tb/arithmeticologic.v
 ../tb/branch.v
 ../tb/mem_test.v

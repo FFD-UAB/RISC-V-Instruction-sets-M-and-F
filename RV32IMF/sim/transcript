@@ -1,229 +1,316 @@
-#  
-source .comp_sv
-# QuestaSim vlog 10.0b Compiler 2011.05 May  5 2011
-# -- Compiling interface AXI_BUS
+# //  Questa Sim-64
+# //  Version 2019.4 linux_x86_64 Oct 15 2019
+# //
+# //  Copyright 1991-2019 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+do .comp_sv
+# E:/Programas/Quartus/altera_lite/13.1/quartus
+# QuestaSim-64 vmap 2019.4 Lib Mapping Utility 2019.10 Oct 15 2019
+# vmap work work 
+# Modifying modelsim.ini
+# ** Note: (vlog-1901) OptionFile "E:/Uni/TFM/VerilogCode/RV32IMF/sim/vlog.opt" not found. Ignored.
+# QuestaSim-64 vlog 2019.4 Compiler 2019.10 Oct 15 2019
+# Start time: 14:55:12 on Jan 13,2022
+# vlog -reportprogress 300 -sv -f sv_files 
 # -- Compiling module ram_mux
 # -- Compiling module instr_ram_wrap
 # -- Compiling module boot_code
 # -- Compiling module boot_rom_wrap
-# -- Compiling module sp_ram_wrap
-# -- Compiling module sp_ram
-# -- Compiling module br
+# -- Compiling module sp_ram_wrap_data
+# -- Compiling module sp_ram_wrap_instr
+# -- Compiling module sp_ram_data
+# -- Compiling module sp_ram_instr
 # -- Compiling module alu
 # -- Compiling module control_unit
+# -- Compiling module br
+# -- Compiling module reg_file
 # -- Compiling module id_stage
 # -- Compiling module if_stage
 # -- Compiling module exe_stage
 # -- Compiling module core_mem_stage
 # -- Compiling module core_wb_stage
-# -- Compiling module reg_file
 # -- Compiling module crs_unit
 # -- Compiling module counter
 # -- Compiling module timer
-# -- Compiling module dataMem
-# -- Compiling module progMem
-# -- Compiling module tb
-# -- Compiling module load_store_test
 # -- Compiling module core
-# -- Compiling module top
+# -- Compiling module top_CoreMem
+# -- Compiling module tb
+# -- Compiling module MULDIV
+# -- Compiling module MULDIV2
+# -- Compiling module MULgold
+# -- Compiling module tDIVrest32u
+# -- Compiling module bDIVrest32u
+# -- Compiling module qsDIVrest32u
+# -- Compiling module eqsDIVrest32u
+# -- Compiling module seDIVrest32u
+# -- Compiling module dDIVrest32u
+# -- Compiling module deqsDIVrest32u
+# -- Compiling module dseDIVrest32u
+# -- Compiling module Signed2Unsigned
+# -- Compiling module HighestLeftBit32u
+# -- Compiling module Normalize32u
+# -- Compiling module reg_file_f
+# -- Compiling module FPU_S
+# -- Compiling module ADDSUB_FPs
+# -- Compiling module MUL_FPs
+# -- Compiling module alignFPs
+# -- Compiling module HighestLeftBit28u
+# -- Compiling module HighestLeftBit48u
+# -- Compiling module roundingFPs
+# -- Compiling module tb_load_store
+# -- Compiling module tb_arithmeticologic_m
+# -- Compiling module tb_arithmeticologic
+# -- Compiling module tb_branch
+# -- Compiling module tb_instrMem
+# -- Compiling module tb_FP
+# -- Compiling module tb_fcsr
 # 
 # Top level modules:
-# 	dataMem
-# 	load_store_test
-vsim -novopt work.load_store_test
-# vsim -novopt work.load_store_test 
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.load_store_test
+# 	MULDIV2
+# 	tDIVrest32u
+# 	bDIVrest32u
+# 	qsDIVrest32u
+# 	eqsDIVrest32u
+# 	seDIVrest32u
+# 	deqsDIVrest32u
+# 	dseDIVrest32u
+# 	tb_load_store
+# 	tb_arithmeticologic_m
+# 	tb_arithmeticologic
+# 	tb_branch
+# 	tb_instrMem
+# 	tb_FP
+# 	tb_fcsr
+# End time: 14:55:12 on Jan 13,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vsim -voptargs=+acc work.tb_branch
+# vsim -voptargs="+acc" work.tb_branch 
+# Start time: 14:55:43 on Jan 13,2022
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: ../tb/testbench.sv(15): (vopt-2685) [TFMPC] - Too few port connections for 'top_CoreMem_inst'.  Expected 31, found 4.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_data_we'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_data_wdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_data_addr'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_instr_rdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_instr_addr'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_rdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_rvalid'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_gnt'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_wdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_be'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_we'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_addr'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'core_axi_req'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_rdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_rvalid'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_gnt'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_wdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_be'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_we'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_data_addr'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_rdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_rvalid'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_gnt'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_wdata'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_be'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_we'.
+# ** Warning: ../tb/testbench.sv(15): (vopt-2718) [TFMPC] - Missing connection for port 'axi_instr_addr'.
+# ** Note: (vopt-143) Recognized 1 FSM in module "core_mem_stage(fast)".
 # Loading sv_std.std
-# Loading work.load_store_test
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.tb
-# Loading work.tb
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.top
-# Loading work.top
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.core
-# Loading work.core
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.if_stage
-# Loading work.if_stage
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.id_stage
-# Loading work.id_stage
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.control_unit
-# Loading work.control_unit
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.reg_file
-# Loading work.reg_file
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.crs_unit
-# Loading work.crs_unit
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.timer
-# Loading work.timer
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.counter
-# Loading work.counter
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.br
-# Loading work.br
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.exe_stage
-# Loading work.exe_stage
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.alu
-# Loading work.alu
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.core_mem_stage
-# Loading work.core_mem_stage
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.core_wb_stage
-# Loading work.core_wb_stage
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.progMem
-# Loading work.progMem
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.instr_ram_wrap
-# Loading work.instr_ram_wrap
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.sp_ram_wrap
-# Loading work.sp_ram_wrap
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.sp_ram
-# Loading work.sp_ram
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.boot_rom_wrap
-# Loading work.boot_rom_wrap
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.boot_code
-# Loading work.boot_code
-# Refreshing C:\Users\raimo\Documents\RISCV\TFG-Pau\RV32i-Verilog-master - pipeline - pulipno\sim\work.ram_mux
-# Loading work.ram_mux
-# ** Warning: (vsim-3015) ../src/top.v(104): [PCDPC] - Port size (10 or 10) does not match connection size (32) for port 'data_addr_o'. The port definition is at: ../src/core/core.v(8).
-#         Region: /load_store_test/TB/top_inst/core_inst
-# ** Warning: (vsim-3015) ../src/top.v(104): [PCDPC] - Port size (10 or 10) does not match connection size (32) for port 'instruction_addr_o'. The port definition is at: ../src/core/core.v(15).
-#         Region: /load_store_test/TB/top_inst/core_inst
-# ** Warning: (vsim-3015) ../src/top.v(281): [PCDPC] - Port size (15 or 15) does not match connection size (32) for port 'port1_addr_i'. The port definition is at: ../src/pulp/ram_mux.sv(35).
-#         Region: /load_store_test/TB/top_inst/data_ram_mux_i
-add wave  \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/rst_n \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/clk \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_we_i \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_raddr_rs1_i \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_raddr_rs2_i \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_waddr_i \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_data_i \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_rs1_o \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regfile_rs2_o \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/reg_file_inst/regFile
-add wave  \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/ADDR_WIDTH \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/DATA_WIDTH \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/NUM_WORDS \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/words \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/clk \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/en_i \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/addr_i \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/wdata_i \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/rdata_o \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/we_i \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/be_i \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/mem \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/wdata \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/addr \
-sim:/load_store_test/TB/top_inst/data_mem/sp_ram_i/i
+# Loading work.tb_branch(fast)
+# Loading work.tb(fast)
+# Loading work.top_CoreMem(fast)
+# Loading work.core(fast)
+# Loading work.if_stage(fast)
+# Loading work.id_stage(fast)
+# Loading work.control_unit(fast)
+# Loading work.reg_file(fast)
+# Loading work.reg_file_f(fast)
+# Loading work.crs_unit(fast)
+# Loading work.timer(fast)
+# Loading work.counter(fast)
+# Loading work.br(fast)
+# Loading work.exe_stage(fast)
+# Loading work.alu(fast)
+# Loading work.MULDIV(fast)
+# Loading work.dDIVrest32u(fast)
+# Loading work.MULgold(fast)
+# Loading work.Signed2Unsigned(fast)
+# Loading work.FPU_S(fast)
+# Loading work.ADDSUB_FPs(fast)
+# Loading work.alignFPs(fast)
+# Loading work.HighestLeftBit28u(fast)
+# Loading work.MUL_FPs(fast)
+# Loading work.HighestLeftBit48u(fast)
+# Loading work.roundingFPs(fast)
+# Loading work.core_mem_stage(fast)
+# Loading work.core_wb_stage(fast)
+# Loading work.instr_ram_wrap(fast)
+# Loading work.sp_ram_wrap_instr(fast)
+# Loading work.sp_ram_instr(fast)
+# Loading work.boot_rom_wrap(fast)
+# Loading work.boot_code(fast)
+# Loading work.ram_mux(fast)
+# Loading work.sp_ram_wrap_data(fast)
+# Loading work.sp_ram_data(fast)
+# Loading work.ram_mux(fast__1)
+do branch.do
+# ** Error: (vish-4014) No objects found matching '/tb_branch/TB/top_CoreMem_inst/instr_mem/sp_ram_wrap_instr_i/sp_ram_instr_i/mem'.
+# Executing ONERROR command at macro ./branch.do line 12
 run -all
-# LOAD Test
-# mem[         0] = 00000000010000000000000110000011
-# mem[         4] = 00000000000000000000000000000000
-# mem[         8] = 00000000000000000000000000000000
-# mem[        12] = 00000000000000000000000000000000
-# mem[        16] = 00000000000000000000000000000000
-#     OK: reg5 is : f04a1c0f
-# STORE Test
-# mem[         0] = 00000000000000000010000010000011
-# mem[         4] = 00000000010000000100001110000011
-# mem[         8] = 00000000000000000000000000000000
-# mem[        12] = 00000000000000000000000000000000
-# mem[        16] = 00000000000000000000000000000000
-# mem[        20] = 00000000000000000000000000000000
-# mem[        24] = 00000000000000000000000000000000
-# mem[        28] = 00000000000000000000000000000000
-# mem[        32] = 00000000000000000000000000000000
-# mem[        36] = 00000000000000000000000000000000
-# mem[        40] = 00000000000000000000000000000000
-#     OK: reg5 is : 10101010
-#     OK: reg6 is : 00001c0f
-#     OK: reg7 is : 00000011
-# STORE Test
-# mem[         0] = 00000000000000000010100000000011
-# mem[         4] = 00000000000100000010100000100011
-# mem[         8] = 00000001000000000010001010000011
-# ** Note: $finish    : ../tb/load_store.v(40)
-#    Time: 4751 ns  Iteration: 0  Instance: /load_store_test
-# 1
-# Break in Module load_store_test at ../tb/load_store.v line 40
-add wave  \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/rst_n \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/clk \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/brj_i \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/brj_pc_i \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/instruction_rdata_i \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/instruction_addr_o \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/d_instruction_o \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/d_pc_o \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/d_pc4_o \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/stall_i \
-sim:/load_store_test/TB/top_inst/core_inst/if_stage_inst/flush_inst_o
-add wave  \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/e_imm_val_o \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/e_regfile_raddr_rs1_o \
-sim:/load_store_test/TB/top_inst/core_inst/id_stage_inst/e_regfile_raddr_rs2_o
-add wave  \
-sim:/load_store_test/TB/top_inst/core_inst/exe_stage_inst/e_regfile_rs1_i \
-sim:/load_store_test/TB/top_inst/core_inst/exe_stage_inst/e_regfile_rs2_i \
-sim:/load_store_test/TB/top_inst/core_inst/exe_stage_inst/e_imm_val_i \
-sim:/load_store_test/TB/top_inst/core_inst/exe_stage_inst/m_regfile_rd_o \
-sim:/load_store_test/TB/top_inst/core_inst/exe_stage_inst/m_data_addr_o
+# JAL Test
+# OK: PC is:    0 
+# 
+# JALR Test
+# OK: PC is:    0 
+# 
+# BEQ Test
+# OK: PC is:  252 
+# 
+# ** Note: $stop    : ../tb/branch.v(42)
+#    Time: 4951 ns  Iteration: 0  Instance: /tb_branch
+# Break in Module tb_branch at ../tb/branch.v line 42
+do .comp_sv
+# E:/Programas/Quartus/altera_lite/13.1/quartus
+# ** Warning: (vlib-34) Library already exists at "work".
+# QuestaSim-64 vmap 2019.4 Lib Mapping Utility 2019.10 Oct 15 2019
+# vmap work work 
+# Modifying modelsim.ini
+# ** Note: (vlog-1901) OptionFile "E:/Uni/TFM/VerilogCode/RV32IMF/sim/vlog.opt" not found. Ignored.
+# QuestaSim-64 vlog 2019.4 Compiler 2019.10 Oct 15 2019
+# Start time: 14:57:15 on Jan 13,2022
+# vlog -reportprogress 300 -sv -f sv_files 
+# -- Compiling module ram_mux
+# -- Compiling module instr_ram_wrap
+# -- Compiling module boot_code
+# -- Compiling module boot_rom_wrap
+# -- Compiling module sp_ram_wrap_data
+# -- Compiling module sp_ram_wrap_instr
+# -- Compiling module sp_ram_data
+# -- Compiling module sp_ram_instr
+# -- Compiling module alu
+# -- Compiling module control_unit
+# -- Compiling module br
+# -- Compiling module reg_file
+# -- Compiling module id_stage
+# -- Compiling module if_stage
+# -- Compiling module exe_stage
+# -- Compiling module core_mem_stage
+# -- Compiling module core_wb_stage
+# -- Compiling module crs_unit
+# -- Compiling module counter
+# -- Compiling module timer
+# -- Compiling module core
+# -- Compiling module top_CoreMem
+# -- Compiling module tb
+# -- Compiling module MULDIV
+# -- Compiling module MULDIV2
+# -- Compiling module MULgold
+# -- Compiling module tDIVrest32u
+# -- Compiling module bDIVrest32u
+# -- Compiling module qsDIVrest32u
+# -- Compiling module eqsDIVrest32u
+# -- Compiling module seDIVrest32u
+# -- Compiling module dDIVrest32u
+# -- Compiling module deqsDIVrest32u
+# -- Compiling module dseDIVrest32u
+# -- Compiling module Signed2Unsigned
+# -- Compiling module HighestLeftBit32u
+# -- Compiling module Normalize32u
+# -- Compiling module reg_file_f
+# -- Compiling module FPU_S
+# -- Compiling module ADDSUB_FPs
+# -- Compiling module MUL_FPs
+# -- Compiling module alignFPs
+# -- Compiling module HighestLeftBit28u
+# -- Compiling module HighestLeftBit48u
+# -- Compiling module roundingFPs
+# -- Compiling module tb_load_store
+# -- Compiling module tb_arithmeticologic_m
+# -- Compiling module tb_arithmeticologic
+# -- Compiling module tb_branch
+# -- Compiling module tb_instrMem
+# -- Compiling module tb_FP
+# -- Compiling module tb_fcsr
+# 
+# Top level modules:
+# 	MULDIV2
+# 	tDIVrest32u
+# 	bDIVrest32u
+# 	qsDIVrest32u
+# 	eqsDIVrest32u
+# 	seDIVrest32u
+# 	deqsDIVrest32u
+# 	dseDIVrest32u
+# 	tb_load_store
+# 	tb_arithmeticologic_m
+# 	tb_arithmeticologic
+# 	tb_branch
+# 	tb_instrMem
+# 	tb_FP
+# 	tb_fcsr
+# End time: 14:57:15 on Jan 13,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
 restart
+# ** Note: (vsim-12125) Error and warning message counts have been reset to '0' because of 'restart'.
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
 # Loading sv_std.std
-# Loading work.load_store_test
-# Loading work.tb
-# Loading work.top
-# Loading work.core
-# Loading work.if_stage
-# Loading work.id_stage
-# Loading work.control_unit
-# Loading work.reg_file
-# Loading work.crs_unit
-# Loading work.timer
-# Loading work.counter
-# Loading work.br
-# Loading work.exe_stage
-# Loading work.alu
-# Loading work.core_mem_stage
-# Loading work.core_wb_stage
-# Loading work.progMem
-# Loading work.instr_ram_wrap
-# Loading work.sp_ram_wrap
-# Loading work.sp_ram
-# Loading work.boot_rom_wrap
-# Loading work.boot_code
-# Loading work.ram_mux
-# ** Warning: (vsim-3015) ../src/top.v(104): [PCDPC] - Port size (10 or 10) does not match connection size (32) for port 'data_addr_o'. The port definition is at: ../src/core/core.v(8).
-#         Region: /load_store_test/TB/top_inst/core_inst
-# ** Warning: (vsim-3015) ../src/top.v(104): [PCDPC] - Port size (10 or 10) does not match connection size (32) for port 'instruction_addr_o'. The port definition is at: ../src/core/core.v(15).
-#         Region: /load_store_test/TB/top_inst/core_inst
-# ** Warning: (vsim-3015) ../src/top.v(281): [PCDPC] - Port size (15 or 15) does not match connection size (32) for port 'port1_addr_i'. The port definition is at: ../src/pulp/ram_mux.sv(35).
-#         Region: /load_store_test/TB/top_inst/data_ram_mux_i
+# Loading work.tb_branch(fast)
+# Loading work.tb(fast)
+# Loading work.top_CoreMem(fast)
+# Loading work.core(fast)
+# Loading work.if_stage(fast)
+# Loading work.id_stage(fast)
+# Loading work.control_unit(fast)
+# Loading work.reg_file(fast)
+# Loading work.reg_file_f(fast)
+# Loading work.crs_unit(fast)
+# Loading work.timer(fast)
+# Loading work.counter(fast)
+# Loading work.br(fast)
+# Loading work.exe_stage(fast)
+# Loading work.alu(fast)
+# Loading work.MULDIV(fast)
+# Loading work.dDIVrest32u(fast)
+# Loading work.MULgold(fast)
+# Loading work.Signed2Unsigned(fast)
+# Loading work.FPU_S(fast)
+# Loading work.ADDSUB_FPs(fast)
+# Loading work.alignFPs(fast)
+# Loading work.HighestLeftBit28u(fast)
+# Loading work.MUL_FPs(fast)
+# Loading work.HighestLeftBit48u(fast)
+# Loading work.roundingFPs(fast)
+# Loading work.core_mem_stage(fast)
+# Loading work.core_wb_stage(fast)
+# Loading work.instr_ram_wrap(fast)
+# Loading work.sp_ram_wrap_instr(fast)
+# Loading work.sp_ram_instr(fast)
+# Loading work.boot_rom_wrap(fast)
+# Loading work.boot_code(fast)
+# Loading work.ram_mux(fast)
+# Loading work.sp_ram_wrap_data(fast)
+# Loading work.sp_ram_data(fast)
+# Loading work.ram_mux(fast__1)
 run -all
-# LOAD Test
-# mem[         0] = 00000000010000000000000110000011
-# mem[         4] = 00000000000000000000000000000000
-# mem[         8] = 00000000000000000000000000000000
-# mem[        12] = 00000000000000000000000000000000
-# mem[        16] = 00000000000000000000000000000000
-#     OK: reg5 is : f04a1c0f
-# STORE Test
-# mem[         0] = 00000000000000000010000010000011
-# mem[         4] = 00000000010000000100001110000011
-# mem[         8] = 00000000000000000000000000000000
-# mem[        12] = 00000000000000000000000000000000
-# mem[        16] = 00000000000000000000000000000000
-# mem[        20] = 00000000000000000000000000000000
-# mem[        24] = 00000000000000000000000000000000
-# mem[        28] = 00000000000000000000000000000000
-# mem[        32] = 00000000000000000000000000000000
-# mem[        36] = 00000000000000000000000000000000
-# mem[        40] = 00000000000000000000000000000000
-#     OK: reg5 is : 10101010
-#     OK: reg6 is : 00001c0f
-#     OK: reg7 is : 00000011
-# STORE Test
-# mem[         0] = 00000000000000000010100000000011
-# mem[         4] = 00000000000100000010100000100011
-# mem[         8] = 00000001000000000010001010000011
-# ** Note: $finish    : ../tb/load_store.v(40)
-#    Time: 4751 ns  Iteration: 0  Instance: /load_store_test
-# 1
-# Break in Module load_store_test at ../tb/load_store.v line 40
+# JAL Test
+# OK: PC is:    0 
+# 
+# JALR Test
+# OK: PC is:    0 
+# 
+# BEQ Test
+# OK: PC is:  252 
+# 
+# ** Note: $stop    : ../tb/branch.v(42)
+#    Time: 4951 ns  Iteration: 0  Instance: /tb_branch
+# Break in Module tb_branch at ../tb/branch.v line 42
