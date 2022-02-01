@@ -172,7 +172,7 @@ output       data_wr;
 output       regfile_wr;
 output wire [`REG_ADDR_WIDTH-1:0]     regfile_raddr_rs1_o;
 output wire [`REG_ADDR_WIDTH-1:0]     regfile_raddr_rs2_o;
-														   
+output wire [`REG_ADDR_WIDTH-2:0]     regfile_raddr_rs3_o;														   
 output wire [`REG_ADDR_WIDTH-1:0]     regfile_waddr;
 input  wire  branch_i;
 output wire  brj_o;  // branch indicator
@@ -224,10 +224,10 @@ assign imm12 = instruction[31:20];
 assign imm20j = {instruction[31], instruction[19:12], instruction[20], instruction[30:21]};
 assign imm12b = {instruction[31], instruction[7], instruction[30:25], instruction[11:8]};
 assign imm12s = {instruction[31:25], instruction[11:7]};
-assign regfile_raddr_rs1_o = {regfile_raddr_rs1_t, instruction[19:15]};
+assign regfile_raddr_rs1_o = opcode == OPCODE_U_LUI ? 5'b0 : {regfile_raddr_rs1_t, instruction[19:15]};
 assign regfile_raddr_rs2_o = {regfile_raddr_rs2_t, instruction[24:20]};
 assign regfile_raddr_rs3_o = instruction[31:27];
-assign regfile_waddr = {regfile_waddr_t, instruction[11:7]}; 
+assign regfile_waddr = {regfile_waddr_t, instruction[11:7]};
 assign brj_o = branch_i | jump;
 assign csr_raddr_o = imm12;  
 assign csr_imm_o = instruction[19:15];
@@ -246,11 +246,15 @@ always@(*)
     STORE_op = `STORE_SB;
     LOAD_op = `LOAD_LW; 
     imm_val_o = {`DATA_WIDTH{1'b0}};
+    regfile_raddr_rs1_t = 1'b0; // By default, read and write 
+    regfile_raddr_rs2_t = 1'b0; // on the integer Regfile
+    regfile_waddr_t = 1'b0;
     // Decode
     data_target_o = 2'b0;
     data_rd_o = 1'b0;
     i_r1_o = 1'b0;
     i_r2_o = 1'b0;
+	i_r3_o = 1'b0;
     jalr_o = 1'b0;
     csr_op_o = {`CSR_OP_WIDTH{1'b0}};
     csr_wr_o = 1'b0;

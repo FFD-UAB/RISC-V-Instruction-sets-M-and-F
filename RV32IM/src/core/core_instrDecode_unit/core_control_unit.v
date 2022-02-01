@@ -192,7 +192,7 @@ assign imm12 = instruction[31:20];
 assign imm20j = {instruction[31], instruction[19:12], instruction[20], instruction[30:21]};
 assign imm12b = {instruction[31], instruction[7], instruction[30:25], instruction[11:8]};
 assign imm12s = {instruction[31:25], instruction[11:7]};
-assign regfile_raddr_rs1_o = instruction[19:15];
+assign regfile_raddr_rs1_o = opcode == OPCODE_U_LUI ? 5'b0 : instruction[19:15];
 assign regfile_raddr_rs2_o = instruction[24:20];
 assign regfile_waddr = instruction[11:7]; 
 assign brj_o = branch_i | jump;

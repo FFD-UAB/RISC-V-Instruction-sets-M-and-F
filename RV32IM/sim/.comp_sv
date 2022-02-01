@@ -22,20 +22,20 @@ vlog -sv -f sv_files
 
 # Load IP Multifunction Libraries (change "QuartusPath" to your Quartus directory)
 # Library created for compiling files required by LPM_MULT32 for MULDIV module
-vlib LPM
-vmap LPM LPM 
-vcom -work LPM $QuartusPath/eda/fv_lib/vhdl/lpms/lpm_components.vhd 
-vlog -work LPM $QuartusPath/eda/fv_lib/verilog/lpm_mult.v 
-vlog -work LPM $QuartusPath/eda/fv_lib/verilog/mult_block.v
-vlog -work LPM $QuartusPath/eda/fv_lib/verilog/addsub_block.v
-vlog -work LPM $QuartusPath/eda/fv_lib/verilog/pipeline_internal_fv.v
-vlog -work LPM ../lib/LPM_MULT32.v
+# vlib LPM
+# vmap LPM LPM 
+# vcom -work LPM $QuartusPath/eda/fv_lib/vhdl/lpms/lpm_components.vhd 
+# vlog -work LPM $QuartusPath/eda/fv_lib/verilog/lpm_mult.v 
+# vlog -work LPM $QuartusPath/eda/fv_lib/verilog/mult_block.v
+# vlog -work LPM $QuartusPath/eda/fv_lib/verilog/addsub_block.v
+# vlog -work LPM $QuartusPath/eda/fv_lib/verilog/pipeline_internal_fv.v
+# vlog -work LPM ../lib/LPM_MULT32.v
 
 # Library created for compiling files required by ALTMULT_ADD32 for MULDIV2 module
-vlib ALTMULT
-vmap ALTMULT ALTMULT
-vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/altmult_add.v
-vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/addsub_block.v
-vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/dffep.v
-vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/mult_block.v
-vlog -work ALTMULT ../lib/ALTMULT_ADD32.v
+# vlib ALTMULT
+# vmap ALTMULT ALTMULT
+# vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/altmult_add.v
+# vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/addsub_block.v
+# vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/dffep.v
+# vlog -work ALTMULT $QuartusPath/eda/fv_lib/verilog/mult_block.v
+# vlog -work ALTMULT ../lib/ALTMULT_ADD32.v

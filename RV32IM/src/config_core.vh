@@ -14,9 +14,9 @@
 //////////////////////////////////////
 
   // Select a single MULDIV (MUL) module (by default selects MULDIV with no IP MUL module):
-//`define RV32IM_noIP    // Uses MULgold as multiplier module (MULDIV). It may not be supported by specific FPGA HW resources.
+`define RV32IM_noIP    // Uses MULgold as multiplier module (MULDIV). It may not be supported by specific FPGA HW resources.
 //`define RV32IM_MULDIV  // Uses LPM_MULT32 as multiplier module (MULDIV).
-`define RV32IM_MULDIV2 // Uses ALTMULT_ADD32 as multiplier module (MULDIV2).
+//`define RV32IM_MULDIV2 // Uses ALTMULT_ADD32 as multiplier module (MULDIV2).
 
   // Select just one DIV module (by default selects tDIVrest32u):
 //`define RV32IM_tDIVrest32
